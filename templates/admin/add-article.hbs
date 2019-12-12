@@ -1,0 +1,37 @@
+{{#*inline "content"}}
+<div class="invoice p-3 mb-3">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label for="exampleInputEmail1">文章标题</label>
+                <input type="email" class="form-control" placeholder="文章标题">
+            </div>
+            <div class="form-group">
+                <label>文章分类</label>
+                <select class="custom-select">
+                    {{#each categorys}}
+                    <option value="{{ id }}">{{ label }}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="form-group">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" id="publish_checkbox">
+                    <label for="publish_checkbox" class="custom-control-label">发布</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>文章内容(markdown)</label>
+                <textarea class="form-control" rows="20" placeholder="输入内容"></textarea>
+            </div>
+            <div>
+                <button class="btn btn-primary btn-sm">添加</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+
+</div>
+{{/inline}}
+{{~> admin/layout ~}}
