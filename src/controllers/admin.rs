@@ -28,8 +28,11 @@ fn manage_article_index(conn: DbConn) -> Template {
 
 // 新建文章页面
 #[get("/add-article")]
-fn add_article_index() -> &'static str {
-    "/add-article"
+fn add_article_index(conn: DbConn) -> Template {
+    Template::render("admin/add-article", &json!({
+        "header" : "添加文章",
+        "categorys" : AdminTask::get_all_categorys(&conn)
+    }))
 }
 
 // 新建文章接口
@@ -52,21 +55,38 @@ fn delete_article(id: i32) {
 }
 
 // 修改文章页面
-#[get("/put-article")]
-fn put_article_index() -> &'static str {
-    "/put-article"
+#[get("/put-article/<id>")]
+fn put_article_index(conn: DbConn, id: i32) -> Template {
+    Template::render("admin/put-article", &json!({
+        "header" : "更新文章",
+        "categorys" : AdminTask::get_all_categorys(&conn)
+    }))
 }
 
 // 修改文章接口
-#[put("/article")]
-fn put_article() {
-
+#[put("/article", format = "json", data = "<article>")]
+fn put_article(conn: DbConn, article: Json<crate::dto::admin::PostArticleDto>) -> JsonValue {
+    let success = AdminTask::update_article(&conn, article.0);
+    json!(ApiResponse {
+        success: success,
+        err_msg: match success {
+            true => "成功".to_string(),
+            false => "失败".to_string()
+        }
+    })
 }
 
 // 发布/取消发布 接口
-#[post("/article/toggle-published")]
-fn change_article_published() {
-
+#[post("/article/toggle-published/<id>")]
+fn change_article_published(conn: DbConn, id: i32) ->JsonValue {
+    let success = AdminTask::toggle_article_published(&conn, id);
+    json!(ApiResponse {
+        success: success,
+        err_msg: match success {
+            true => "成功".to_string(),
+            false => "失败".to_string()
+        }
+    })
 }
 
 // 管理分类页面

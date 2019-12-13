@@ -1,8 +1,7 @@
 use crate::schemas::articles::dsl as article_dsl;
 use crate::schemas::categorys::dsl as categorys_dsl;
 use crate::models;
-use diesel::SqliteConnection;
-use diesel::{self, prelude::*};
+use diesel::{self, prelude::*, SqliteConnection, dsl::not};
 use crate::dto::admin as dto;
 
 pub fn all(conn: &SqliteConnection) -> Vec<models::Article> {
@@ -33,4 +32,29 @@ pub fn insert_article(conn: &SqliteConnection, article: dto::PostArticleDto) -> 
         article_dsl::category_id.eq(article.category_id),
         article_dsl::published.eq(article.published)
     )).execute(conn).is_ok()
+}
+
+pub fn update_article(conn: &SqliteConnection, article: dto::PostArticleDto) -> bool {
+    let target = article_dsl::articles.filter(article_dsl::id.eq(article.id));
+    diesel::update(target).set((
+        article_dsl::title.eq(article.title),
+        article_dsl::body.eq(article.body),
+        article_dsl::category_id.eq(article.category_id),
+        article_dsl::published.eq(article.published)
+    )).execute(conn).is_ok()
+}
+
+pub fn get_all_categorys(conn: &SqliteConnection) -> Vec<dto::CategoryDto> {
+    let result = categorys_dsl::categorys.load::<models::Category>(conn).unwrap();
+    result.iter().map(|c| dto::CategoryDto {
+        id: c.id,
+        label: c.label.to_string()
+    }).collect()
+}
+
+pub fn toggle_article_published(conn: &SqliteConnection, id: i32) -> bool {
+    let target = article_dsl::articles.filter(article_dsl::id.eq(id));
+    diesel::update(target).set(
+        article_dsl::published.eq(not(article_dsl::published))
+    ).execute(conn).is_ok()
 }

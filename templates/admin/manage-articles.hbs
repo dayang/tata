@@ -3,7 +3,7 @@
     <div class="col-md-12">
         <div class="card card-outline card-primary">
             <div class="card-header">
-                <button type="button" class="btn btn-success btn-xs"><i class="fas fa-plus"> 新建</i></button>
+                <a role="button" href="/admin/add-article" class="btn btn-success btn-xs"><i class="fas fa-plus"> 新建</i></a>
             </div>
             <div class="card-body" style="display: block;">
                 <table class="table table-bordered table-sm">
@@ -28,13 +28,13 @@
                             <td>{{ visit_count }}</td>
                             <td>
                                 {{#if published}}
-                                <button class="btn btn-xs btn-outline-primary">已发布</button>
+                                <button value="{{id}}" class="btn btn-xs btn-outline-primary toggle_publish_btn">已发布</button>
                                 {{else}}
-                                <button class="btn btn-xs btn-outline-secondary">未发布</button>
+                                <button value="{{id}}" class="btn btn-xs btn-outline-secondary toggle_publish_btn">未发布</button>
                                 {{/if}}
                             </td>
                             <td>
-                                <button class="btn btn-primary btn-xs">更新</button>
+                                <a role="button" href="/admin/put-article/{{id}}" class="btn btn-primary btn-xs">更新</a>
                                 <button class="btn btn-danger btn-xs">删除</button>
                             </td>
                         </tr>
@@ -45,5 +45,33 @@
         </div>
     </div>
 </div>
+<script>
+    $(".toggle_publish_btn").each(function(i, btn) {
+        var toggle_button = $(btn);
+        toggle_button.click(function(){
+            $.ajax({
+                type: "POST",
+                url: "/admin/article/toggle-published/" + toggle_button.attr("value"),
+                dataType: "json",
+                success: function(data, status, xhr) {
+                    if(data.success){
+                        if(toggle_button.hasClass("btn-outline-primary")){
+                            toggle_button.removeClass("btn-outline-primary");
+                            toggle_button.addClass("btn-outline-secondary");
+                            toggle_button.text("未发布");
+                        } else {
+                            toggle_button.removeClass("btn-outline-secondary");
+                            toggle_button.addClass("btn-outline-primary");
+                            toggle_button.text("已发布");
+                        }
+                    } else {
+                        alert("修改发布状态失败")
+                    }
+                }
+            })
+        })
+    })
+    
+</script>
 {{/inline}}
 {{~> admin/layout ~}}
