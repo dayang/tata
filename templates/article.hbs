@@ -1,14 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>🕮 {{ title }}</title>
-</head>
-<body>
-    <h3>{{ title }}</h3>
+{{#*inline "header-block"}}
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/tomorrow-night-blue.min.css">
+<style>
+     code {
+        font-family: "Source Code Pro",Menlo,Monaco,Consolas,"Courier New",monospace;
+        color: hsl(328.3636363636364,80.4922279793%,48.1568627451%);
+        font-size: 0.85em;
+        padding: 2px 4px;
+        font-size: 0.85em;
+        text-shadow: none;
+        word-wrap: break-word;
+        white-space: pre;
+    }
 
-    <p> {{ body }} </p>
-</body>
-</html>
+    #article-body p {
+        text-indent: 2em;
+    }
+
+    #article-body h1,h2,h3,h4,h5,h6 {
+        color: #555;
+    }
+
+    .article-title{
+        font-family: Lato,"Microsoft YaHei",sans-serif;
+        font-size: 2rem;
+        font-weight: 900;
+        {{!-- margin: 0.5em 0 0.25em 0; --}}
+        padding-bottom: 0.2em;
+    }
+
+    .article-meta{
+        font-size: .8rem;
+        color: #777;;
+    }
+</style>
+{{/inline}}
+
+{{#*inline "content"}}
+<div>
+    <div class="article-title">📃 {{ title }}</div>
+    <div class="article-meta">
+        <span>{{ create_at }}</span>
+    </div>
+    <div id="article-body"> </div>
+</div>
+{{/inline}}
+
+{{#*inline "script-block"}}
+<script src="/static/plugins/jquery/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/markdown-it/10.0.0/markdown-it.min.js"></script>
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $.get("/article/v1/{{id}}", function(data, status, xhr) {
+            var md = window.markdownit({
+                breaks: true,
+            });
+            var article_body = $("#article-body");
+            var result = md.render(data);
+            article_body.html(result);
+            hljs.initHighlighting();
+        })
+    })
+</script>
+{{/inline}}
+
+{{~> base ~}}

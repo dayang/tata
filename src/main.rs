@@ -36,13 +36,19 @@ fn run_db_migrations(rocket: Rocket) -> Result<Rocket, Rocket> {
     }
 }
 
+#[derive(Serialize, Deserialize)]
+struct Sections{
+    js: String,
+    link: String,
+}
+
 fn rocket() -> Rocket {
     rocket::ignite()
         .attach(DbConn::fairing())
         .attach(AdHoc::on_attach("Database Migrations", run_db_migrations))
-        .mount("/", routes![controllers::index])
-        .mount("/category", routes![controllers::category])
-        .mount("/article", routes![controllers::article])
+        .mount("/", routes![controllers::blog::index])
+        //.mount("/category", routes![controllers::category])
+        .mount("/article", controllers::blog::routes())
         .mount("/admin", controllers::admin::routes())
         .mount("/static", StaticFiles::from("static"))
         .register(catchers![catchers::not_found])
@@ -51,4 +57,4 @@ fn rocket() -> Rocket {
 
 fn main() {
     rocket().launch();
-}
+} 

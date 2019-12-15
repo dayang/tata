@@ -1,16 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title> {{ title }}</title>
-</head>
-<body>
-    <ul>
-        {{#each articles}}
-        <li><a href="/article/{{ id }}">{{ title }}</a></li>
-        {{/each}}
-    </ul>
-</body>
-</html>
+{{#*inline "header-block"}}
+<style>  
+.article-line {
+    margin: 9pt 0;
+    overflow: hidden;
+}
+
+.article-title a{
+    font-size: 1.2rem;
+}
+
+.book-icon{
+    position: absolute;
+    margin-top: 4px;
+}
+
+.article-brief{
+    margin-left: 30px;
+}
+
+.aricle-meta{
+    font-size: .8rem;
+    color: #aaa;
+}
+</style>
+{{/inline}}
+
+{{#*inline "content"}}
+<div class="article-list">
+    {{#each articles}}
+    <div class="article-line">
+        <div class="book-icon">
+            📝
+        </div>
+        <div class="article-brief">
+            <div class="article-title">
+                <a href="/article/{{ id }}">{{ title }}</a>
+            </div>
+            <div class="aricle-meta">
+                <span>{{ create_at }}</span>
+            </div>
+        </div>
+    </div>
+    {{/each}}
+</div>
+{{/inline}}
+
+{{~> base ~}}

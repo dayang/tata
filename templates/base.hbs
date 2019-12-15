@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title> 🌅 {{ title }}</title>
+    <link href="/static/dist/css/base.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/flexboxgrid/6.3.1/flexboxgrid.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Lato|Arvo|Permanent+Marker" rel="stylesheet">
+    {{~> header-block}}
+</head>
+<body>
+    <div class="row main-row">
+        <div id="main-content" class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2 col-lg-8 col-lg-offset-2">
+            <div class="signatures site-title">
+                <a href="/">Hey Tomorrow</a>
+            </div>
+            <div class="nav">
+                <a href="/">首页</a>
+                <a href="#">分类</a>
+                <a href="#">关于</a>
+            </div>
+            <div class="header-line"></div>
+            <div class="wrapper">
+                {{~> content}}
+            </div>
+            <div class="footer-line"></div>
+            <div class="footer">
+                <span>Powered by <a href="https://rocket.rs/" target="_blank">Rocket</a>  </span>
+            </div>
+        </div>
+    </div>
+    {{~> script-block}}
+</body>
+</html>
