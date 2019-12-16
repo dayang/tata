@@ -4,13 +4,6 @@ use crate::models;
 use diesel::{self, prelude::*, SqliteConnection, dsl::not};
 use crate::dto::admin as dto;
 
-pub fn all(conn: &SqliteConnection) -> Vec<models::Article> {
-    article_dsl::articles.load::<models::Article>(conn).unwrap()
-}
-
-pub fn get_article_by_id(conn: &SqliteConnection, article_id: i32) -> models::Article {
-    article_dsl::articles.find(article_id).get_result::<models::Article>(conn).unwrap()
-}
 
 pub fn get_admin_article_briefs(conn: &SqliteConnection) -> Vec<dto::GetArticleBriefDto> {
     let data = article_dsl::articles.inner_join(categorys_dsl::categorys.on(categorys_dsl::id.eq(article_dsl::category_id)))
@@ -57,4 +50,13 @@ pub fn toggle_article_published(conn: &SqliteConnection, id: i32) -> bool {
     diesel::update(target).set(
         article_dsl::published.eq(not(article_dsl::published))
     ).execute(conn).is_ok()
+}
+
+pub fn insert_category(conn: &SqliteConnection, category: dto::CategoryDto) -> bool {
+    diesel::insert_into(categorys_dsl::categorys).values(categorys_dsl::label.eq(category.label)).execute(conn).is_ok()
+}
+
+pub fn update_category(conn: &SqliteConnection, category: dto::CategoryDto) -> bool {
+    let target = categorys_dsl::categorys.filter(categorys_dsl::id.eq(category.id));
+    diesel::update(target).set(categorys_dsl::label.eq(category.label)).execute(conn).is_ok()
 }

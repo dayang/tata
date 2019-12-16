@@ -30,6 +30,9 @@
         </div>
     </div>
 </div>
+{{/inline}}
+
+{{#*inline "script-block"}}
 <script>
     $("#add-btn").click(function(){
         var postdata = JSON.stringify({
@@ -54,4 +57,5 @@
     })
 </script>
 {{/inline}}
+
 {{~> admin/layout ~}}

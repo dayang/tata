@@ -3,3 +3,7 @@ template_dir = "templates"
 
 [global.databases.sqlite_database]
 url = "db/db.sqlite"
+
+# [auth]
+# admin = "admin"
+# password = "123456"

@@ -91,14 +91,24 @@ fn change_article_published(conn: DbConn, id: i32) ->JsonValue {
 
 // 管理分类页面
 #[get("/manage-categorys")]
-fn manage_category_index() -> &'static str {
-    "/manage-category"
+fn manage_category_index(conn: DbConn) -> Template {
+    Template::render("admin/manage-categorys", &json!({
+        "header" : "管理分类",
+        "categorys" : AdminTask::get_all_categorys(&conn)
+    }))
 }
 
 // 增加分类接口
-#[post("/category")]
-fn add_category() {
-
+#[post("/category", format = "json", data = "<category>")]
+fn add_category(conn: DbConn, category: Json<crate::dto::admin::CategoryDto>) ->JsonValue {
+    let success = AdminTask::insert_category(&conn, category.0);
+    json!(ApiResponse {
+        success: success,
+        err_msg: match success {
+            true => "成功".to_string(),
+            false => "失败".to_string()
+        }
+    })
 }
 
 // 删除分类接口
@@ -108,9 +118,16 @@ fn delete_category(id: i32) {
 }
 
 // 修改分类接口
-#[put("/category")]
-fn put_category() {
-
+#[put("/category", format = "json", data = "<category>")]
+fn put_category(conn: DbConn, category: Json<crate::dto::admin::CategoryDto>) ->JsonValue {
+    let success = AdminTask::update_category(&conn, category.0);
+    json!(ApiResponse {
+        success: success,
+        err_msg: match success {
+            true => "成功".to_string(),
+            false => "失败".to_string()
+        }
+    })
 }
 
 pub fn routes() -> Vec<rocket::Route> {

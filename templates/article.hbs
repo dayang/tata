@@ -51,7 +51,7 @@
 <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
 <script>
     $(document).ready(function() {
-        $.get("/article/v1/{{id}}", function(data, status, xhr) {
+        $.get("/article/article-body/{{id}}", function(data, status, xhr) {
             var md = window.markdownit({
                 breaks: true,
             });

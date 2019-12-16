@@ -1,12 +1,5 @@
 pub mod admin;
-
-use crate::models::Article;
-
-#[derive(Serialize)]
-pub struct PageArticles {
-    pub title: String,
-    pub articles: Vec<Article>,
-}
+pub mod blog;
 
 #[derive(Serialize)]
 pub struct ApiResponse {

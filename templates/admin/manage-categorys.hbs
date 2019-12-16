@@ -1,0 +1,129 @@
+{{#*inline "content"}}
+<div class="invoice p-3 mb-3">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-primary">
+                <div class="card-body" style="display: block;">
+                    <button type="button" style="margin-bottom: 10px;" class="btn btn-success btn-xs" data-toggle="modal" data-target="#modal-add"><i class="fas fa-plus"></i> 新建</button>
+                    <table class="table table-bordered table-sm">
+                        <thead>                  
+                            <tr>
+                                <th style="width: 60px;">编号</th>
+                                <th style="width: 120px;">名称</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each categorys}}
+                            <tr>
+                                <td id="id-{{id}}">{{ id }}</td>
+                                <td id="label-{{id}}">{{ label }}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-xs update-btn" value="{{id}}" data-toggle="modal" data-target="#modal-update">更新</button>
+                                    <button class="btn btn-danger btn-xs" value="{{ id }}">删除</button>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-add">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">新增分类</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <input id="input-label" type="text" class="form-control" placeholder="分类名称">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary btn-sm" id="add-btn">新增</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <div class="modal fade" id="modal-update">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">修改分类</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <span>编号：</span><span id="update-id"></span>
+              <input id="update-label" type="text" class="form-control" placeholder="分类名称">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary btn-sm" id="update-save-btn">保存</button>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+{{/inline}}
+
+{{#*inline "script-block"}}
+<script>
+    $(document).ready(function(){
+        $("#add-btn").click(function(){
+            if($("#input-label").val().length <= 0)
+                return;
+            $.ajax({
+                type: "POST",
+                url: "/admin/category",
+                data: JSON.stringify({
+                    id: 0,
+                    label: $("#input-label").val()
+                }),
+                contentType: "application/json",
+                dataType: "json",
+                success: function(data, status, xhr) {
+                    if(data.success){
+                        alert("添加成功")
+                    }
+                }
+            })
+        })
+
+        $(".update-btn").each(function(i, btn){
+            var jq_btn = $(btn);
+            jq_btn.click(function() {
+                $("#update-id").text($("#id-" + jq_btn.attr("value")).text())
+                $("#update-label").val($("#label-" + jq_btn.attr("value")).text())
+            })
+        })
+
+        $("#update-save-btn").click(function(){
+            if($("#update-label").val().length <= 0)
+                return;
+            $.ajax({
+                type: "PUT",
+                url: "/admin/category",
+                data: JSON.stringify({
+                    id: parseInt($("#update-id").text()),
+                    label: $("#update-label").val()
+                }),
+                contentType: "application/json",
+                dataType: "json",
+                success: function(data, status, xhr) {
+                    if(data.success){
+                        alert("修改成功")
+                    }
+                }
+            })
+        })
+    })
+</script>
+{{/inline}}
+
+{{~> admin/layout ~}}

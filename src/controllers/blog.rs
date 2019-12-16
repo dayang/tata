@@ -1,15 +1,14 @@
 use crate::DbConn;
 use rocket_contrib::templates::Template;
-use crate::dto::PageArticles;
-use crate::tasks::admin as AdminTask;
+use crate::tasks::blog as BlogTask;
 
 #[get("/")]
 pub fn index(conn: DbConn) -> Template{
-    let all_articles = AdminTask::all(&conn);
-    Template::render("index", &PageArticles {
-        title: "Yonghua's blog".to_string(),
-        articles: all_articles,
-    })
+    let all_articles = BlogTask::get_article_briefs(&conn);
+    Template::render("index", &json!({
+        "title": "Yonghua's blog".to_string(),
+        "articles": all_articles,
+    }))
 }
 
 // #[get("/<category>")]
@@ -19,19 +18,18 @@ pub fn index(conn: DbConn) -> Template{
 
 #[get("/<id>")]
 pub fn article(id: i32, conn: DbConn) -> Template {
-    Template::render("article", AdminTask::get_article_by_id(&conn, id))
+    Template::render("article", BlogTask::get_article_brief_by_id(&conn, id))
 }
 
-#[get("/v1/<id>")]
-pub fn get_article(id: i32, conn: DbConn) -> String {
-    AdminTask::get_article_by_id(&conn, id).body
+#[get("/article-body/<id>")]
+pub fn get_article_body(id: i32, conn: DbConn) -> String {
+    BlogTask::get_article_body_by_id(&conn, id)
 }
-
 
 pub fn routes() -> Vec<rocket::Route> {
     routes![
         index,
         article,
-        get_article
+        get_article_body
     ]
 }
