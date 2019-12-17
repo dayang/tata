@@ -4,14 +4,24 @@ use rocket_contrib::json::{Json, JsonValue};
 use rocket_contrib::templates::{Template};
 use crate::tasks::admin as AdminTask;
 use crate::dto::ApiResponse;
+use super::AdminUser;
+
 
 #[get("/login")]
-fn login() -> Option<NamedFile> {
+fn login_page() -> Option<NamedFile> {
     NamedFile::open("templates/admin/login.html").ok()
 }
 
+fn login() {
+
+}
+
+fn logout() {
+
+}
+
 #[get("/")]
-fn index() -> Template {
+fn index(admin: AdminUser) -> Template {
     Template::render("admin/index", &json!({
         "header" : "首页",
     }))
@@ -132,7 +142,7 @@ fn put_category(conn: DbConn, category: Json<crate::dto::admin::CategoryDto>) ->
 
 pub fn routes() -> Vec<rocket::Route> {
     routes![
-        login,
+        login_page,
         index,
         manage_article_index,
         add_article_index,

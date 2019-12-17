@@ -46,6 +46,19 @@ fn rocket() -> Rocket {
     rocket::ignite()
         .attach(DbConn::fairing())
         .attach(AdHoc::on_attach("Database Migrations", run_db_migrations))
+        .attach(AdHoc::on_attach("Get Auth", |rocket| {
+            let auth_config = rocket.config()
+                .get_table("auth")
+                .expect("missing auth config");
+            
+            let admin = auth_config.get("admin").expect("missing auth:admin config").to_string();
+            let password = auth_config.get("password").expect("missing auth:password config").to_string();
+
+            Ok(rocket.manage(controllers::Auth{
+                admin,
+                password,
+            }))
+        }))
         .mount("/", routes![controllers::blog::index])
         //.mount("/category", routes![controllers::category])
         .mount("/article", controllers::blog::routes())
