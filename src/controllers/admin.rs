@@ -1,48 +1,82 @@
 use crate::DbConn;
-use rocket::response::NamedFile;
+use rocket::response::{NamedFile, Redirect};
 use rocket_contrib::json::{Json, JsonValue};
 use rocket_contrib::templates::{Template};
+use rocket::request::{Form, State};
+use rocket::http::{Cookies, Cookie};
 use crate::tasks::admin as AdminTask;
 use crate::dto::ApiResponse;
-use super::AdminUser;
+use super::User;
+use super::Auth;
 
+macro_rules! admin_or_login {
+    ($admin: ident, $t: expr) => {
+        if $admin.is_admin() {
+            Ok($t)
+        } else {
+            Err(Redirect::to("/admin/login"))
+        }
+    };
+}
 
 #[get("/login")]
-fn login_page() -> Option<NamedFile> {
-    NamedFile::open("templates/admin/login.html").ok()
+fn login_page(admin: User) -> Result<Redirect, Option<NamedFile>> {
+    if admin.is_admin() {
+        Ok(Redirect::to("/admin/"))
+    } else {
+        Err(NamedFile::open("templates/admin/login.html").ok())
+    }
 }
 
-fn login() {
-
+#[post("/login", data = "<login_field>")]
+fn login(mut cookies: Cookies, login_field: Form<Auth>, auth: State<Auth>) -> Redirect {
+    if login_field.admin == auth.admin && login_field.password == auth.password {
+        let mut cookie = Cookie::new("auth", auth.admin.clone());
+        cookie.set_expires(time::now_utc() + time::Duration::days(1));
+        cookie.set_max_age(time::Duration::minutes(30));
+        println!("{}", cookie) ;
+        cookies.add_private(cookie);
+        Redirect::to("/admin/")
+    } else {
+        Redirect::to("/admin/login")
+    }
 }
 
-fn logout() {
-
+#[post("/logout")]
+fn logout(mut cookies: Cookies) -> Redirect {
+    cookies.remove(Cookie::named("auth"));
+    Redirect::to("/admin/login")
 }
 
 #[get("/")]
-fn index(admin: AdminUser) -> Template {
-    Template::render("admin/index", &json!({
-        "header" : "首页",
-    }))
+fn index(admin: User) -> Result<Template, Redirect> {
+    admin_or_login!(admin,
+        Template::render("admin/index", &json!({
+            "header" : "首页",
+        }))
+    )
 }
 
 // 管理文章页面
 #[get("/manage-articles")]
-fn manage_article_index(conn: DbConn) -> Template {
-    Template::render("admin/manage-articles", &json!({
-        "header" : "文章管理",
-        "articles" : AdminTask::get_admin_article_briefs(&conn)
-    }))
+fn manage_article_index(admin: User, conn: DbConn) -> Result<Template, Redirect> {
+    admin_or_login!(admin,
+        Template::render("admin/manage-articles", &json!({
+            "header" : "文章管理",
+            "articles" : AdminTask::get_admin_article_briefs(&conn)
+        }))
+    )
 }
 
 // 新建文章页面
 #[get("/add-article")]
-fn add_article_index(conn: DbConn) -> Template {
-    Template::render("admin/add-article", &json!({
-        "header" : "添加文章",
-        "categorys" : AdminTask::get_all_categorys(&conn)
-    }))
+fn add_article_index(admin: User, conn: DbConn) -> Result<Template, Redirect> {
+    admin_or_login!(admin,
+        Template::render("admin/add-article", &json!({
+            "header" : "添加文章",
+            "categorys" : AdminTask::get_all_categorys(&conn)
+        }))
+    )
 }
 
 // 新建文章接口
@@ -66,11 +100,13 @@ fn delete_article(id: i32) {
 
 // 修改文章页面
 #[get("/put-article/<id>")]
-fn put_article_index(conn: DbConn, id: i32) -> Template {
-    Template::render("admin/put-article", &json!({
-        "header" : "更新文章",
-        "categorys" : AdminTask::get_all_categorys(&conn)
-    }))
+fn put_article_index(admin: User, conn: DbConn, id: i32) -> Result<Template, Redirect> {
+    admin_or_login!(admin,
+        Template::render("admin/put-article", &json!({
+            "header" : "更新文章",
+            "categorys" : AdminTask::get_all_categorys(&conn)
+        }))
+    )
 }
 
 // 修改文章接口
@@ -101,11 +137,13 @@ fn change_article_published(conn: DbConn, id: i32) ->JsonValue {
 
 // 管理分类页面
 #[get("/manage-categorys")]
-fn manage_category_index(conn: DbConn) -> Template {
-    Template::render("admin/manage-categorys", &json!({
-        "header" : "管理分类",
-        "categorys" : AdminTask::get_all_categorys(&conn)
-    }))
+fn manage_category_index(admin: User, conn: DbConn) -> Result<Template, Redirect> {
+    admin_or_login!(admin,
+        Template::render("admin/manage-categorys", &json!({
+            "header" : "管理分类",
+            "categorys" : AdminTask::get_all_categorys(&conn)
+        }))
+    )
 }
 
 // 增加分类接口
@@ -143,6 +181,8 @@ fn put_category(conn: DbConn, category: Json<crate::dto::admin::CategoryDto>) ->
 pub fn routes() -> Vec<rocket::Route> {
     routes![
         login_page,
+        login,
+        logout,
         index,
         manage_article_index,
         add_article_index,

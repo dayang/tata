@@ -6,6 +6,7 @@
 #[macro_use] extern crate log;
 #[macro_use] extern crate serde_derive;
 extern crate chrono;
+extern crate time;
 
 use rocket_contrib::templates::{Template};
 use rocket::Rocket;
@@ -51,15 +52,15 @@ fn rocket() -> Rocket {
                 .get_table("auth")
                 .expect("missing auth config");
             
-            let admin = auth_config.get("admin").expect("missing auth:admin config").to_string();
-            let password = auth_config.get("password").expect("missing auth:password config").to_string();
+            let admin = auth_config.get("admin").expect("missing auth:admin config").as_str().expect("admin should be string").to_string();
+            let password = auth_config.get("password").expect("missing auth:password config").as_str().expect("password should be string").to_string();
 
             Ok(rocket.manage(controllers::Auth{
                 admin,
                 password,
             }))
         }))
-        .mount("/", routes![controllers::blog::index])
+        .mount("/", routes![controllers::blog::index, controllers::about])
         //.mount("/category", routes![controllers::category])
         .mount("/article", controllers::blog::routes())
         .mount("/admin", controllers::admin::routes())

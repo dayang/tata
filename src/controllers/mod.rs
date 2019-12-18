@@ -1,43 +1,40 @@
 pub mod admin;
 pub mod blog;
 
+use rocket_contrib::templates::Template;
 use rocket::request::{self, Request, FromRequest, State};
 use rocket::outcome::IntoOutcome;
-use rocket::response::{Redirect};
-use rocket::http::Status;
 
+#[derive(FromForm)]
 pub struct Auth{
+    #[form(field = "username")]
     pub admin: String,
     pub password: String,
 }
 
-struct AdminUser(bool);
-struct AdminUserOrLogin;
+pub struct User(bool);
 
-impl<'a, 'r> FromRequest<'a, 'r> for AdminUser {
+impl User {
+    pub fn is_admin(&self) -> bool{
+        self.0
+    }
+}
+
+impl<'a, 'r> FromRequest<'a, 'r> for User {
     type Error = ();
 
-    fn from_request(request: &'a Request<'r>) -> request::Outcome<AdminUser, ()> {
+    fn from_request(request: &'a Request<'r>) -> request::Outcome<User, ()> {
         let auth = request.guard::<State<Auth>>()?;
         request.cookies()
-            .get_private("user_id")
+            .get_private("auth")
             .and_then(|cookie| cookie.value().parse().ok())
-            .and_then(|id: String| Some(AdminUser(auth.admin == id)))
+            .and_then(|id: String| Some(User(auth.admin == id)))
+            .or(Some(User(false)))
             .or_forward(())
     }
 }
 
-impl<'a, 'r> FromRequest<'a, 'r> for AdminUserOrLogin {
-    type Error = ();
-
-    fn from_request(request: &'a Request<'r>) -> request::Outcome<AdminUserOrLogin, ()> {
-        let auth = request.guard::<State<Auth>>()?;
-        request.cookies()
-            .get_private("user_id")
-            .and_then(|cookie| cookie.value().parse().ok())
-            .and_then(|id: String| match id == auth.admin {
-                true => Some(AdminUserOrLogin),
-                false => None
-            }).or_forward(())
-    }
+#[get("/about")]
+pub fn about() -> Template {
+    Template::render("about", &json!({}))
 }
