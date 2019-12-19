@@ -18,6 +18,16 @@ pub fn get_admin_article_briefs(conn: &SqliteConnection) -> Vec<dto::GetArticleB
     }).collect()
 }
 
+pub fn get_article_dto(conn: &SqliteConnection, id: i32) -> Option<dto::PostArticleDto> {
+    article_dsl::articles.find(id).first::<models::Article>(conn).ok().and_then(|r| Some(dto::PostArticleDto{
+        id: r.id,
+        title: r.title,
+        body: r.body,
+        category_id: r.category_id,
+        published: r.published,
+    }))
+}
+
 pub fn insert_article(conn: &SqliteConnection, article: dto::PostArticleDto) -> bool {
     diesel::insert_into(article_dsl::articles).values((
         article_dsl::title.eq(article.title),

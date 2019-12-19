@@ -2,30 +2,31 @@
 <div class="invoice p-3 mb-3">
     <div class="row">
         <div class="col-md-12">
+            <input type="text" id="article-id" value="{{article.id}}" hidden>
             <div class="form-group">
                 <label for="exampleInputEmail1">文章标题</label>
-                <input id="article-title" type="email" class="form-control" placeholder="文章标题">
+                <input id="article-title" autocomplete="off" type="email" class="form-control" value="{{article.title}}" placeholder="文章标题">
             </div>
             <div class="form-group">
                 <label>文章分类</label>
-                <select class="custom-select" id="article-category">
+                <select class="custom-select" id="article-category" autocomplete="off">
                     {{#each categorys}}
-                    <option value="{{ id }}">{{ label }}</option>
+                    <option value="{{ id }}" {{#if (eq ../article.category_id this.id)}} selected {{/if}}>{{ label }}</option>
                     {{/each}}
                 </select>
             </div>
             <div class="form-group">
                 <div class="custom-control custom-checkbox">
-                    <input class="custom-control-input" type="checkbox" id="publish_checkbox">
-                    <label id="article-published" for="publish_checkbox" class="custom-control-label">发布</label>
+                    <input autocomplete="off" id="article-published" class="custom-control-input" type="checkbox" {{#if article.published}} checked {{/if}}>
+                    <label for="article-published" class="custom-control-label">发布</label>
                 </div>
             </div>
             <div class="form-group">
                 <label>文章内容(markdown)</label>
-                <textarea id="article-body" class="form-control" rows="20" placeholder="输入内容"></textarea>
+                <textarea autocomplete="off" id="article-body" class="form-control" rows="20" placeholder="输入内容">{{article.body}}</textarea>
             </div>
             <div>
-                <button id="add-btn" class="btn btn-primary btn-sm">添加</button>
+                <button id="save-btn" class="btn btn-primary btn-sm">保存</button>
             </div>
         </div>
     </div>
@@ -33,7 +34,29 @@
 {{/inline}}
 
 {{#*inline "script-block"}}
-
+<script>
+    $("#save-btn").click(function(){
+        var postdata = JSON.stringify({
+            "id" : parseInt($("#article-id").val()),
+            "title" : $("#article-title").val(),
+            "body" : $("#article-body").val(),
+            "published" : $("#article-published").is(":checked"),
+            "category_id" : parseInt($("#article-category").val()),
+        });
+        $.ajax({
+            type: "PUT",
+            url: "/admin/article",
+            data: postdata,
+            contentType: "application/json",
+            dataType: "json",
+            success: function(data, status, xhr) {
+                if(data.success){
+                    alert("保存成功")
+                }
+            }
+        })
+    })
+</script>
 {{/inline}}
 
 {{~> admin/layout ~}}

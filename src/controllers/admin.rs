@@ -19,6 +19,19 @@ macro_rules! admin_or_login {
     };
 }
 
+macro_rules! admin_or_fail {
+    ($admin: ident, $t: expr) => {
+        if $admin.is_admin() {
+            $t
+        } else {
+            json!(ApiResponse {
+                success: false,
+                err_msg: String::from("没有权限")
+            })
+        }
+    };
+}
+
 #[get("/login")]
 fn login_page(admin: User) -> Result<Redirect, Option<NamedFile>> {
     if admin.is_admin() {
@@ -81,20 +94,22 @@ fn add_article_index(admin: User, conn: DbConn) -> Result<Template, Redirect> {
 
 // 新建文章接口
 #[post("/article", format = "json", data = "<article>")]
-fn add_article(conn: DbConn, article: Json<crate::dto::admin::PostArticleDto>) -> JsonValue {
-    let success = AdminTask::insert_article(&conn, article.0);
-    json!(ApiResponse {
-        success: success,
-        err_msg: match success {
-            true => "成功".to_string(),
-            false => "失败".to_string()
-        }
+fn add_article(admin: User, conn: DbConn, article: Json<crate::dto::admin::PostArticleDto>) -> JsonValue {
+    admin_or_fail!(admin, {
+        let success = AdminTask::insert_article(&conn, article.0);
+        json!(ApiResponse {
+            success: success,
+            err_msg: match success {
+                true => "成功".to_string(),
+                false => "失败".to_string()
+            }
+        })
     })
 }
 
 // 删除文章接口
-#[delete("/article/<id>")]
-fn delete_article(id: i32) {
+#[delete("/article/<_id>")]
+fn delete_article(_admin: User, _id: i32) {
 
 }
 
@@ -104,34 +119,39 @@ fn put_article_index(admin: User, conn: DbConn, id: i32) -> Result<Template, Red
     admin_or_login!(admin,
         Template::render("admin/put-article", &json!({
             "header" : "更新文章",
-            "categorys" : AdminTask::get_all_categorys(&conn)
+            "categorys" : AdminTask::get_all_categorys(&conn),
+            "article": AdminTask::get_article_dto(&conn, id)
         }))
     )
 }
 
 // 修改文章接口
 #[put("/article", format = "json", data = "<article>")]
-fn put_article(conn: DbConn, article: Json<crate::dto::admin::PostArticleDto>) -> JsonValue {
-    let success = AdminTask::update_article(&conn, article.0);
-    json!(ApiResponse {
-        success: success,
-        err_msg: match success {
-            true => "成功".to_string(),
-            false => "失败".to_string()
-        }
+fn put_article(admin: User, conn: DbConn, article: Json<crate::dto::admin::PostArticleDto>) -> JsonValue {
+    admin_or_fail!(admin, {
+        let success = AdminTask::update_article(&conn, article.0);
+        json!(ApiResponse {
+            success: success,
+            err_msg: match success {
+                true => "成功".to_string(),
+                false => "失败".to_string()
+            }
+        })
     })
 }
 
 // 发布/取消发布 接口
 #[post("/article/toggle-published/<id>")]
-fn change_article_published(conn: DbConn, id: i32) ->JsonValue {
-    let success = AdminTask::toggle_article_published(&conn, id);
-    json!(ApiResponse {
-        success: success,
-        err_msg: match success {
-            true => "成功".to_string(),
-            false => "失败".to_string()
-        }
+fn change_article_published(admin: User, conn: DbConn, id: i32) ->JsonValue {
+    admin_or_fail!(admin, {
+        let success = AdminTask::toggle_article_published(&conn, id);
+        json!(ApiResponse {
+            success: success,
+            err_msg: match success {
+                true => "成功".to_string(),
+                false => "失败".to_string()
+            }
+        })
     })
 }
 
@@ -148,33 +168,37 @@ fn manage_category_index(admin: User, conn: DbConn) -> Result<Template, Redirect
 
 // 增加分类接口
 #[post("/category", format = "json", data = "<category>")]
-fn add_category(conn: DbConn, category: Json<crate::dto::admin::CategoryDto>) ->JsonValue {
-    let success = AdminTask::insert_category(&conn, category.0);
-    json!(ApiResponse {
-        success: success,
-        err_msg: match success {
-            true => "成功".to_string(),
-            false => "失败".to_string()
-        }
+fn add_category(admin: User, conn: DbConn, category: Json<crate::dto::admin::CategoryDto>) ->JsonValue {
+    admin_or_fail!(admin, {
+        let success = AdminTask::insert_category(&conn, category.0);
+        json!(ApiResponse {
+            success: success,
+            err_msg: match success {
+                true => "成功".to_string(),
+                false => "失败".to_string()
+            }
+        })
     })
 }
 
 // 删除分类接口
-#[delete("/category/<id>")]
-fn delete_category(id: i32) {
+#[delete("/category/<_id>")]
+fn delete_category(_admin: User, _id: i32) {
 
 }
 
 // 修改分类接口
 #[put("/category", format = "json", data = "<category>")]
-fn put_category(conn: DbConn, category: Json<crate::dto::admin::CategoryDto>) ->JsonValue {
-    let success = AdminTask::update_category(&conn, category.0);
-    json!(ApiResponse {
-        success: success,
-        err_msg: match success {
-            true => "成功".to_string(),
-            false => "失败".to_string()
-        }
+fn put_category(admin: User, conn: DbConn, category: Json<crate::dto::admin::CategoryDto>) ->JsonValue {
+    admin_or_fail!(admin, {
+        let success = AdminTask::update_category(&conn, category.0);
+        json!(ApiResponse {
+            success: success,
+            err_msg: match success {
+                true => "成功".to_string(),
+                false => "失败".to_string()
+            }
+        })
     })
 }
 
