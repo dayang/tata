@@ -8,8 +8,7 @@ CREATE TABLE articles (
     visit_count INTEGER NOT NULL DEFAULT 0
 );
 
-INSERT INTO articles (title, body, category_id) VALUES ("Test Article1", "An Empty Article", 0);
-INSERT INTO articles (title, body, category_id) VALUES ("Test Article2", "sdfs", 1);
+INSERT INTO articles (title, body, category_id) VALUES ("Test Article1", "An Empty Article", 2);
 
 CREATE TABLE categorys (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

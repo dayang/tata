@@ -61,7 +61,7 @@ fn rocket() -> Rocket {
             }))
         }))
         .mount("/", routes![controllers::blog::index, controllers::about])
-        //.mount("/category", routes![controllers::category])
+        // .mount("/category", routes![controllers::category])
         .mount("/article", controllers::blog::routes())
         .mount("/admin", controllers::admin::routes())
         .mount("/static", StaticFiles::from("static"))
