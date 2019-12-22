@@ -4,6 +4,7 @@ pub mod blog;
 use rocket_contrib::templates::Template;
 use rocket::request::{self, Request, FromRequest, State};
 use rocket::outcome::IntoOutcome;
+use rocket::response::{Redirect};
 
 #[derive(FromForm)]
 pub struct Auth{
@@ -37,4 +38,9 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
 #[get("/about")]
 pub fn about() -> Template {
     Template::render("about", &json!({}))
+}
+
+#[get("/favicon.ico")]
+pub fn favicon() -> Redirect {
+    Redirect::to("/static/favicon.ico")
 }

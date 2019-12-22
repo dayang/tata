@@ -85,6 +85,24 @@
             transform: rotate(360deg);
         }
     }
+
+    .article-category{
+        display: inline-block;
+        margin: 0 4px;
+        color: #D0648A;
+        font-weight: 500;
+    }
+
+    .article-copyright {
+        margin-top: 5rem;
+        border-top: 1px solid #e8e8e8;
+        border-bottom: 1px solid #e8e8e8;
+    }
+
+    .copyright-item{
+        font-size: .8rem;
+        line-height: .8rem;
+    }
 </style>
 {{/inline}}
 
@@ -93,14 +111,36 @@
     <div class="loader"></div>
     <div class="article-title">📃 {{ title }}</div>
     <div class="article-meta">
+        <span class="article-category">{{ category }}</span> 
         <span>{{ create_at }}</span>
+        &nbsp;&nbsp;<span><i class="fas fa-eye"></i> {{ visit_count }}</span>
     </div>
     <div id="article-body"> </div>
+    <section class="article-copyright">
+        <p class="copyright-item">
+            <span>Author:</span>
+            <span>Yonghua</span>
+        </p>
+        <p class="copyright-item">
+            <span>License:</span>
+            <span>本文采用 知识共享<a target="_blank" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"> 署名-非商业性使用-禁止演绎4.0(CC BY-NC-ND 4.0)国际</a>许可协议 进行许可</span>
+        </p>
+    </section>
+    <section>
+        <script src="https://utteranc.es/client.js"
+            repo="dayang/BlogComments"
+            issue-term="pathname"
+            label="Comment"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    </section>
 </div>
 {{/inline}}
 
 {{#*inline "script-block"}}
-<script src="/static/plugins/jquery/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://cdn.bootcss.com/markdown-it/10.0.0/markdown-it.min.js"></script>
 <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
 <script>

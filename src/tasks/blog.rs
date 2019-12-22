@@ -12,6 +12,10 @@ pub fn get_article_brief_by_id(conn: &SqliteConnection, article_id: i32, filter_
         stmt = stmt.filter(article_dsl::published.eq(true))
     }
 
+    // 更新访问次数，不管结果是否成功
+    let target = article_dsl::articles.find(article_id);
+    let _result = diesel::update(target).set(article_dsl::visit_count.eq(article_dsl::visit_count + 1)).execute(conn);
+
     stmt.first::<(models::Article, models::Category)>(conn)
         .ok()
         .and_then(|data| Some(dto::ArticleBrief {

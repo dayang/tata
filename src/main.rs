@@ -60,7 +60,7 @@ fn rocket() -> Rocket {
                 password,
             }))
         }))
-        .mount("/", routes![controllers::blog::index, controllers::about])
+        .mount("/", routes![controllers::blog::index, controllers::about, controllers::favicon])
         // .mount("/category", routes![controllers::category])
         .mount("/article", controllers::blog::routes())
         .mount("/admin", controllers::admin::routes())

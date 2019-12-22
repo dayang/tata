@@ -8,7 +8,7 @@ use super::User;
 pub fn index(conn: DbConn) -> Template{
     let all_articles = BlogTask::get_article_briefs(&conn);
     Template::render("index", &json!({
-        "title": "Yonghua's blog".to_string(),
+        "title": "Yonghua's Blog".to_string(),
         "articles": all_articles,
     }))
 }
