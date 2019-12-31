@@ -4,14 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="keywords" content="yonghua's blog,编程,博客,yonghua,hey tomorrow">
+    <meta name="description" content="yonghua的个人博客，记录生活和工作">
     <title>
     {{#> title}}
-         ☀️ {{ title }}
+         {{ title }}
     {{/title}}
     </title>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-154918186-1"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-154918186-1');
+    </script>
+
     <link href="/static/dist/css/base.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/flexboxgrid/6.3.1/flexboxgrid.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Lato|Arvo|Kaushan+Script" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Lato|Arvo|Kaushan+Script|Long+Cang" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/font-awesome/5.11.2/css/all.min.css" rel="stylesheet">
     {{~> header-block}}
 </head>
 <body>
@@ -19,6 +32,7 @@
         <div id="main-content" class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2 col-lg-8 col-lg-offset-2">
             <div class="signatures site-title">
                 <a href="/">Hey Tomorrow</a>
+                <span class="subtitle">2020又会怎样呢</span>
             </div>
             <div class="nav">
                 <a href="/">首页</a>
