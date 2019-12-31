@@ -20,6 +20,7 @@ mod controllers;
 mod catchers;
 mod dto;
 mod tasks;
+mod helpers;
 
 embed_migrations!();
 
@@ -66,7 +67,9 @@ fn rocket() -> Rocket {
         .mount("/admin", controllers::admin::routes())
         .mount("/static", StaticFiles::from("static"))
         .register(catchers![catchers::not_found])
-        .attach(Template::fairing())
+        .attach(Template::custom(|engines| {
+            engines.handlebars.register_helper("markdown", Box::new(crate::helpers::markdown_helper));
+        }))
 }
 
 fn main() {

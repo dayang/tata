@@ -4,7 +4,7 @@ use crate::models;
 use diesel::{self, prelude::*, SqliteConnection};
 use crate::dto::blog as dto;
 
-pub fn get_article_brief_by_id(conn: &SqliteConnection, article_id: i32, filter_published: bool) -> Option<dto::ArticleBrief> {
+pub fn get_article_by_id(conn: &SqliteConnection, article_id: i32, filter_published: bool) -> Option<dto::Article> {
     let mut stmt = article_dsl::articles.inner_join(categorys_dsl::categorys.on(categorys_dsl::id.eq(article_dsl::category_id)))
         .filter(article_dsl::id.eq(article_id)).into_boxed();
 
@@ -18,8 +18,9 @@ pub fn get_article_brief_by_id(conn: &SqliteConnection, article_id: i32, filter_
 
     stmt.first::<(models::Article, models::Category)>(conn)
         .ok()
-        .and_then(|data| Some(dto::ArticleBrief {
+        .and_then(|data| Some(dto::Article {
             id: data.0.id,
+            body: data.0.body.to_string(),
             title: data.0.title.to_string(),
             create_at: data.0.create_at.format("%Y-%m-%d").to_string(),
             category: data.1.label.to_string(),
@@ -42,10 +43,10 @@ pub fn get_article_briefs(conn: &SqliteConnection) -> Option<Vec<dto::ArticleBri
         })
 }
 
-pub fn get_article_body_by_id(conn: &SqliteConnection, id: i32, filter_published: bool) -> Option<String> {
-    let mut query = article_dsl::articles.select(article_dsl::body).filter(article_dsl::id.eq(id)).into_boxed();
-    if filter_published {
-        query = query.filter(article_dsl::published.eq(true));
-    }
-    query.first::<String>(conn).ok()
-}
+// pub fn get_article_body_by_id(conn: &SqliteConnection, id: i32, filter_published: bool) -> Option<String> {
+//     let mut query = article_dsl::articles.select(article_dsl::body).filter(article_dsl::id.eq(id)).into_boxed();
+//     if filter_published {
+//         query = query.filter(article_dsl::published.eq(true));
+//     }
+//     query.first::<String>(conn).ok()
+// }
