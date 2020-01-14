@@ -1,10 +1,57 @@
-<!DOCTYPE html>
-<html>
-  <head>  
-    <meta charset="" />
-    <title>📢 页面找不到了</title>
-  </head>
-  <body>
-    <script type="text/javascript" src="http://www.qq.com/404/search_children.js" homePageUrl="/" homePageName="回到主页" charset="utf-8"></script>
-  </body>
-</html>
+{{#*inline "title"}}
+📢 页面找不到了呀 ~~~
+{{/inline}}
+
+
+{{#*inline "header-block"}}
+<style>  
+#ferris-error {
+    width: 30%;
+    max-width: 100%;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+}
+
+.err-msg{
+  text-align: center;
+}
+
+#err-code{
+  font-size: 2rem;
+  font-style: italic;
+  font-weight: 800;
+  color: brown;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+#err{
+  display: inline-block;
+  color: #000;
+  font-weight: 400;
+  font-size: 1.2rem;
+}
+</style>
+{{/inline}}
+
+{{#*inline "content"}}
+<div>
+  <div class="flex-center">
+    <img id="ferris-error" src="/static/dist/img/error.png" alt="404 img">
+  </div>
+  <div class="err-msg">
+    <span id="err-code">404</span> <span id="err">📢 要找的东西不见了呢 ~~</span>
+  </div>
+  <div style="text-align: center; font-size: 0.8rem; font-style: italic;">
+    <a href="/">返回主页</a>
+  </div>
+</div>
+
+{{/inline}}
+
+{{~> base ~}}
