@@ -1,0 +1,10 @@
+drop table friendlink;
+drop table tag;
+drop table category;
+drop table comment;
+drop table book;
+drop table post;
+drop table posttag;
+drop table dict;
+drop table user;
+drop table logininfo;

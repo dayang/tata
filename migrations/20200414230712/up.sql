@@ -1,55 +1,55 @@
-DROP TABLE articles;
-DROP TABLE categorys;
+drop table articles;
+drop table categorys;
 
 CREATE TABLE friendlink (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    display_text Text NOT NULL,
-    link Text NOT NULL,
+    display_text TEXT NOT NULL,
+    link TEXT NOT NULL,
     show BOOLEAN NOT NULL DEFAULT 0,
-    remark Text,
+    remark TEXT
 );
 
 CREATE TABLE tag (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    name Text NOT NULL,
-    display_text Text NOT NULL,
+    name TEXT NOT NULL,
+    display_text TEXT NOT NULL
 );
 
 CREATE TABLE category (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    name Text NOT NULL,
-    display_text Text NOT NULL,
+    name TEXT NOT NULL,
+    display_text TEXT NOT NULL
 );
 
 CREATE TABLE comment (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    user_name Text NOT NULL,
-    email Text NOT NULL,
-    content Text NOT NULL,
+    user_name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    content TEXT NOT NULL,
     comment_time TIMESTAMP DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')) NOT NULL,
-    reply Text,
+    reply TEXT,
     reply_time TIMESTAMP DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')) NOT NULL,
     show BOOLEAN NOT NULL DEFAULT 0,
-    post_id INTEGER NOTNULL,
-    user_agent TEXT,
+    post_id INTEGER NOT NULL,
+    user_agent TEXT
 );
 
 CREATE TABLE book (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    name Text NOT NULL,
-    display_text Text NOT NULL,
-    create_time TIMESTAMP DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')) NOT NULL,
+    name TEXT NOT NULL,
+    display_text TEXT NOT NULL,
+    create_time TIMESTAMP DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')) NOT NULL
 );
 
 
 CREATE TABLE post (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    title Text NOT NULL,
-    url Text NOT NULL,
-    raw_content Text NOT NULL,
-    html_content Text NOT NULL,
-    summary Text NOT NULL,
-    thumbnail Text NOT NULL,
+    title TEXT NOT NULL,
+    url TEXT NOT NULL,
+    raw_content TEXT NOT NULL,
+    html_content TEXT NOT NULL,
+    summary TEXT NOT NULL,
+    thumbnail TEXT NOT NULL,
     reads INTEGER DEFAULT 0 NOT NULL,
     likes INTEGER DEFAULT 0 NOT NULL,
     allow_comment BOOLEAN NOT NULL DEFAULT 0,
@@ -59,18 +59,18 @@ CREATE TABLE post (
     post_type INTEGER NOT NULL,
     parent_id INTEGER,
     book_id INTEGER,
-    display_order INTEGER,
+    display_order INTEGER
 );
 
 CREATE TABLE posttag (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     post_id INTEGER NOT NULL,
-    tag_id INTEGER NOT NULL,
+    tag_id INTEGER NOT NULL
 );
 
 CREATE TABLE dict (
-    d_key VARCHAR(20) NOT NULL,
-    d_value TEXT NOT NULL,
+    d_key VARCHAR(20) PRIMARY KEY NOT NULL UNIQUE,
+    d_value TEXT NOT NULL
 );
 
 CREATE TABLE user (
@@ -84,7 +84,7 @@ CREATE TABLE user (
     notify_comment BOOLEAN NOT NULL DEFAULT 0,
     notify_type INTEGER DEFAULT 1,
     notify_email TEXT,
-    session_period INTEGER DEFAULT 7200,
+    session_period INTEGER DEFAULT 7200
 );
 
 CREATE TABLE logininfo (
@@ -95,5 +95,5 @@ CREATE TABLE logininfo (
     is_success BOOLEAN NOT NULL DEFAULT 0,
     ip TEXT,
     mac TEXT,
-    user_agent TEXT,
+    user_agent TEXT
 );
