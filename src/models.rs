@@ -1,5 +1,5 @@
 use chrono::prelude::*;
-use crate::schemas::*;
+use crate::schema::*;
 
 #[derive(Queryable, Serialize)]
 pub struct Article {

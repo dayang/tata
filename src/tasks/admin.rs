@@ -1,5 +1,5 @@
-use crate::schemas::articles::dsl as article_dsl;
-use crate::schemas::categorys::dsl as categorys_dsl;
+use crate::schema::articles::dsl as article_dsl;
+use crate::schema::categorys::dsl as categorys_dsl;
 use crate::models;
 use diesel::{self, prelude::*, SqliteConnection, dsl::not};
 use crate::dto::admin as dto;

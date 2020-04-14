@@ -14,7 +14,7 @@ use rocket::fairing::AdHoc;
 use diesel::SqliteConnection;
 use rocket_contrib::serve::StaticFiles;
 
-mod schemas;
+mod schema;
 mod models;
 mod controllers;
 mod catchers;
