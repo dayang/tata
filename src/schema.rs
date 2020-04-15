@@ -3,6 +3,8 @@ table! {
         id -> Integer,
         name -> Text,
         display_text -> Text,
+        description -> Nullable<Text>,
+        cover -> Nullable<Text>,
         create_time -> Timestamp,
     }
 }
@@ -25,7 +27,7 @@ table! {
         reply -> Nullable<Text>,
         reply_time -> Timestamp,
         show -> Bool,
-        post_id -> Integer,
+        foreign_id -> Integer,
         user_agent -> Nullable<Text>,
     }
 }
@@ -61,6 +63,25 @@ table! {
 }
 
 table! {
+    page (id) {
+        id -> Integer,
+        title -> Text,
+        url -> Text,
+        raw_content -> Text,
+        html_content -> Text,
+        reads -> Integer,
+        likes -> Integer,
+        allow_comment -> Bool,
+        published -> Bool,
+        create_time -> Timestamp,
+        edit_time -> Timestamp,
+        parent_id -> Integer,
+        book_id -> Integer,
+        display_order -> Integer,
+    }
+}
+
+table! {
     post (id) {
         id -> Integer,
         title -> Text,
@@ -72,13 +93,10 @@ table! {
         reads -> Integer,
         likes -> Integer,
         allow_comment -> Bool,
+        published -> Bool,
         create_time -> Timestamp,
         edit_time -> Timestamp,
-        category_id -> Nullable<Integer>,
-        post_type -> Integer,
-        parent_id -> Nullable<Integer>,
-        book_id -> Nullable<Integer>,
-        display_order -> Nullable<Integer>,
+        category_id -> Integer,
     }
 }
 
@@ -108,11 +126,17 @@ table! {
         avator -> Nullable<Text>,
         email -> Nullable<Text>,
         notify_comment -> Bool,
-        notify_type -> Nullable<Integer>,
+        notify_type -> Integer,
         notify_email -> Nullable<Text>,
-        session_period -> Nullable<Integer>,
+        session_period -> Integer,
     }
 }
+
+joinable!(comment -> post (post_id));
+joinable!(page -> book (book_id));
+joinable!(post -> category (category_id));
+joinable!(posttag -> post (post_id));
+joinable!(posttag -> tag (tag_id));
 
 allow_tables_to_appear_in_same_query!(
     book,
@@ -121,6 +145,7 @@ allow_tables_to_appear_in_same_query!(
     dict,
     friendlink,
     logininfo,
+    page,
     post,
     posttag,
     tag,

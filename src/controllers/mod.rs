@@ -1,5 +1,5 @@
-pub mod admin;
-pub mod blog;
+// pub mod admin;
+pub mod post;
 
 use rocket_contrib::templates::Template;
 use rocket::request::{self, Request, FromRequest, State};

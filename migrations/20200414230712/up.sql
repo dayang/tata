@@ -1,6 +1,3 @@
-drop table articles;
-drop table categorys;
-
 CREATE TABLE friendlink (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     display_text TEXT NOT NULL,
@@ -11,13 +8,13 @@ CREATE TABLE friendlink (
 
 CREATE TABLE tag (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    name TEXT NOT NULL,
+    name TEXT NOT NULL UNIQUE,
     display_text TEXT NOT NULL
 );
 
 CREATE TABLE category (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    name TEXT NOT NULL,
+    name TEXT NOT NULL UNIQUE,
     display_text TEXT NOT NULL
 );
 
@@ -30,22 +27,43 @@ CREATE TABLE comment (
     reply TEXT,
     reply_time TIMESTAMP DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')) NOT NULL,
     show BOOLEAN NOT NULL DEFAULT 0,
-    post_id INTEGER NOT NULL,
-    user_agent TEXT
+    foreign_id INTEGER NOT NULL,
+    user_agent TEXT,
+    FOREIGN KEY(post_id) REFERENCES post(id)
 );
 
 CREATE TABLE book (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    name TEXT NOT NULL,
+    name TEXT NOT NULL UNIQUE,
     display_text TEXT NOT NULL,
+    description TEXT,
+    cover TEXT,
     create_time TIMESTAMP DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')) NOT NULL
+);
+
+CREATE TABLE page (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    title TEXT NOT NULL,
+    url TEXT NOT NULL UNIQUE,
+    raw_content TEXT NOT NULL,
+    html_content TEXT NOT NULL,
+    reads INTEGER DEFAULT 0 NOT NULL,
+    likes INTEGER DEFAULT 0 NOT NULL,
+    allow_comment BOOLEAN NOT NULL DEFAULT 0,
+    published BOOLEAN NOT NULL DEFAULT TRUE,
+    create_time TIMESTAMP DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')) NOT NULL,
+    edit_time TIMESTAMP DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')) NOT NULL,
+    parent_id INTEGER NOT NULL DEFAULT -1,
+    book_id INTEGER NOT NULL,
+    display_order INTEGER NOT NULL DEFAULT 0,
+    FOREIGN KEY(book_id) REFERENCES book(id)
 );
 
 
 CREATE TABLE post (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     title TEXT NOT NULL,
-    url TEXT NOT NULL,
+    url TEXT NOT NULL UNIQUE,
     raw_content TEXT NOT NULL,
     html_content TEXT NOT NULL,
     summary TEXT NOT NULL,
@@ -53,19 +71,19 @@ CREATE TABLE post (
     reads INTEGER DEFAULT 0 NOT NULL,
     likes INTEGER DEFAULT 0 NOT NULL,
     allow_comment BOOLEAN NOT NULL DEFAULT 0,
+    published BOOLEAN NOT NULL DEFAULT TRUE,
     create_time TIMESTAMP DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')) NOT NULL,
     edit_time TIMESTAMP DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')) NOT NULL,
-    category_id INTEGER,
-    post_type INTEGER NOT NULL,
-    parent_id INTEGER,
-    book_id INTEGER,
-    display_order INTEGER
+    category_id INTEGER NOT NULL,
+    FOREIGN KEY(category_id) REFERENCES category(id)
 );
 
 CREATE TABLE posttag (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     post_id INTEGER NOT NULL,
-    tag_id INTEGER NOT NULL
+    tag_id INTEGER NOT NULL,
+    FOREIGN KEY(post_id) REFERENCES post(id),
+    FOREIGN KEY(tag_id) REFERENCES tag(id)
 );
 
 CREATE TABLE dict (
@@ -75,16 +93,16 @@ CREATE TABLE dict (
 
 CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    name VARCHAR(20) NOT NULL,
+    name VARCHAR(20) NOT NULL UNIQUE,
     nick_name VARCHAR(50),
     description TEXT,
     password TEXT NOT NULL,
     avator TEXT,
     email TEXT,
     notify_comment BOOLEAN NOT NULL DEFAULT 0,
-    notify_type INTEGER DEFAULT 1,
+    notify_type INTEGER DEFAULT 1 NOT NULL,
     notify_email TEXT,
-    session_period INTEGER DEFAULT 7200
+    session_period INTEGER DEFAULT 7200 NOT NULL
 );
 
 CREATE TABLE logininfo (

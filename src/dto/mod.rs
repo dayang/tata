@@ -1,5 +1,7 @@
 pub mod admin;
-pub mod blog;
+// pub mod blog;
+pub mod post;
+pub mod comment;
 
 #[derive(Serialize)]
 pub struct ApiResponse {
