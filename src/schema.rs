@@ -22,12 +22,14 @@ table! {
         id -> Integer,
         user_name -> Text,
         email -> Text,
-        content -> Text,
+        raw_content -> Text,
+        html_content -> Text,
         comment_time -> Timestamp,
         reply -> Nullable<Text>,
         reply_time -> Timestamp,
         show -> Bool,
         foreign_id -> Integer,
+        comment_type -> Integer,
         user_agent -> Nullable<Text>,
     }
 }

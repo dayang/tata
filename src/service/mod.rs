@@ -2,6 +2,9 @@ pub mod admin;
 pub mod blog;
 pub mod post;
 pub mod pagination;
+pub mod comment;
+pub mod tag;
+pub mod category;
 
 use diesel::prelude::*;
 use crate::schema::dict::dsl as dict_dsl;

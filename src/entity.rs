@@ -51,7 +51,8 @@ pub struct Comment {
     pub id: i32,
     pub user_name: String,
     pub email: String,
-    pub content: String,
+    pub raw_content: String,
+    pub html_content: String,
     #[diesel(deserialize_as = "FormatedTime<HHMMDDHMTime>")]
     pub comment_time: String,
     pub reply: Option<String>,
@@ -59,6 +60,7 @@ pub struct Comment {
     pub reply_time: String,
     pub show: bool,
     pub foreign_id: i32,
+    pub comment_type: i32,
     pub user_agent: Option<String>,
 }
 

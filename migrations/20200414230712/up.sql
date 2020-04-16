@@ -22,12 +22,14 @@ CREATE TABLE comment (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     user_name TEXT NOT NULL,
     email TEXT NOT NULL,
-    content TEXT NOT NULL,
+    raw_content TEXT NOT NULL,
+    html_content TEXT NOT NULL,
     comment_time TIMESTAMP DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')) NOT NULL,
     reply TEXT,
     reply_time TIMESTAMP DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')) NOT NULL,
     show BOOLEAN NOT NULL DEFAULT 0,
     foreign_id INTEGER NOT NULL,
+    comment_type INTEGER NOT NULL,
     user_agent TEXT,
     FOREIGN KEY(foreign_id) REFERENCES post(id)
     FOREIGN KEY(foreign_id) REFERENCES page(id)
