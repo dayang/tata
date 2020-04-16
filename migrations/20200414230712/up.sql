@@ -29,7 +29,8 @@ CREATE TABLE comment (
     show BOOLEAN NOT NULL DEFAULT 0,
     foreign_id INTEGER NOT NULL,
     user_agent TEXT,
-    FOREIGN KEY(post_id) REFERENCES post(id)
+    FOREIGN KEY(foreign_id) REFERENCES post(id)
+    FOREIGN KEY(foreign_id) REFERENCES page(id)
 );
 
 CREATE TABLE book (
@@ -87,7 +88,7 @@ CREATE TABLE posttag (
 );
 
 CREATE TABLE dict (
-    d_key VARCHAR(20) PRIMARY KEY NOT NULL UNIQUE,
+    d_key VARCHAR(30) PRIMARY KEY NOT NULL UNIQUE,
     d_value TEXT NOT NULL
 );
 

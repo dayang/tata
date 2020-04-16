@@ -132,7 +132,8 @@ table! {
     }
 }
 
-joinable!(comment -> post (post_id));
+joinable!(comment -> page (foreign_id));
+joinable!(comment -> post (foreign_id));
 joinable!(page -> book (book_id));
 joinable!(post -> category (category_id));
 joinable!(posttag -> post (post_id));

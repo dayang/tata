@@ -22,6 +22,7 @@ mod dto;
 mod service;
 mod helpers;
 mod sqltypes;
+mod consts;
 
 embed_migrations!();
 

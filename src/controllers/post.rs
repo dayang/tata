@@ -3,6 +3,10 @@ use rocket_contrib::templates::Template;
 use rocket::http::Status;
 use rocket_contrib::json::{Json, JsonValue};
 use crate::dto::comment::{Comment, CommentRequest};
+use crate::service::post as post_service;
+use crate::service::get_dict_value;
+use std::collections::HashMap;
+use crate::consts::*;
 
 use super::User;
 
@@ -15,9 +19,23 @@ use super::User;
 //     }))
 // }
 
+
+
 #[get("/?<page>")]
 pub fn posts(page: i32, conn: DbConn, user: User) -> Result<Template, Status> {
-    
+    let mut bag = HashMap::new();
+    bag.insert("title", get_dict_value(DICT_INDEX_TITLE.into(), &conn).unwrap_or_else(|| "Yong Hua' blog".into()));
+    bag.insert("list_title", "所有文章".into());
+    let page_num = get_dict_value(DICT_INDEX_TITLE.into(), &conn).map(|v| v.parse().unwrap_or(DEFAULT_PAGE_NUM)).unwrap_or(DEFAULT_PAGE_NUM);
+    match post_service::get_posts_list(&conn, page_num, page, None, None) {
+        Ok(post_list_info) => {
+            Ok(Template::render("index", &json!({
+                "viewbag": bag,
+                "post_list_info": post_list_info,
+            })))
+        },
+        Err(_) => Err(Status::InternalServerError)
+    }
 }
 
 #[get("/post/<url>")]

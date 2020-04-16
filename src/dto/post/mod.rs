@@ -1,8 +1,5 @@
-pub mod category;
 pub mod post;
-pub mod postdetail;
-pub mod tag; 
 
-pub use category::Category;
-pub use post::Post;
-pub use tag::Tag;
+pub use post::PostListItem;
+pub use post::PostListInfo;
+pub use post::PostDetail;
