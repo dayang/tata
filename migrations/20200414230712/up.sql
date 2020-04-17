@@ -9,13 +9,16 @@ CREATE TABLE friendlink (
 CREATE TABLE tag (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     name TEXT NOT NULL UNIQUE,
-    display_text TEXT NOT NULL
+    display_text TEXT NOT NULL,
+    remark TEXT NOT NULL DEFAULT "",
+    weight INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE category (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     name TEXT NOT NULL UNIQUE,
-    display_text TEXT NOT NULL
+    display_text TEXT NOT NULL,
+    remark TEXT NOT NULL DEFAULT ""
 );
 
 CREATE TABLE comment (
@@ -27,11 +30,11 @@ CREATE TABLE comment (
     comment_time TIMESTAMP DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')) NOT NULL,
     reply TEXT,
     reply_time TIMESTAMP DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')) NOT NULL,
-    show BOOLEAN NOT NULL DEFAULT 0,
+    show BOOLEAN NOT NULL DEFAULT TRUE,
     foreign_id INTEGER NOT NULL,
     comment_type INTEGER NOT NULL,
     user_agent TEXT,
-    FOREIGN KEY(foreign_id) REFERENCES post(id)
+    FOREIGN KEY(foreign_id) REFERENCES post(id),
     FOREIGN KEY(foreign_id) REFERENCES page(id)
 );
 
@@ -41,6 +44,7 @@ CREATE TABLE book (
     display_text TEXT NOT NULL,
     description TEXT,
     cover TEXT,
+    published BOOLEAN NOT NULL DEFAULT FALSE,
     create_time TIMESTAMP DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')) NOT NULL
 );
 

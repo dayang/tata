@@ -30,7 +30,7 @@ pub struct PostDetail {
     pub reads: i32,
     pub likes: i32,
     pub allow_comment: bool,
-    pub comment_list_info: CommentListInfo,
+    // pub comment_list_info: CommentListInfo,
     pub create_time: String,
     pub edit_time: String,
     pub tags: Vec<Tag>,

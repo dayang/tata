@@ -8,7 +8,7 @@ use crate::entity::*;
 use super::err_str;
 use crate::service::{
     pagination::*,
-    comment as comment_service
+    //comment as comment_service
 };
 use crate::service::get_dict_value;
 use crate::consts::*;
@@ -72,10 +72,17 @@ pub fn get_posts_list(conn: &SqliteConnection, page_index: i32, by_category_id: 
     Ok(post_list_info)
 }
 
-pub fn get_post(conn: &SqliteConnection, post_url: String) -> Result<PostDetail, String> {
-    let post_find = post.filter(url.eq(post_url)).first::<Post>(conn).map_err(err_str)?;
+pub fn get_post_by_url(conn: &SqliteConnection, post_url: String) -> Result<Post, String> {
+    post.filter(url.eq(post_url)).first::<Post>(conn).map_err(err_str)
+}
+
+pub fn get_post_detail(conn: &SqliteConnection, post_url: String) -> Result<PostDetail, String> {
+    let post_find = get_post_by_url(conn, post_url)?;
     let category_find = category.find(post_find.category_id).first::<Category>(conn).map_err(err_str)?;
     let post_tags = get_post_tags(conn, post_find.id).map_err(err_str)?;
+
+    // add reads
+    diesel::update(&post_find).set(reads.eq(reads + 1)).execute(conn);
 
     Ok(PostDetail {
         title: post_find.title,
@@ -87,12 +94,14 @@ pub fn get_post(conn: &SqliteConnection, post_url: String) -> Result<PostDetail,
         reads: post_find.reads,
         likes: post_find.likes,
         allow_comment: post_find.allow_comment,
-        comment_list_info: comment_service::get_paged_comment(conn, COMMENT_FOR_POST, 1, post_find.id).unwrap_or_default(),
-        //#[diesel(deserialize_as = "FormatedTime<HHMMDDHMTime>")]
+        // comment_list_info: comment_service::get_paged_comment(conn, COMMENT_FOR_POST, 1, post_find.id).unwrap_or_default(),
         create_time: post_find.create_time,
-        //#[diesel(deserialize_as = "FormatedTime<HHMMDDHMTime>")]
         edit_time: post_find.edit_time,
         tags: post_tags,
         category: category_find,
     })
+}
+
+pub fn like_post(conn: &SqliteConnection, post_url: String) -> bool {
+    diesel::update(post).set(likes.eq(likes + 1)).filter(url.eq(post_url)).execute(conn).unwrap_or(0) == 1
 }

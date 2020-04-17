@@ -9,6 +9,7 @@ pub struct Book {
     pub display_text: String,
     pub description: Option<String>,
     pub cover: Option<String>,
+    pub published: bool,
     #[diesel(deserialize_as = "FormatedTime<HHMMDDHMTime>")]
     pub create_time: String,
 }
@@ -19,6 +20,7 @@ pub struct Category {
     pub id: i32,
     pub name: String,
     pub display_text: String,
+    pub remark: String,
 }
 
 #[derive(Identifiable, Queryable, Associations, Serialize, AsChangeset)]
@@ -134,6 +136,8 @@ pub struct Tag {
     pub id: i32,
     pub name: String,
     pub display_text: String,
+    pub remark: String,
+    pub weight: i32,
 }
 
 #[derive(Identifiable, Queryable, Serialize, AsChangeset)]

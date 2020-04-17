@@ -1,6 +1,6 @@
 use diesel::prelude::*;
 use crate::schema::comment::dsl::*;
-use crate::entity::*;
+use crate::entity::Comment as CommentEntity;
 use super::err_str;
 use crate::service::pagination::*;
 use crate::service::get_dict_value;
@@ -11,7 +11,7 @@ pub fn get_paged_comment(conn: &SqliteConnection, comment_for: i32,
         page_index: i32, master_id: i32) -> Result<CommentListInfo, String> {
     let page_num = get_dict_value(DICT_COMMENT_PAGE_NUM.into(), &conn).map(|v| v.parse().unwrap_or(DEFAULT_COMMENT_PAGE_NUM)).unwrap_or(DEFAULT_COMMENT_PAGE_NUM);
     let (comments, total_pages, total_num) = comment.filter(foreign_id.eq(master_id)).filter(comment_type.eq(comment_for)).paginate(page_index as i64).per_page(page_num as i64)
-        .load_and_count_pages::<Comment>(conn).map_err(err_str)?;
+        .load_and_count_pages::<CommentEntity>(conn).map_err(err_str)?;
     
     Ok(CommentListInfo {
         total_num,

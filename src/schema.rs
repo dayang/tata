@@ -5,6 +5,7 @@ table! {
         display_text -> Text,
         description -> Nullable<Text>,
         cover -> Nullable<Text>,
+        published -> Bool,
         create_time -> Timestamp,
     }
 }
@@ -14,6 +15,7 @@ table! {
         id -> Integer,
         name -> Text,
         display_text -> Text,
+        remark -> Text,
     }
 }
 
@@ -115,6 +117,8 @@ table! {
         id -> Integer,
         name -> Text,
         display_text -> Text,
+        remark -> Text,
+        weight -> Integer,
     }
 }
 

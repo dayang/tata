@@ -6,6 +6,7 @@ use crate::service::{
     post as post_service,
     tag as tag_service,
     category as category_service,
+    comment as comment_service,
     get_dict_value,
 };
 use std::collections::HashMap;
@@ -39,8 +40,8 @@ pub fn get_posts(page: Option<i32>, conn: DbConn) -> Result<Template, Status> {
 }
 
 #[get("/post/<url>")]
-pub fn get_post(url: String, conn: DbConn) -> Result<Template, Status> { //-> Result<Template, Status>
-    match post_service::get_post(&conn, url) {
+pub fn get_post(url: String, conn: DbConn) -> Result<Template, Status> {
+    match post_service::get_post_detail(&conn, url) {
         Ok(post_detail) => {
             Ok(Template::render("post", &json!(post_detail)))
         },
@@ -49,23 +50,44 @@ pub fn get_post(url: String, conn: DbConn) -> Result<Template, Status> { //-> Re
 }
 
 #[put("/post/<url>/like")]
-pub fn like_post(url: String, conn: DbConn) {
-
+pub fn like_post(url: String, conn: DbConn) -> JsonValue {
+    json!({
+        "success" : post_service::like_post(&conn, url)
+    })
 }
 
 #[post("/post/<url>/comment", format = "json", data = "<comment>")]
-pub fn comment_post(url: String, conn: DbConn, comment: Json<CommentRequest>) {
-
+pub fn comment_post(url: String, conn: DbConn, comment: Json<CommentRequest>) -> JsonValue {
+    json!({})
 }
 
 #[get("/post/<url>/comments?<page>")]
-pub fn get_post_comments(url: String, page: Option<i32>, conn: DbConn) {
-
+pub fn get_post_comments(url: String, page: Option<i32>, conn: DbConn) -> JsonValue {
+    match post_service::get_post_by_url(&conn, url) {
+        Ok(post_find) => json!({
+            "success": true,
+            "data": comment_service::get_paged_comment(&conn, COMMENT_FOR_POST, page.unwrap_or(1), post_find.id)
+        }),
+        Err(_) => json!({
+            "success": false
+        })
+    }
 }
 
 #[get("/tags")]
-pub fn tag_list(conn: DbConn) {
-
+pub fn tag_list(conn: DbConn)  -> Result<Template, Status> {
+    let mut bag: HashMap<&str, String> = HashMap::new();
+    bag.insert("title", "所有标签".into());
+    bag.insert("list_title", "所有标签".into());
+    match tag_service::all_tags(&conn) {
+        Ok(all_tags) => {
+            Ok(Template::render("tags", &json!({
+                "viewbag": bag,
+                "tags": all_tags,
+            })))
+        },
+        Err(_) => Err(Status::InternalServerError)
+    }
 }
 
 #[get("/tag/<tag>?<page>")]

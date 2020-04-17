@@ -29,7 +29,7 @@ pub struct CommentListItem {
 
 #[derive(Serialize, Deserialize)]
 pub struct CommentRequest {
-    pub post_url: String,
+    pub url: String,
     pub user_name: String,
     pub email: String,
     pub content: String,
