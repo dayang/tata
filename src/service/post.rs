@@ -1,3 +1,4 @@
+#![allow(dead_code, unused_imports)]
 use crate::dto::post::*;
 use diesel::prelude::*;
 use crate::schema::post::{ dsl as post_dsl, dsl::*};
@@ -20,12 +21,7 @@ fn get_post_tags(conn: &SqliteConnection, by_post_id: i32) -> Result<Vec<Tag>, S
 }
 
 pub fn get_posts_list(conn: &SqliteConnection, page_index: i32, by_category_id: Option<i32>, by_tag_id: Option<i32>) -> Result<PostListInfo, String> {
-    let mut post_list_info = PostListInfo {
-        total_num: 0,
-        total_pages: 0,
-        curr_page: 0,
-        page_items : vec![]
-    };
+    let mut post_list_info = PostListInfo::default();
 
     if page_index < 1 {
         return Err("page index must great than 0".into());
@@ -52,6 +48,7 @@ pub fn get_posts_list(conn: &SqliteConnection, page_index: i32, by_category_id: 
 
     post_list_info.total_num = paged_posts.2 as i32;
     post_list_info.total_pages = paged_posts.1 as i32;
+    post_list_info.per_page = page_num;
     post_list_info.curr_page = page_index;
 
     for p in paged_posts.0 {

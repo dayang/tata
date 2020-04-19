@@ -1,7 +1,6 @@
 use rocket_contrib::templates::handlebars;
-use self::handlebars::{Helper, Handlebars, Context, RenderContext, Output, HelperResult, JsonRender};
+use self::handlebars::{Helper, to_json, HelperDef, ScopedJson, RenderError, Handlebars, Context, RenderContext, Output, HelperResult, JsonRender};
 use pulldown_cmark::{Parser, html};
-
 pub fn markdown_helper(
     h: &Helper<'_, '_>,
     _: &Handlebars,
@@ -18,4 +17,19 @@ pub fn markdown_helper(
     }
 
     Ok(())
+}
+
+pub struct NotEmptyStrHelper;
+
+impl HelperDef for NotEmptyStrHelper {
+    fn call_inner<'reg: 'rc, 'rc>(
+        &self,
+        h: &Helper<'reg, 'rc>,
+        _: &'reg Handlebars,
+        _: &'rc Context,
+        _: &mut RenderContext<'reg>,
+    ) -> Result<Option<ScopedJson<'reg, 'rc>>, RenderError> {
+        //Ok(Some(ScopedJson::Derived(to_json(true))))
+        Ok(Some(ScopedJson::Derived(to_json(h.param(0).unwrap().value().as_str().unwrap().len() > 0))))
+    }
 }

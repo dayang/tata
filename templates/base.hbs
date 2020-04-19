@@ -12,21 +12,18 @@
     {{/title}}
     </title>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-154918186-1"></script>
+    {{!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-154918186-1"></script>
     <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
 
     gtag('config', 'UA-154918186-1');
-    </script>
+    </script> --}}
 
-    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.4.1/js/bootstrap.min.js"></script>
-
-    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Lato|Arvo|Kaushan+Script|Long+Cang" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/font-awesome/5.11.2/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://www.layuicdn.com/layui-v2.5.6/css/layui.css">
+    <script src="/static/dist/iconfont/iconfont.js"></script>
+    <script src="https://www.layuicdn.com/layui-v2.5.6/layui.js"></script>
     {{~> header-block}}
 
     <style>
@@ -50,91 +47,396 @@
         }
 
         html{
+            color: #3f3f3f;
             position: relative;
             min-height: 100%;
+            background-color:#d6d6d6;
+            font-family: "Open Sans",Helvetica,Arial,Verdana,sans-serif;
         }
         body{
-            padding-top: 70px;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
+            
+            {{!-- padding-top: 70px;
+            
+            padding-bottom: 20px; --}}
         }
         a, a:hover{
             text-decoration: none;
             color: inherit;
         }
-        #footer{
-            background-color: #2a3439;
-            color: #eee;
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 30px;
-        }
-        #footer a {
-            color: #ffc832;
-        }
-        .navbar{
+
+        .page{
             background-color: #fff;
-            padding: .2rem 1rem;
-            box-shadow: 0 0 4px #888;
+            box-shadow: 0 0 12px #9e9e9e;
         }
 
-        .navbar-nav .nav-item{
-            margin: 0 5px;
+        .tata-header{
+            height: 110px;
+            border-bottom: 1px solid rgba(0,0,0,0.2);
         }
+
+        .tata-header-mb{
+            height: 60px;
+            border-bottom: 1px solid rgba(0,0,0,0.2);
+        }
+
+        .tata-brand-area {
+            height: 100%;
+            text-align: center;
+        }
+
+        .logo-text {
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .tata-header .logo-text a{
+            display: block;
+            font-weight: 700;
+            color: #383838;
+            font-size: 30px;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .tata-header-mb .logo-text a{
+            display: inline-block;
+            font-weight: 700;
+            color: #383838;
+            font-size: 25px;
+            cursor: pointer;
+            text-align: left;
+        }
+
+
+        .tata-nav-area{
+            text-align: center;
+            height: 100%;
+        }
+
+        .tata-nav{
+            border-bottom: 1px solid rgba(56, 56, 56, 1);
+            border-top: 1px solid rgba(56, 56, 56, 1);
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .tata-nav .nav-item{
+            display: inline;
+            margin: 0 30px;
+        }
+
+        .tata-nav .nav-item a{
+            display: inline-block;
+            padding: 7px 0;
+            font: normal normal 15px / 23px "微软雅黑",Helvetica,Arial,Verdana,sans-serif;
+        }
+
+        .tata-nav .nav-item a:hover{
+            color: cadetblue;
+            transition: color 0.3s ease;
+        }
+
+        .tata-nav .active{
+            color: cadetblue;
+            font-weight: 600;
+        }
+
+        .tata-nav-side .nav-item a{
+            display: block;
+            padding: 10px;
+            text-align: center;
+            color: #ddd;
+            border-bottom: 1px dotted cadetblue;
+        }
+
+        .tata-nav-side .nav-item a:hover{
+            color: #fff;
+            transition: color 0.3s ease;
+        }
+
+        .search-area{
+            height: 100%;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .search-form {
+            display: inline-block;
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .collapse-btn{
+            height: 100%;
+            text-align: center;
+        }
+
+        .collapse-btn button{
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        #search-button{
+            display: inline-block;
+            height: 30px;
+            width: 32px;
+            text-align: center;
+            background-color: cadetblue;
+            vertical-align:top;
+            line-height: 30px;
+            border-top: 1px;
+            border-bottom: 1px;
+            border-right: 1px;
+            border-left: 0;
+            border-color: #666666;
+            border-style: solid;
+            color: white;
+        }
+
+        #search-input{
+            border: 1px solid #666666;
+            color: #8d9095;
+            font-size: 13px;
+            line-height: 15px;
+            padding: 0 5px;
+            height: 30px;
+            width: 120px;
+        }
+
+        .tata-footer{
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid rgba(0,0,0,0.2);
+        }
+
+        .tata-footer p{
+            margin: 3px 0;
+        }
+
+        .tata-footer a {
+            color: cadetblue;
+        }
+
+        .left-side{
+            padding: 20px;
+        }
+
+        .tata-quote{
+            text-indent: 2rem;
+            padding: 5px;
+            border: 1px dotted #acc4ac;
+            font-family: Lato,FangSong,SimSun,STSong,sans-serif;
+        }
+
+        .left-header{
+            font-weight: 800;
+            border-bottom: 2px solid #acc4ac;
+            color: #666666;
+            margin: 10px 0;
+            padding: 4px 0;
+        }
+
+        .post-categorys a{
+            color: #666666;
+            display: block;
+            margin: 10px 5px;
+        }
+
+        .post-categorys a:hover{
+            color: cadetblue;;
+        }
+
+        .post-categorys .active{
+            color: cadetblue;
+        }
+
+        .user-info li {
+            padding: 4px 0;
+        }
+
+        .user-info li .icon-symbol{
+            margin-right: 5px;
+        }
+
+        .user-info li a{
+            color: cadetblue;
+        }
+        
+        .user-img{
+            border: 1px dotted #acc4ac;
+            margin-bottom: 10px;
+        }
+
+        .icon-symbol {
+            width: 1em;
+            height: 1em;
+            vertical-align: -0.15em;
+            fill: currentColor;
+            overflow: hidden;
+        }
+
     </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar fixed-top navbar-expand-lg navbar-light">
-            <div class="container">
-                <a class="navbar-brand" href="/">
-                    <img src="/static/dist/img/brand.png" width="25px" alt="">
-                </a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="/"><i class="fa fa-home"></i> 首页</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link disabled" href="/#"><i class="fa fa-book"></i> 分类</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link disabled" href="/#"><i class="fa fa-archive"></i> 归档</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link disabled" href="/#"><i class="fa fa-tags"></i> 标签</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/about"><i class="fa fa-star"></i> 关于</a>
-                        </li>
-                    </ul>
+    <div id="tata-side-nav" style="display: none;" class="layui-nav layui-nav-tree layui-nav-side">
+        <button type="button" class="layui-btn layui-btn-fluid" id="tata-sice-nav-close">
+            <i class="layui-icon layui-icon-close"></i>
+        </button>
+        
+        <ul class="tata-nav-side">
+            <li class="nav-item"><a href="/#">分类</a></li>
+            <li class="nav-item"><a href="#">标签</a></li>
+            <li class="nav-item"><a href="/#">归档</a></li>
+            <li class="nav-item"><a href="/about">关于</a></li>
+        </ul>
+    </div>
+    <div class="layui-container">
+        <div class="layui-row">
+            <div class="layui-col-md12 page">
+                <div class="layui-row tata-header-mb layui-hide-sm">
+                    <div class="layui-col-xs10 tata-brand-area">
+                        <div class="logo-text layui-inline">
+                            <a href="/">Yonghua's</a>
+                            <a href="/">Blog</a>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs2 collapse-btn">
+                        <button type="button" class="layui-btn layui-btn-sm layui-btn-primary side-open-close">
+                            <i class="layui-icon layui-icon-menu-fill"></i>
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </nav>
-    </header>
-    <section id="page-content">
-        {{~> content}}
-    </section>
-    <div class="clearfix"></div>
-    <footer id="footer">
-        <div class="container">
-            <div class="row justify-content-md-center">
-                <div class="col-md-auto">
-                    <small>
-                        Copyright © 2020 - 2021 yyonghua | 
-                        Powered by <a href="https://rocket.rs/" target="_blank">Rocket</a> | 
-                        <a href="http://www.beian.miit.gov.cn" target="_blank">皖ICP备16017204号</a>
-                    </small>
+                <div class="layui-row tata-header layui-hide-xs">
+                    <div class="layui-col-lg3 layui-col-md4 layui-col-sm5 layui-col-xs10 tata-brand-area">
+                        {{!-- <a href="/">
+                            <img src="/static/dist/img/brand.png" width="35px" alt="">
+                        </a> --}}
+                        <div class="logo-text layui-inline">
+                            <a href="/">Yonghua's</a>
+                            <a href="/">Blog</a>
+                        </div>
+                    </div>
+                    <div class="layui-col-lg6 layui-col-md8 layui-hide-xs layui-hide-sm layui-show-md-block layui-show-lg-block tata-nav-area">
+                        <ul class="layui-inline tata-nav">
+                            <li class="nav-item"><a href="/#">分类</a></li>
+                            <li class="nav-item"><a href="#">标签</a></li>
+                            <li class="nav-item"><a href="/#">归档</a></li>
+                            <li class="nav-item"><a href="/about">关于</a></li>
+                        </ul>
+                    </div>
+                    <div class="layui-col-lg3 layui-col-sm5 layui-hide-xs layui-show-sm-block layui-hide-md layui-show-lg-block search-area">
+                        <form action="" class="search-form">
+                            <input type="text" placeholder="Search" name="" id="search-input"><a href="" id="search-button"><i class="layui-icon layui-icon-search"></i></a>
+                        </form>
+                    </div>
+                    <div class="layui-col-sm2 layui-hide-md collapse-btn">
+                        <button type="button" class="layui-btn layui-btn-primary side-open-close">
+                            <i class="layui-icon layui-icon-menu-fill"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="layui-row">
+                    <div class="layui-col-md3 left-side layui-hide-xs layui-hide-sm layui-show-md-block layui-show-lg-block">
+                        <p class="tata-quote">
+                            {{ viewbag.index_quote }}
+                        </p>
+                        <h4 class="left-header">文章分类</h4>
+                        <ul class="post-categorys">
+                            {{#each viewbag.categorys }}
+                                <li>
+                                    <a href="/posts/category/{{name}}" data="{{name}}">{{ display_text }}</a>
+                                </li>
+                            {{/each}}
+                        </ul>
+                        <h4 class="left-header">关于博主</h4>
+                        <div class="user-img">
+                            <img src="/static/dist/img/users-2.png" alt="" style="width: 100%;">
+                        </div>
+                        <ul class="user-info">
+                            <li>
+                                <svg class="icon-symbol" aria-hidden="true">
+                                    <use xlink:href="#icon-github"></use>
+                                </svg>
+
+                                <a href="https://github.com/dayang">dayang</a>
+                            </li>
+                            <li>
+                                <svg class="icon-symbol" aria-hidden="true">
+                                    <use xlink:href="#icon-location"></use>
+                                </svg>
+                                <span>上海</span>
+                            </li>
+                            <li>
+                                <svg class="icon-symbol" aria-hidden="true">
+                                    <use xlink:href="#icon-email"></use>
+                                </svg>
+                                <a href="mailto:1306693844@qq.com">Email</a>
+                            </li>
+                            <li>
+                                <svg class="icon-symbol" aria-hidden="true">
+                                    <use xlink:href="#icon-programming"></use>
+                                </svg>
+                                <svg class="icon-symbol" aria-hidden="true">
+                                    <use xlink:href="#icon-rust"></use>
+                                </svg>
+                                <svg class="icon-symbol" aria-hidden="true">
+                                    <use xlink:href="#icon-vscode"></use>
+                                </svg>
+                                <svg class="icon-symbol" aria-hidden="true">
+                                    <use xlink:href="#icon-Books"></use>
+                                </svg>
+                            </li>
+                        </ul>
+
+                            
+                    </div>
+                    <div class="layui-col-md9 layui-col-ms12 layui-xs-ms12 main-content">
+                        {{~> content}}
+                    </div>
+                </div>
+                <div class="layui-row tata-footer">
+                    <div class="layui-col-md4 layui-col-md-offset4">
+                        <p>Copyright © 2020 - 2021 yyonghua</p> 
+                        <p>Powered by <a href="https://rocket.rs/" target="_blank">Rocket</a><p/> 
+                        <p><a href="http://www.beian.miit.gov.cn" target="_blank">皖ICP备16017204号</a></p>
+                    </div>
                 </div>
             </div>
         </div>
-    </footer>
+    </div>
+    <script>
+        layui.use(['jquery'], function(){
+            var $ = layui.jquery;
+            
+            $('.side-open-close').each(function(i, e){
+                $(e).click(function(){
+                    $('#tata-side-nav').toggle();
+                })
+            });
 
+            $('#tata-sice-nav-close').click(function(){
+                $('#tata-side-nav').toggle();
+            });
+
+            $('.post-categorys a').each(function(i, e) {
+                var a = $(e);
+                if(a.attr('href') === location.pathname) {
+                    a.addClass('active');
+                }
+            });
+
+            $('.tata-nav a').each(function(i, e) {
+                var a = $(e);
+                if(a.attr('href') === location.pathname) {
+                    a.addClass('active');
+                }
+            })
+        });
+    </script>
     {{~> script-block}}
 </body>
 </html>

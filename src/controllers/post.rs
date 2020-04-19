@@ -9,31 +9,28 @@ use crate::service::{
     comment as comment_service,
     get_dict_value,
 };
-use std::collections::HashMap;
+
 use crate::consts::*;
 use crate::dto::comment::CommentRequest;
+use super::ViewData;
 
-// #[get("/")]
-// pub fn index(conn: DbConn) -> Template{
-//     let all_articles = BlogTask::get_article_briefs(&conn);
-//     Template::render("index", &json!({
-//         "title": "Yonghua's Blog".to_string(),
-//         "articles": all_articles,
-//     }))
-// }
+#[get("/")]
+pub fn index(conn: DbConn) -> Result<Template, Status>{
+    get_posts(None, conn)
+}
 
 
 #[get("/?<page>")]
 pub fn get_posts(page: Option<i32>, conn: DbConn) -> Result<Template, Status> {
-    let mut bag = HashMap::new();
-    bag.insert("title", get_dict_value(DICT_INDEX_TITLE.into(), &conn).unwrap_or_else(|| "Yong Hua' blog".into()));
-    bag.insert("list_title", "所有文章".into());
+    let mut view_data = ViewData::default();
+    view_data.add_viewbag("title", get_dict_value(DICT_INDEX_TITLE.into(), &conn).unwrap_or_else(|| "Yong Hua' blog".into()));
+    view_data.add_viewbag("list_title", "所有文章");
+    view_data.load_posts_page_meta_data(&conn);
     match post_service::get_posts_list(&conn, page.unwrap_or(1), None, None) {
         Ok(post_list_info) => {
-            Ok(Template::render("index", &json!({
-                "viewbag": bag,
-                "post_list_info": post_list_info,
-            })))
+            view_data.add("post_list_info", post_list_info);
+            //println!("{}", view_data.clone().to_json().to_string());
+            Ok(Template::render("index", view_data.to_json()))
         },
         Err(_) => Err(Status::InternalServerError)
     }
@@ -41,9 +38,13 @@ pub fn get_posts(page: Option<i32>, conn: DbConn) -> Result<Template, Status> {
 
 #[get("/post/<url>")]
 pub fn get_post(url: String, conn: DbConn) -> Result<Template, Status> {
+    let mut view_data = ViewData::default();
+    view_data.load_posts_page_meta_data(&conn);
     match post_service::get_post_detail(&conn, url) {
         Ok(post_detail) => {
-            Ok(Template::render("post", &json!(post_detail)))
+            view_data.add_viewbag("title", post_detail.title.clone());
+            view_data.add("post", post_detail);
+            Ok(Template::render("post", view_data.to_json()))
         },
         Err(_) => Err(Status::NotFound)
     }
@@ -76,15 +77,15 @@ pub fn get_post_comments(url: String, page: Option<i32>, conn: DbConn) -> JsonVa
 
 #[get("/tags")]
 pub fn tag_list(conn: DbConn)  -> Result<Template, Status> {
-    let mut bag: HashMap<&str, String> = HashMap::new();
-    bag.insert("title", "所有标签".into());
-    bag.insert("list_title", "所有标签".into());
+    let mut view_data = ViewData::default();
+    view_data.add_viewbag("title", "所有标签");
+    view_data.add_viewbag("list_title", "所有标签");
+    view_data.load_posts_page_meta_data(&conn);
+    
     match tag_service::all_tags(&conn) {
         Ok(all_tags) => {
-            Ok(Template::render("tags", &json!({
-                "viewbag": bag,
-                "tags": all_tags,
-            })))
+            view_data.add("tas", all_tags);
+            Ok(Template::render("tags", view_data.to_json()))
         },
         Err(_) => Err(Status::InternalServerError)
     }
@@ -93,15 +94,15 @@ pub fn tag_list(conn: DbConn)  -> Result<Template, Status> {
 #[get("/tag/<tag>?<page>")]
 pub fn get_posts_by_tag(tag: String, page: Option<i32>, conn: DbConn) -> Result<Template, Status> {
     let tag_find = tag_service::get_tag_by_name(&conn, tag).map_err(|_| Status::NotFound)?;
-    let mut bag = HashMap::new();
-    bag.insert("title", tag_find.display_text.to_string());
-    bag.insert("list_title", tag_find.display_text.to_string());
+    let mut view_data = ViewData::default();
+    view_data.add_viewbag("title", tag_find.display_text.to_string());
+    view_data.add_viewbag("list_title", tag_find.display_text.to_string());
+    view_data.load_posts_page_meta_data(&conn);
+    
     match post_service::get_posts_list(&conn, page.unwrap_or(1), None, Some(tag_find.id)) {
         Ok(post_list_info) => {
-            Ok(Template::render("index", &json!({
-                "viewbag": bag,
-                "post_list_info": post_list_info,
-            })))
+            view_data.add("post_list_info", post_list_info);
+            Ok(Template::render("index", view_data.to_json()))
         },
         Err(_) => Err(Status::InternalServerError)
     }
@@ -110,15 +111,15 @@ pub fn get_posts_by_tag(tag: String, page: Option<i32>, conn: DbConn) -> Result<
 #[get("/category/<category>?<page>")]
 pub fn get_posts_by_category(category: String, page: Option<i32>, conn: DbConn) -> Result<Template, Status> {
     let category_find = category_service::get_category_by_name(&conn, category).map_err(|_| Status::NotFound)?;
-    let mut bag = HashMap::new();
-    bag.insert("title", category_find.display_text.to_string());
-    bag.insert("list_title", category_find.display_text.to_string());
+    let mut view_data = ViewData::default();
+    view_data.add_viewbag("title", category_find.display_text.to_string());
+    view_data.add_viewbag("list_title", category_find.display_text.to_string());
+    view_data.load_posts_page_meta_data(&conn);
+    
     match post_service::get_posts_list(&conn, page.unwrap_or(1), Some(category_find.id), None) {
         Ok(post_list_info) => {
-            Ok(Template::render("index", &json!({
-                "viewbag": bag,
-                "post_list_info": post_list_info,
-            })))
+            view_data.add("post_list_info", post_list_info);
+            Ok(Template::render("index", view_data.to_json()))
         },
         Err(_) => Err(Status::InternalServerError)
     }

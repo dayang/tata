@@ -5,6 +5,7 @@ pub const DICT_COPYRIGHT: &'static str = "copyright";
 pub const DICT_SITE_INFO: &'static str = "site_info";
 pub const DICT_POST_PAGE_NUM: &'static str = "post_page_num";
 pub const DICT_COMMENT_PAGE_NUM: &'static str = "comment_page_num";
+pub const DICT_INDEX_QUOTE: &'static str = "index_quote";
 
 pub const DEFAULT_POST_PAGE_NUM: i32 = 15;
 pub const DEFAULT_COMMENT_PAGE_NUM: i32 = 10;

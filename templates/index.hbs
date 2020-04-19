@@ -1,130 +1,125 @@
 {{#*inline "header-block"}}
 <style>  
+    .post-list-item {
+        border-top: 1px dashed #ddd;
+    }
 
-.article-wrapper .date-and-category {
-    font-size: 0.8125rem;
-    text-align: center;
-    border: 1px solid #2a579a;
-    border-radius: 0.1875rem;
-}
+    {{!-- .layui-card-header{
+        border-bottom: 1px solid #ddd;
+    } --}}
 
-.date-and-category .categories {
-    color: #fff;
-    background-color: #2a579a;
-    padding: 0.125rem 0;
-}
+    .post-info{
+        display: inline-block;
+        vertical-align: middle;
+    }
 
-.date-and-category .date{
-    color: #2a579a;
-    padding: 0.125rem 0;
-}
+    .post-title a{
+        display: inline-block;
+        width: 100%;
+        margin: 15px 0 3px 0;
+        color: #585356;
+        font-weight: 500;
+        font-family: Lato,"Microsoft YaHei",sans-serif;
+    }
 
-.article-wrapper .article-title a {
-    color: #2a579a;
-}
+    .post-title a:hover{
+        color: cadetblue;
+        transition: color 0.3s ease;
+    }
 
-.article-wrapper .article-title a:hover {
-    text-decoration: none;
-    color: #1999ec;
-    transition: all 0.25s;
-    cursor: pointer;
-}
+    .post-thumb {
+        width: 180px;
+        display: inline-block;
+        vertical-align: middle;
+    }
 
-.blog-head-picture{
-    height: 90px;
-    width: 90px;
-}
+    .post-meta a{
+        display: inline-block;
+        background-color: #acc4ac;
+        border-radius: 5px;
+        padding: 3px 3px;
+        font-size: .7rem;
+        line-height: .7rem;
+        color: #ececec;
+    }
 
-.side-categorys{
-    margin-top: 20px;
-}
+    .post-meta span{
+        font-size: .7rem;
+        color: #999;
+        line-height: .7rem;
+    }
+
+    .post-meta a:hover{
+        color: white;
+        background-color: #009688;
+        transition: all .5s ease;
+    }
+
+    .post-summary{
+        padding: 5px 0;
+    }
+
+    #pagination{
+        text-align: center;
+    }
 
 </style>
 {{/inline}}
 
+{{#*inline "title"}}
+{{ viewbag.title }}
+{{/inline}}
+
 {{#*inline "content"}}
 
-<div class="container">
-    <div class="row">
-        <div class="col-lg-9 col-md-12">
-            <div class="container article-wrapper">
-                <h4>
-                    <span>所有文章</span>
-                    <a class="float-right d-none d-md-block" target="_blank" title="订阅" href="/rss">
-                        <span class="fa fa-rss"></span>
-                    </a>
-                </h4>
-                <hr>
-                {{#each articles}}
-                <div class="row">
-                    <div class="col-md-2 d-none d-sm-none d-md-block">
-                        <div class="date-and-category">
-                            <div class="date">{{ create_at }}</div>
-                            <div class="categories">
-                                <a href="/#">{{ category }}</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-10">
-                        <div class="article-title">
-                            <a href="/article/{{ id }}">{{ title }}</a>
-                        </div>
-                        <div class="aricle-meta d-none d-sm-block">
-                            <span class="badge badge-pill badge-secondary">{{ visit_count }} Reads</span>
-                        </div>
-                    </div>
-                </div>
-                <hr />
-                {{/each}}
+<div class="layui-card">
+    <div class="layui-card-header">{{ viewbag.list_title }}</div>
+    <div class="layui-card-body">
+        {{#each post_list_info.page_items}}
+        <div class="post-list-item">
+            {{#if (not_empty_str thumbnail) }}
+            <div class="post-thumb">
+                <a href="/posts/post/{{url}}">
+    	            <img style="width: 160px;max-height: 100%;" src="{{thumbnail}}" alt="图片呢？(｡•ˇ‸ˇ•｡)">
+                </a>
             </div>
-            
-            <div class="pagination-container pagination-sm">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item active"><span class="page-link">1</span></li>
-            
-                    <li class="page-item PagedList-skipToNext"><a class="page-link" href="?page=2" rel="next">&gt;</a></li>
-                    <li class="page-item PagedList-skipToLast"><a class="page-link" href="?page=31">&gt;&gt;</a></li>
-                </ul>
+            {{/if}}
+            <div class="post-info">
+                <h2 class="post-title">
+                    <a href="/posts/post/{{url}}">{{ title }}</a>
+                </h2>
+                
+                <div class="post-meta">
+                    <span>{{ create_time }} /</span>
+                    <span>阅读 {{ reads }}</span> 
+                    <br>
+                    {{#each tags}}
+                    <a class="post-tag" href="/posts/tag/{{name}}">{{ display_text }}</a>
+                    {{/each}}
+                </div>
+                <p class="post-summary">{{ summary }}</p>
             </div>
         </div>
-        <div class="col-lg-3 d-lg-block d-none d-ms-none d-md-none">
-            <div class="container">
-                <div class="row">
-                    <div class="col">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <a href="/about">
-                                    <img src="/static/dist/img/brand.png" class="rounded-circle blog-head-picture" alt="这里是头像">
-                                </a>
-                            </div>
-                            <div class="card-footer text-center">
-                                <a href="https://github.com/dayang"><i class="fab fa-github"></i></a>
-                                <i class="fa fa-map-marker-alt" style="font-size: .6rem;"> Shanghai</i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row side-categorys">
-                    <div class="col">
-                        <div class="card">
-                            <div class="card-header">
-                                分类
-                            </div>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">
-                                    <a href="/#">读书</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <a href="/#">文章</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {{/each}}
     </div>
+    <div id="pagination"></div>
 </div>
+{{/inline}}
+
+{{#*inline "script-block"}}
+<script>
+    layui.use('laypage', function(){
+        var laypage = layui.laypage;
+        
+        laypage.render({
+            elem: 'pagination',
+            theme: '#acc4ac',
+            count: {{ post_list_info.total_num }},
+            limit: {{ post_list_info.per_page }},
+            curr: {{ post_list_info.curr_page }}
+        });
+    });
+</script>
 {{/inline}}
 
 {{~> base ~}}
