@@ -140,6 +140,7 @@ insert into category values(3, "diary", "日记", "随想吧");
 insert into post (id, title, url, raw_content, html_content, summary, thumbnail, reads, likes, allow_comment, published, category_id) values(1, "git 学习", "learn-git", "这是一篇学习git的文章", "这是一篇学习git的文章", "如何学习git?", "https://static.liaoxuefeng.com/files/attachments/1280526512029793/l", 45, 2, 1, 1, 1);
 insert into post (id, title, url, raw_content, html_content, summary, thumbnail, reads, likes, allow_comment, published, category_id) values(2, "《堂吉诃德》", "man-of-la-mancha", "《堂吉诃德》读后感", "《堂吉诃德》读后感", "《堂吉诃德》", "", 120, 30, 1, 1, 2);
 insert into post (id, title, url, raw_content, html_content, summary, thumbnail, reads, likes, allow_comment, published, category_id) values(3, "2020年总结", "2020-year-self-summary", "2020 是这么过得", "2020 是这么过得", "2020 总结", "", 45, 2, 1, 1, 3);
+insert into post (id, title, url, raw_content, html_content, summary, thumbnail, reads, likes, allow_comment, published, category_id) values(4, "golang 发送接收组播数据", "golang-multicast", "如何使用golang发送和接收组播数据？", "", "如何使用golang发送和接收组播数据？", "", 45, 2, 1, 1, 3);
 
 insert into posttag values(1, 1, 1);
 insert into posttag values(2, 1, 2);
@@ -153,3 +154,8 @@ insert into dict values("index_quote", "永远相信美好的事情将要发生�
 insert into dict values("index_title", "Hello Yonghus's Blog");
 insert into dict values("post_page_num", "10");
 insert into dict values("comment_page_num", "10");
+insert into dict values("about_page", "<h3>这是关于的内容</h3> <p>内容</p>");
+
+insert into friendlink values(1, "狼煞博客", "https://blog.wolfogre.com/", 1, "老宋的博客");
+insert into friendlink values(2, "老增", "https://oldzeng.com/", 1, "老方的博客");
+insert into friendlink values(3, "一南向北", "https://blog.wongwongsu.com/", 1, "老王的博客");

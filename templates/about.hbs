@@ -4,48 +4,43 @@
 
 {{#*inline "header-block"}}
 <style>
-    .about ul {
-        margin: 0;
-        list-style: circle;
-        font-size: .9rem;
+    .about a{
+        color: cadetblue;
     }
 
-    .about a{
-        color: #2a579a;
+    .about-page{
+        margin-bottom: 20px;
+    }
+
+    .friend-links a{
+        display: inline-block;
+        margin: 4px 0;
+    }
+
+    .friend-links a:hover{
+        color:darkcyan;
     }
 </style>
 {{/inline}}
 
 {{#*inline "content"}}
-<div class="container about">
-    <div class="row">
-        <div class="col">
-            <h4>
-                <span>关于我和本博客</span>
-            </h4>
-            <hr>
-            <p>
-                一个前后端都会一点的年轻人，目前在公司从事 WPF 开发。不过最近迷上了 Rust。
-            </p>
-            <p>
-                本博客后台基于 Rust 语言的 web 框架 <a href="https://rocket.rs/">Rocket</a> 开发，前端使用 Bootstrap， 目前还没有开发完毕。
-            </p>
-            <hr>
-            <h5 style="margin: 10px;">其它链接：</h5>
-            <ul>
-                <li><a href="/static/wasm-game/index.html" target="_blank">一款 rust+webassembly 写的小游戏</a></li>
-                <li><a href="/static/leetcode/doc/two_sum/index.html" target="_blank">我的 leetcode 的Rust语言题解</a></li>
-            </ul>
-
-            <hr>
-            <h5 style="margin: 10px;">友情链接：</h5>
-            <ul>
-                <li><a href="https://blog.wolfogre.com" target="_blank">狼煞博客</a></li>
-                <li><a href="https://oldzeng.com" target="_blank">老增</a></li>
-                <li><a href="https://blog.wongwongsu.com" target="_blank">一南向北</a></li>
-            </ul>
-        </div>
+<div class="about">
+    <div class="about-page">
+        {{{ about_page }}}
     </div>
+    <h3>
+        友情链接：
+    </h3>
+    <ul class="friend-links">
+        {{#each friend_links}}
+        <li>
+            <svg class="icon-symbol" aria-hidden="true">
+                <use xlink:href="#icon-lianjie"></use>
+            </svg>
+            <a href="{{ link }}" target="_blank">{{ display_text }}</a>
+        </li>
+        {{/each}}
+    </ul>
 </div>
 {{/inline}}
 

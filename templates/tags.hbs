@@ -1,0 +1,42 @@
+{{#*inline "title"}}
+{{ viewbag.title }}
+{{/inline}}
+
+{{#*inline "header-block"}}
+<style>
+
+.tag-link{
+    display: inline-block;
+    background-color: cadetblue;
+    border-radius: 5px;
+    padding: 0 7px;
+    margin: 5px;
+    color: #ececec;
+}
+
+
+.tag-link:hover{
+    color: white;
+    background-color: #009688;
+    transition: all .5s ease;
+}
+</style>
+{{/inline}}
+
+{{#*inline "content"}}
+<div class="layui-card">
+    <div class="layui-card-header">{{ viewbag.list_title }}</div>
+    <div class="layui-card-body">
+        {{#each tags}}
+            <a class="tag-link" href="/posts/tag/{{name}}">{{ display_text }}</a>
+        {{/each}}
+    </div>
+    <div id="pagination"></div>
+</div>
+{{/inline}}
+
+{{#*inline "script-block"}}
+
+{{/inline}}
+
+{{~> base ~}}

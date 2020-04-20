@@ -1,6 +1,7 @@
 // pub mod admin;
 pub mod post;
 
+use crate::DbConn;
 use diesel::prelude::*;
 use rocket_contrib::templates::Template;
 use rocket_contrib::json::JsonValue;
@@ -10,7 +11,10 @@ use rocket::response::{Redirect};
 use serde_json::{Value as SerdeJsonValue, to_value};
 use serde::Serialize;
 use std::collections::HashMap;
-use crate::service::category as category_service;
+use crate::service::{
+    category as category_service,
+    friendlinks as friendlink_service
+};
 use crate::service::get_dict_value;
 use crate::consts::*;
 
@@ -95,8 +99,17 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
 }
 
 #[get("/about")]
-pub fn about() -> Template {
-    Template::render("about", &json!({}))
+pub fn about(conn: DbConn) -> Template {
+    let mut view_data = ViewData::default();
+    view_data.load_posts_page_meta_data(&conn);
+    view_data.add("about_page", get_dict_value(DICT_ABOUT_PAGE.into(), &conn));
+
+    match friendlink_service::all_friendlinks(&conn) {
+        Ok(links) => view_data.add("friend_links", links),
+        Err(_) => ()
+    };
+
+    Template::render("about", view_data.to_json())
 }
 
 #[get("/favicon.ico")]

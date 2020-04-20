@@ -5,6 +5,7 @@ pub mod pagination;
 pub mod comment;
 pub mod tag;
 pub mod category;
+pub mod friendlinks;
 
 use diesel::prelude::*;
 use crate::schema::dict::dsl as dict_dsl;

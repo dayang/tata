@@ -84,7 +84,7 @@ pub fn tag_list(conn: DbConn)  -> Result<Template, Status> {
     
     match tag_service::all_tags(&conn) {
         Ok(all_tags) => {
-            view_data.add("tas", all_tags);
+            view_data.add("tags", all_tags);
             Ok(Template::render("tags", view_data.to_json()))
         },
         Err(_) => Err(Status::InternalServerError)
