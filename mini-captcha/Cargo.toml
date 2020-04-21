@@ -1,0 +1,14 @@
+[package]
+name = "mini_captcha"
+version = "0.1.0"
+authors = ["dayang <1306693844@qq.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+image = "0.23.3"
+num-complex = "0.2.4"
+rusttype = "0.8.3"
+imageproc = "0.20.0"
+rand = "0.7.3"

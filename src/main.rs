@@ -7,6 +7,7 @@
 #[macro_use] extern crate serde_derive;
 extern crate chrono;
 extern crate time;
+extern crate mini_captcha;
 
 use rocket_contrib::templates::{Template};
 use rocket::Rocket;
@@ -62,6 +63,7 @@ fn rocket() -> Rocket {
         .mount("/posts", controllers::post::routes())
         //.mount("/admin", controllers::admin::routes())
         .mount("/static", StaticFiles::from("static"))
+        .mount("/captcha", routes![controllers::captcha::get_captcha])
         .register(catchers![catchers::not_found])
         .attach(Template::custom(|engines| {
             engines.handlebars.register_helper("markdown", Box::new(crate::helpers::markdown_helper));

@@ -4,10 +4,6 @@
         border-top: 1px dashed #ddd;
     }
 
-    {{!-- .layui-card-header{
-        border-bottom: 1px solid #ddd;
-    } --}}
-
     .post-info{
         display: inline-block;
         vertical-align: middle;
@@ -23,7 +19,7 @@
     }
 
     .post-title a:hover{
-        color: cadetblue;
+        color: #2474b5;
         transition: color 0.3s ease;
     }
 
@@ -33,16 +29,6 @@
         vertical-align: middle;
     }
 
-    .post-meta a{
-        display: inline-block;
-        background-color: #acc4ac;
-        border-radius: 5px;
-        padding: 3px 3px;
-        font-size: .7rem;
-        line-height: .7rem;
-        color: #ececec;
-    }
-
     .post-meta span{
         font-size: .7rem;
         color: #999;
@@ -50,9 +36,9 @@
     }
 
     .post-meta a:hover{
-        color: white;
-        background-color: #009688;
-        transition: all .5s ease;
+        color: #eee;
+        background-color: #2474b5;
+        transition: all .2s ease;
     }
 
     .post-summary{
@@ -78,7 +64,7 @@
         {{#each post_list_info.page_items}}
         <div class="post-list-item">
             {{#if (not_empty_str thumbnail) }}
-            <div class="post-thumb">
+            <div class="post-thumb layui-hide-xs">
                 <a href="/posts/post/{{url}}">
     	            <img style="width: 160px;max-height: 100%;" src="{{thumbnail}}" alt="图片呢？(｡•ˇ‸ˇ•｡)">
                 </a>
@@ -94,7 +80,7 @@
                     <span>阅读 {{ reads }}</span> 
                     <br>
                     {{#each tags}}
-                    <a href="/posts/tag/{{name}}">{{ display_text }}</a>
+                    <a href="/posts/tag/{{name}}" class="layui-badge-rim">{{ display_text }}</a>
                     {{/each}}
                 </div>
                 <p class="post-summary">{{ summary }}</p>
@@ -113,10 +99,18 @@
         
         laypage.render({
             elem: 'pagination',
-            theme: '#acc4ac',
+            theme: '#2474b5',
             count: {{ post_list_info.total_num }},
             limit: {{ post_list_info.per_page }},
-            curr: {{ post_list_info.curr_page }}
+            curr: {{ post_list_info.curr_page }},
+            prev: 'prev',
+            next: 'next',
+            jump: function(obj, first){
+                // doing nothing when init call
+                if(!first){
+                    location.assign("/posts?page=" + obj.curr);
+                }
+            }
         });
     });
 </script>

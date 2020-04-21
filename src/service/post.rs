@@ -73,13 +73,15 @@ pub fn get_post_by_url(conn: &SqliteConnection, post_url: String) -> Result<Post
     post.filter(url.eq(post_url)).first::<Post>(conn).map_err(err_str)
 }
 
-pub fn get_post_detail(conn: &SqliteConnection, post_url: String) -> Result<PostDetail, String> {
+pub fn get_post_detail(conn: &SqliteConnection, post_url: String, new_hit: bool) -> Result<PostDetail, String> {
     let post_find = get_post_by_url(conn, post_url)?;
     let category_find = category.find(post_find.category_id).first::<Category>(conn).map_err(err_str)?;
     let post_tags = get_post_tags(conn, post_find.id).map_err(err_str)?;
 
     // add reads
-    diesel::update(&post_find).set(reads.eq(reads + 1)).execute(conn);
+    if new_hit {
+        diesel::update(&post_find).set(reads.eq(reads + 1)).execute(conn);
+    }
 
     Ok(PostDetail {
         title: post_find.title,
@@ -99,6 +101,6 @@ pub fn get_post_detail(conn: &SqliteConnection, post_url: String) -> Result<Post
     })
 }
 
-pub fn like_post(conn: &SqliteConnection, post_url: String) -> bool {
-    diesel::update(post).set(likes.eq(likes + 1)).filter(url.eq(post_url)).execute(conn).unwrap_or(0) == 1
+pub fn like_post(conn: &SqliteConnection, post_url: String) -> Result<usize, String> {
+    diesel::update(post).set(likes.eq(likes + 1)).filter(url.eq(post_url)).execute(conn).map_err(err_str)
 }

@@ -1,7 +1,7 @@
 use crate::DbConn;
 use rocket_contrib::templates::Template;
-use rocket::http::Status;
 use rocket_contrib::json::{Json, JsonValue};
+use rocket::http::{Status, Cookies, Cookie};
 use crate::service::{
     post as post_service,
     tag as tag_service,
@@ -12,7 +12,7 @@ use crate::service::{
 
 use crate::consts::*;
 use crate::dto::comment::CommentRequest;
-use super::ViewData;
+use super::{ViewData, JsonErr};
 
 #[get("/")]
 pub fn index(conn: DbConn) -> Result<Template, Status>{
@@ -37,13 +37,23 @@ pub fn get_posts(page: Option<i32>, conn: DbConn) -> Result<Template, Status> {
 }
 
 #[get("/post/<url>")]
-pub fn get_post(url: String, conn: DbConn) -> Result<Template, Status> {
+pub fn get_post(mut cookies: Cookies, url: String, conn: DbConn) -> Result<Template, Status> {
+    let new_hit = cookies.get_private("hit").and_then(|cookie| Some(cookie.value() != &url)).unwrap_or(true);
+
     let mut view_data = ViewData::default();
     view_data.load_posts_page_meta_data(&conn);
-    match post_service::get_post_detail(&conn, url) {
+    match post_service::get_post_detail(&conn, url.clone(), new_hit) {
         Ok(post_detail) => {
             view_data.add_viewbag("title", post_detail.title.clone());
             view_data.add("post", post_detail);
+
+            if new_hit {
+                let mut cookie = Cookie::new("hit", url);
+                cookie.set_expires(time::now_utc() + time::Duration::days(1));
+                cookie.set_max_age(time::Duration::days(1));
+                cookies.add_private(cookie);
+            }
+
             Ok(Template::render("post", view_data.to_json()))
         },
         Err(_) => Err(Status::NotFound)
@@ -51,27 +61,33 @@ pub fn get_post(url: String, conn: DbConn) -> Result<Template, Status> {
 }
 
 #[put("/post/<url>/like")]
-pub fn like_post(url: String, conn: DbConn) -> JsonValue {
-    json!({
-        "success" : post_service::like_post(&conn, url)
-    })
+pub fn like_post(mut cookies: Cookies, url: String, conn: DbConn) -> JsonValue {
+    let have_liked = cookies.get_private("like").and_then(|cookie| Some(cookie.value() == &url)).unwrap_or(false);
+    if have_liked {
+        json!(JsonErr::Err("你已经点过赞啦".into()))
+    } else {
+        let mut cookie = Cookie::new("like", url.clone());
+        cookie.set_expires(time::now_utc() + time::Duration::days(1));
+        cookie.set_max_age(time::Duration::days(1));
+        cookies.add_private(cookie);
+
+        json!(post_service::like_post(&conn, url).map_err(|_| "发生错误了呢"))
+    }
 }
 
 #[post("/post/<url>/comment", format = "json", data = "<comment>")]
 pub fn comment_post(url: String, conn: DbConn, comment: Json<CommentRequest>) -> JsonValue {
-    json!({})
+    match post_service::get_post_by_url(&conn, url) {
+        Ok(post_find) => json!(comment_service::new_comment(&conn, comment.0, post_find.id, COMMENT_FOR_POST)),
+        Err(_) => json!(JsonErr::Err("post not found".into()))
+    }
 }
 
 #[get("/post/<url>/comments?<page>")]
 pub fn get_post_comments(url: String, page: Option<i32>, conn: DbConn) -> JsonValue {
     match post_service::get_post_by_url(&conn, url) {
-        Ok(post_find) => json!({
-            "success": true,
-            "data": comment_service::get_paged_comment(&conn, COMMENT_FOR_POST, page.unwrap_or(1), post_find.id)
-        }),
-        Err(_) => json!({
-            "success": false
-        })
+        Ok(post_find) => json!(comment_service::get_paged_comment(&conn, COMMENT_FOR_POST, page.unwrap_or(1), post_find.id)),
+        Err(_) => json!(JsonErr::Err("post not found".to_string()))
     }
 }
 
@@ -132,7 +148,7 @@ pub fn archive() {
 
 #[get("/archive/<year>/<month>")]
 pub fn archive_month(year: String, month: String, conn: DbConn) {
-
+    
 }
 
 pub fn routes() -> Vec<rocket::Route> {

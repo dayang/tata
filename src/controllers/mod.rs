@@ -1,5 +1,6 @@
 // pub mod admin;
 pub mod post;
+pub mod captcha;
 
 use crate::DbConn;
 use diesel::prelude::*;
@@ -17,6 +18,8 @@ use crate::service::{
 };
 use crate::service::get_dict_value;
 use crate::consts::*;
+
+type JsonErr = Result<(), String>;
 
 #[derive(Clone)]
 pub struct ViewData{
@@ -59,7 +62,7 @@ impl ViewData {
     pub fn load_posts_page_meta_data(&mut self, conn: &SqliteConnection) {
         match category_service::all_categorys(conn) {
             Ok(categorys) => {self.view_bag.insert("categorys".into(), Self::json_value(categorys));},
-            Err(err) => ()
+            Err(_) => ()
         };
 
         get_dict_value(DICT_INDEX_QUOTE.into(), conn).into_iter().for_each(|v| {

@@ -16,10 +16,12 @@ pub fn get_paged_comment(conn: &SqliteConnection, comment_for: i32,
     Ok(CommentListInfo {
         total_num,
         total_pages,
+        per_page: page_num,
         curr_page: page_index,
         page_items: comments.into_iter().map(|detail| {
             CommentListItem {
                 user_name: detail.user_name,
+                avatar: format!("{:x}", md5::compute(detail.email)),
                 raw_content: detail.raw_content,
                 html_content: detail.html_content,
                 comment_time: detail.comment_time,
@@ -28,4 +30,14 @@ pub fn get_paged_comment(conn: &SqliteConnection, comment_for: i32,
             }
         }).collect()
     })
+}
+
+pub fn new_comment(conn: &SqliteConnection, request: CommentRequest, for_id: i32, for_type: i32) -> Result<(), String> {
+
+    Ok(())
+}
+
+/// for admin
+pub fn reply_comment() -> bool {
+    true
 }

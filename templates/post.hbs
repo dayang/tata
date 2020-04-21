@@ -2,6 +2,16 @@
 <link rel="stylesheet"
     href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/vs.min.css">
 <style>
+    #main-content ul li{
+        list-style: disc;
+        margin-left: 20px;
+    }
+
+    #main-content ol li{
+        list-style: decimal;
+        margin-left: 20px;
+    }
+
     code {
         font-family: Consolas, Menlo, Monaco, Consolas, "Courier New", monospace;
         padding: 2px 4px;
@@ -25,18 +35,14 @@
         letter-spacing: .6px;
     }
 
-    #article-body p {
-        text-indent: 2em;
-        font-size: .95rem;
-    }
-
     #article-body h1,
     h2,
     h3,
     h4,
     h5,
     h6 {
-        margin: 10px 0;
+        margin: 20px 0 20px;
+        color: #34495e;
     }
 
     #article-body h1{
@@ -64,7 +70,8 @@
     }
 
     #article-body p{
-        color: #504a4b;
+        {{!-- text-indent: 2rem; --}}
+        color: #34495e;
         font-size: 1rem;
         line-height: 1.8em;
         margin: 12px 0!important;
@@ -74,7 +81,7 @@
         display: block;
         padding: .25rem;
         background-color: #fff;
-        {{!-- border: 1px solid #dee2e6; --}}
+        border: 1px solid #dee2e6;
         border-radius: .25rem;
         max-width: 100%;
         height: auto;
@@ -83,10 +90,13 @@
     .article-title {
         font-size: 1.6rem;
         font-weight: normal;
+        color: #34495e;
     }
 
     .article-publish-info {
-        font-size: .75rem;
+        color: #999;
+        font-size: .8rem;
+        padding: 3px 0;
     }
 
     .article-header-hr {
@@ -101,11 +111,11 @@
     }
 
     #article-body a {
-        color: darkcyan;
+        color: #2474b5;
     }
 
     .copyright-item a{
-        color:darkcyan;
+        color:#2474b5;
     }
 
     .hljs {
@@ -122,15 +132,15 @@
         text-align: center;
         cursor: pointer;
         vertical-align: baseline;
-        color: #5FB878;
+        color: #1485FE;
         position: relative;
-        border: 1px dotted #5FB878;
+        border: 1px dotted #1485FE;
         border-radius: 2px;
     }
 
     #toggle-left-side:hover{
-        color:darkcyan;
-        border-color: darkcyan;
+        color:#2474b5;
+        border-color: #2474b5;
     }
 
     blockquote {
@@ -141,6 +151,11 @@
         word-break: break-all;
         background: #f5f8fa;
         border-radius: 2px;
+    }
+
+    .article-category{
+        display: inline-block;
+
     }
 
     .like-area div{
@@ -157,36 +172,32 @@
         vertical-align: middle;
         cursor: pointer;
     }
+
+    .comment-card{
+        box-shadow: none;
+        border: 1px solid #e6e6e6;
+    }
 </style>
+{{/inline}}
+
+{{#*inline "title"}}
+{{ viewbag.title }} - Yonghua's Blog
 {{/inline}}
 
 {{#*inline "content"}}
 <article>
     <header>
         <h1 class="article-title"><i id="toggle-left-side" class="layui-hide-xs layui-hide-sm layui-show-md-inline-block layui-show-lg-inline-block layui-icon layui-icon-prev"></i> {{ post.title }}</h1>
-        <hr class="d-none d-md-block article-header-hr">
-        <div class="d-block d-sm-none">
-            <div class="article-publish-info article-publish-info-mobile bg-light">
-                <time>Published on {{ post.create_time }}</time>
-            </div>
+        <hr class="article-header-hr">
+        <div class="article-publish-info">
+            <time>{{ post.create_time }}</time> / 
+            <span class="">阅读 {{ post.reads }}</span>
         </div>
-        <div class="d-none d-sm-block article-publish-info mb-2">
-            <strong class="text-muted">
-                <time>Published on {{ post.create_time }}</time>
-            </strong>
-            <span class="badge badge-secondary float-right post-hit-number d-none d-md-block">{{ post.reads }} Reads</span>
-        </div>
-        <div class="hidden-print">
-            <section class="article-cat-tag-info">
-                <a href="#" class="badge badge-primary">{{ post.category.display_text }}</a>
-                <div class="float-right d-none d-md-block">
-                    {{!-- <span class="toptags-list toptags-list-sm">
-                        <a href="/tags/list/azure">Azure</a>
-                        <a href="/tags/list/dotnet-core">.NET Core</a>
-                        <a href="/tags/list/cdn">CDN</a>
-                    </span> --}}
-                </div>
-            </section>
+        <div>
+            <a href="/posts/category/{{post.category.name}}" class="article-category layui-badge layui-bg-blue">{{ post.category.display_text }}</a>
+            {{#each post.tags}}
+            <a class="article-tag layui-badge-rim" href="/posts/tag/{{name}}">{{display_text}}</a>
+            {{/each}}
         </div>
         <hr class="article-header-hr">
     </header>
@@ -199,7 +210,7 @@
             </svg>
             <span id="post-likes">{{ post.likes }}</span>
         </div>
-        <div>觉得有帮助的话，点个赞吧</div>
+        <div style="font-size: .7rem;margin-top:5px;">觉得有帮助的话，点个赞吧</div>
     </div>
     <hr>
     <section class="article-copyright">
@@ -216,12 +227,37 @@
     <hr>
     {{#if post.allow_comment}}
     <section class="post-comments-area">
-        <div class="request-comment">
-            发表评论
+        <div class="layui-row">
+            <div class="layui-col-md10 layui-col-md-offset1">
+                <form action="" class="layui-form">
+                    <div class="layui-form-item">
+                        {{!-- <label class="layui-form-label"></label> --}}
+                        <div class="layui-inline">
+                            <div class="layui-input-inline" style="width: 200px;">
+                                <input type="text" name="commentor-name" placeholder="姓名" required lay-verify="required" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-input-inline" style="width: 200px;">
+                                <input type="text" name="commentor-email" placeholder="邮箱" required lay-verify="required" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-input-inline">
+                                <button class="layui-btn layui-btn-primary" lay-submit lay-filter="formDemo">提交</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <textarea name="comment-content" placeholder="请输入评论内容（支持 markdown 格式）" class="layui-textarea"></textarea>
+                    </div>
+                </form>
+                <hr>
+                <div id="post-comments">
+                    
+                </div>
+            </div>
         </div>
-        <div class="post-comments">
-            已有评论
-        </div>
+    </section>
+    {{else}} 
+    <section class="post-comments-area">
+        <p style="color: #999; text-align: center;">评论已关闭</p>
     </section>
     {{/if}}
 </article>
@@ -229,11 +265,40 @@
 
 {{#*inline "script-block"}}
 <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+<script id="comment-template" type="text/template">
+    <%# if(d.total_num > 0) { %>
+        <%# layui.each(d.page_items, function(i, item){ %>
+        <div class="layui-card comment-card">
+            <div class="layui-card-header">
+                <img src="https://cdn.v2ex.com/gravatar/<%= item.avatar %>" width="25" alt="头像">
+                <span style="color:#2474b5;"><%= item.user_name %></span> &nbsp;
+                <span style="font-size: .7rem;color: #999;"><%= item.comment_time %></span>
+            </div>
+            <div class="layui-card-body">
+                <% item.html_content %>
+                <%# if(item.reply){ %>
+                <hr>
+                <span style="color:#2474b5;">博主回复：</span>
+                <%= item.reply %>
+                <%# } %>
+            </div>
+        </div>
+        <%# }) %>
+    <%# }else{ %>
+    <p style="color: #999; text-align: center;">暂时还没有评论</p>
+    <%# } %>
+    <%# if(d.total_pages > 0) { %>
+    <div id="comment-pagination" style="text-align: center"></div>
+    <%# } %>
+</script>
 <script>
     hljs.initHighlighting();
 
-    layui.use(['jquery'], function(){
+    layui.use(['jquery','laytpl','layer', 'laypage'], function(){
         var $ = layui.jquery;
+        var laytpl = layui.laytpl;
+        var layer = layui.layer;
+        var laypage = layui.laypage;
 
         var left_side_show = true;
         function toggle_left_side() {
@@ -278,10 +343,63 @@
         window.requestAnimationFrame(animate);
 
         $('#like-btn').click(function(){
-            // 发送请求
+            // send like request
+            $.ajax("/posts/post/{{post.url}}/like",{
+                method: "put",
+                dataType: "json",
+                success: function(data) {
+                    if (data.Ok) {
+                        var n = $("#post-likes").html();
+                        $('#post-likes').html(Number(n) + 1);
+                    }
+
+                    layer.tips(data.Ok ? "感谢点赞呢~" : data.Err, '#like-btn', {
+                        tips: [1, '#1E9FFF'],
+                        time: 1000
+                    });
+                }
+            })
+
+            
         });
 
-        
+        // load comments
+        laytpl.config({
+            open: '<%',
+            close: '%>'
+        });
+
+        function load_comments(page) {
+            $.ajax("/posts/post/{{post.url}}/comments?page=" + page, {
+                method: "get",
+                dataType: "json",
+                success: function(data) {
+                    if (data.Ok) {
+                        laytpl($('#comment-template').html()).render(data.Ok, function(html) {
+                            $("#post-comments").html(html);
+
+                            laypage.render({
+                                elem: 'comment-pagination',
+                                theme: '#2474b5',
+                                count: data.Ok.total_num,
+                                limit: data.Ok.per_page,
+                                curr: data.Ok.curr_page,
+                                prev: 'prev',
+                                next: 'next',
+                                jump: function(obj, first){
+                                    // doing nothing when init call
+                                    if(!first){
+                                        load_comments(obj.curr);
+                                    }
+                                }
+                            });
+                        })
+                    }
+                }
+            })
+        }
+
+        load_comments(1);
     });
 </script>
 {{/inline}}
