@@ -5,8 +5,8 @@ use rocket::http::{ContentType, Cookies, Cookie};
 #[get("/get")]
 pub fn get_captcha(mut cookies: Cookies) -> Content<Vec<u8>> {
     let captcha = CaptchaBuilder::default()
-        .width(100)
-        .height(25)
+        .width(80)
+        .height(28)
         .chars(4)
         .build()
         .draw();

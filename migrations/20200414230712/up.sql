@@ -33,9 +33,9 @@ CREATE TABLE comment (
     show BOOLEAN NOT NULL DEFAULT TRUE,
     foreign_id INTEGER NOT NULL,
     comment_type INTEGER NOT NULL,
-    user_agent TEXT,
-    FOREIGN KEY(foreign_id) REFERENCES post(id),
-    FOREIGN KEY(foreign_id) REFERENCES page(id)
+    user_agent TEXT
+    -- FOREIGN KEY(foreign_id) REFERENCES post(id),
+    -- FOREIGN KEY(foreign_id) REFERENCES page(id)
 );
 
 CREATE TABLE book (

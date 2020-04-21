@@ -37,4 +37,5 @@ pub struct CommentRequest {
     pub email: String,
     pub raw_content: String,
     pub html_content: String,
+    pub captcha: String,
 }

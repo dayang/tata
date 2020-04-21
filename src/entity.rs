@@ -46,8 +46,8 @@ pub struct Post {
 }
 
 #[derive(Identifiable, Queryable, Serialize, Associations, AsChangeset)]
-#[belongs_to(Post, foreign_key = "foreign_id")]
-#[belongs_to(Page, foreign_key = "foreign_id")]
+// #[belongs_to(Post, foreign_key = "foreign_id")]
+// #[belongs_to(Page, foreign_key = "foreign_id")]
 #[table_name = "comment"]
 pub struct Comment {
     pub id: i32,

@@ -1,6 +1,9 @@
 {{#*inline "header-block"}}
 <link rel="stylesheet"
     href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/vs.min.css">
+{{#if post.allow_comment}}
+<link href="https://cdn.bootcss.com/simplemde/1.11.2/simplemde.min.css" rel="stylesheet">
+{{/if}}
 <style>
     #main-content ul li{
         list-style: disc;
@@ -177,6 +180,10 @@
         box-shadow: none;
         border: 1px solid #e6e6e6;
     }
+
+    .CodeMirror, .CodeMirror-scroll {
+        min-height: 100px;
+    }
 </style>
 {{/inline}}
 
@@ -226,27 +233,38 @@
     </section>
     <hr>
     {{#if post.allow_comment}}
+
     <section class="post-comments-area">
         <div class="layui-row">
             <div class="layui-col-md10 layui-col-md-offset1">
-                <form action="" class="layui-form">
+                <form class="layui-form" id="comment-form">
                     <div class="layui-form-item">
-                        {{!-- <label class="layui-form-label"></label> --}}
                         <div class="layui-inline">
-                            <div class="layui-input-inline" style="width: 200px;">
+                            <div class="layui-input-inline" style="width: 150px;">
                                 <input type="text" name="commentor-name" placeholder="姓名" required lay-verify="required" autocomplete="off" class="layui-input">
                             </div>
                             <div class="layui-input-inline" style="width: 200px;">
-                                <input type="text" name="commentor-email" placeholder="邮箱" required lay-verify="required" autocomplete="off" class="layui-input">
-                            </div>
-                            <div class="layui-input-inline">
-                                <button class="layui-btn layui-btn-primary" lay-submit lay-filter="formDemo">提交</button>
+                                <input type="text" name="commentor-email" placeholder="邮箱" required lay-verify="required|email" autocomplete="off" class="layui-input">
                             </div>
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <textarea name="comment-content" placeholder="请输入评论内容（支持 markdown 格式）" class="layui-textarea"></textarea>
+                        <textarea name="comment-content" id="comment-editor" placeholder="请输入评论内容（支持 markdown 格式）" class="layui-textarea"></textarea>
                     </div>
+                    
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label" style="padding: 0; width: 100px; height: 38px; line-height: 38px; text-align:center;">
+                                <img src="/captcha/get" id="captcha" alt="验证码" style="vertical-align: middle; cursor: pointer;">
+                            </label>
+                            <div class="layui-input-inline" style="width: 100px;">
+                                <input type="text" name="captcha-code" placeholder="验证码" required lay-verify="required" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-input-inline">
+                                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="commentForm">提交</button>
+                            </div>
+                        </div>
+                    </div>    
                 </form>
                 <hr>
                 <div id="post-comments">
@@ -264,6 +282,9 @@
 {{/inline}}
 
 {{#*inline "script-block"}}
+{{#if post.allow_comment }}
+<script src="https://cdn.bootcss.com/simplemde/1.11.2/simplemde.min.js"></script>
+{{/if}}
 <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
 <script id="comment-template" type="text/template">
     <%# if(d.total_num > 0) { %>
@@ -294,11 +315,16 @@
 <script>
     hljs.initHighlighting();
 
-    layui.use(['jquery','laytpl','layer', 'laypage'], function(){
+    layui.use(['jquery','laytpl','layer', 'laypage','form'], function(){
         var $ = layui.jquery;
         var laytpl = layui.laytpl;
         var layer = layui.layer;
         var laypage = layui.laypage;
+        var form = layui.form;
+
+        $('#captcha').click(function(){
+            $(this).attr("src", "/captcha/get?k=" + Math.random());
+        })
 
         var left_side_show = true;
         function toggle_left_side() {
@@ -363,6 +389,51 @@
             
         });
 
+        {{#if post.allow_comment }}
+        var editor = new SimpleMDE({ 
+            element: document.getElementById("comment-editor"),
+            spellChecker: false,
+            hideIcons: ['image'],
+            toolbarTips: false,
+            status: false,
+        });
+
+        form.on('submit(commentForm)', function(data){
+            if (editor.value() === ''){
+                layer.msg('评论内容不能为空', {icon: 5}); 
+                return false;
+            }
+            var new_comment = JSON.stringify({
+                "url" : "{{ post.url }}",
+                "user_name": data.field["commentor-name"],
+                "email": data.field["commentor-email"],
+                "raw_content": editor.value(),
+                // todo: 获取html内容
+                "html_content": editor.value(),
+                "captcha": data.field["captcha-code"]
+            });
+            
+            $.ajax('/posts/post/{{post.url}}/comment', {
+                method: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: new_comment,
+                success: function(data) {
+                    console.log(data)
+                    if (data.Ok) {
+                        layer.msg("评论成功");
+                        document.getElementById("comment-form").reset();
+                        editor.value("");
+
+                    } else {
+                        layer.msg(data.Err);
+                    }
+                }
+            })
+
+            return false;
+        });
+
         // load comments
         laytpl.config({
             open: '<%',
@@ -400,6 +471,8 @@
         }
 
         load_comments(1);
+
+        {{/if}}
     });
 </script>
 {{/inline}}

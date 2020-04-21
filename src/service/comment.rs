@@ -6,6 +6,8 @@ use crate::service::pagination::*;
 use crate::service::get_dict_value;
 use crate::consts::*;
 use crate::dto::comment::*;
+use diesel::debug_query;
+use diesel::sqlite::Sqlite;
 
 pub fn get_paged_comment(conn: &SqliteConnection, comment_for: i32, 
         page_index: i32, master_id: i32) -> Result<CommentListInfo, String> {
@@ -32,12 +34,20 @@ pub fn get_paged_comment(conn: &SqliteConnection, comment_for: i32,
     })
 }
 
-pub fn new_comment(conn: &SqliteConnection, request: CommentRequest, for_id: i32, for_type: i32) -> Result<(), String> {
+pub fn new_comment(conn: &SqliteConnection, request: CommentRequest, for_id: i32, for_type: i32) -> Result<usize, String> {
+    let query = diesel::insert_into(comment).values((user_name.eq(request.user_name),
+        email.eq(request.email),
+        raw_content.eq(request.raw_content),
+        html_content.eq(request.html_content),
+        show.eq(true),
+        foreign_id.eq(for_id),
+        comment_type.eq(for_type)));
 
-    Ok(())
+    // println!("{}", debug_query::<Sqlite, _>(&query));
+    query.execute(conn).map_err(err_str)
 }
 
 /// for admin
-pub fn reply_comment() -> bool {
+pub fn reply_comment(conn: &SqliteConnection, reply_content: String, comment_id: i32) -> bool {
     true
 }

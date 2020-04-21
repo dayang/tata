@@ -76,7 +76,12 @@ pub fn like_post(mut cookies: Cookies, url: String, conn: DbConn) -> JsonValue {
 }
 
 #[post("/post/<url>/comment", format = "json", data = "<comment>")]
-pub fn comment_post(url: String, conn: DbConn, comment: Json<CommentRequest>) -> JsonValue {
+pub fn comment_post(mut cookies: Cookies, url: String, conn: DbConn, comment: Json<CommentRequest>) -> JsonValue {
+    let err_captcha = cookies.get_private("code").and_then(|cookie| Some(cookie.value().to_lowercase() != (&comment.0.captcha).to_lowercase())).unwrap_or(false);
+    if err_captcha {
+        return json!(JsonErr::Err("验证码不正确呦~".into()));
+    }
+
     match post_service::get_post_by_url(&conn, url) {
         Ok(post_find) => json!(comment_service::new_comment(&conn, comment.0, post_find.id, COMMENT_FOR_POST)),
         Err(_) => json!(JsonErr::Err("post not found".into()))
