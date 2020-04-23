@@ -1,4 +1,4 @@
-use rocket::{Request};
+use rocket::Request;
 use rocket_contrib::templates::Template;
 
 #[catch(404)]

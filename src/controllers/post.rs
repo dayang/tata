@@ -1,44 +1,46 @@
-use crate::DbConn;
-use rocket_contrib::templates::Template;
-use rocket_contrib::json::{Json, JsonValue};
-use rocket::http::{Status, Cookies, Cookie};
 use crate::service::{
-    post as post_service,
+    category as category_service, comment as comment_service, get_dict_value, post as post_service,
     tag as tag_service,
-    category as category_service,
-    comment as comment_service,
-    get_dict_value,
 };
+use crate::DbConn;
+use rocket::http::{Cookie, Cookies, Status};
+use rocket_contrib::json::{Json, JsonValue};
+use rocket_contrib::templates::Template;
 
+use super::{JsonErr, ViewData};
 use crate::consts::*;
 use crate::dto::comment::CommentRequest;
-use super::{ViewData, JsonErr};
 
 #[get("/")]
-pub fn index(conn: DbConn) -> Result<Template, Status>{
+pub fn index(conn: DbConn) -> Result<Template, Status> {
     get_posts(None, conn)
 }
-
 
 #[get("/?<page>")]
 pub fn get_posts(page: Option<i32>, conn: DbConn) -> Result<Template, Status> {
     let mut view_data = ViewData::default();
-    view_data.add_viewbag("title", get_dict_value(DICT_INDEX_TITLE.into(), &conn).unwrap_or_else(|| "Yong Hua' blog".into()));
+    view_data.add_viewbag(
+        "title",
+        get_dict_value(DICT_INDEX_TITLE.into(), &conn).unwrap_or_else(|| "Yong Hua' blog".into()),
+    );
     view_data.add_viewbag("list_title", "所有文章");
     view_data.load_posts_page_meta_data(&conn);
-    match post_service::get_posts_list(&conn, page.unwrap_or(1), None, None) {
+    match post_service::get_posts_list(&conn, page.unwrap_or(1), None, None, None) {
         Ok(post_list_info) => {
             view_data.add("post_list_info", post_list_info);
             //println!("{}", view_data.clone().to_json().to_string());
             Ok(Template::render("index", view_data.to_json()))
-        },
-        Err(_) => Err(Status::InternalServerError)
+        }
+        Err(_) => Err(Status::InternalServerError),
     }
 }
 
 #[get("/post/<url>")]
 pub fn get_post(mut cookies: Cookies, url: String, conn: DbConn) -> Result<Template, Status> {
-    let new_hit = cookies.get_private("hit").and_then(|cookie| Some(cookie.value() != &url)).unwrap_or(true);
+    let new_hit = cookies
+        .get_private("hit")
+        .and_then(|cookie| Some(cookie.value() != &url))
+        .unwrap_or(true);
 
     let mut view_data = ViewData::default();
     view_data.load_posts_page_meta_data(&conn);
@@ -55,14 +57,17 @@ pub fn get_post(mut cookies: Cookies, url: String, conn: DbConn) -> Result<Templ
             }
 
             Ok(Template::render("post", view_data.to_json()))
-        },
-        Err(_) => Err(Status::NotFound)
+        }
+        Err(_) => Err(Status::NotFound),
     }
 }
 
 #[put("/post/<url>/like")]
 pub fn like_post(mut cookies: Cookies, url: String, conn: DbConn) -> JsonValue {
-    let have_liked = cookies.get_private("like").and_then(|cookie| Some(cookie.value() == &url)).unwrap_or(false);
+    let have_liked = cookies
+        .get_private("like")
+        .and_then(|cookie| Some(cookie.value() == &url))
+        .unwrap_or(false);
     if have_liked {
         json!(JsonErr::Err("你已经点过赞啦".into()))
     } else {
@@ -76,39 +81,58 @@ pub fn like_post(mut cookies: Cookies, url: String, conn: DbConn) -> JsonValue {
 }
 
 #[post("/post/<url>/comment", format = "json", data = "<comment>")]
-pub fn comment_post(mut cookies: Cookies, url: String, conn: DbConn, comment: Json<CommentRequest>) -> JsonValue {
-    let err_captcha = cookies.get_private("code").and_then(|cookie| Some(cookie.value().to_lowercase() != (&comment.0.captcha).to_lowercase())).unwrap_or(false);
+pub fn comment_post(
+    mut cookies: Cookies,
+    url: String,
+    conn: DbConn,
+    comment: Json<CommentRequest>,
+) -> JsonValue {
+    let err_captcha = cookies
+        .get_private("code")
+        .and_then(|cookie| {
+            Some(cookie.value().to_lowercase() != (&comment.0.captcha).to_lowercase())
+        })
+        .unwrap_or(false);
     if err_captcha {
         return json!(JsonErr::Err("验证码不正确呦~".into()));
     }
 
     match post_service::get_post_by_url(&conn, url) {
-        Ok(post_find) => json!(comment_service::new_comment(&conn, comment.0, post_find.id, COMMENT_FOR_POST)),
-        Err(_) => json!(JsonErr::Err("post not found".into()))
+        Ok(post_find) => json!(comment_service::new_comment(
+            &conn,
+            comment.0,
+            post_find.id,
+            COMMENT_FOR_POST
+        )),
+        Err(_) => json!(JsonErr::Err("post not found".into())),
     }
 }
 
 #[get("/post/<url>/comments?<page>")]
 pub fn get_post_comments(url: String, page: Option<i32>, conn: DbConn) -> JsonValue {
     match post_service::get_post_by_url(&conn, url) {
-        Ok(post_find) => json!(comment_service::get_paged_comment(&conn, COMMENT_FOR_POST, page.unwrap_or(1), post_find.id)),
-        Err(_) => json!(JsonErr::Err("post not found".to_string()))
+        Ok(post_find) => json!(comment_service::get_paged_comment(
+            &conn,
+            COMMENT_FOR_POST,
+            page.unwrap_or(1),
+            post_find.id
+        )),
+        Err(_) => json!(JsonErr::Err("post not found".to_string())),
     }
 }
 
 #[get("/tags")]
-pub fn tag_list(conn: DbConn)  -> Result<Template, Status> {
+pub fn tag_list(conn: DbConn) -> Result<Template, Status> {
     let mut view_data = ViewData::default();
     view_data.add_viewbag("title", "所有标签");
     view_data.add_viewbag("list_title", "所有标签");
     view_data.load_posts_page_meta_data(&conn);
-    
     match tag_service::all_tags(&conn) {
         Ok(all_tags) => {
             view_data.add("tags", all_tags);
             Ok(Template::render("tags", view_data.to_json()))
-        },
-        Err(_) => Err(Status::InternalServerError)
+        }
+        Err(_) => Err(Status::InternalServerError),
     }
 }
 
@@ -119,41 +143,72 @@ pub fn get_posts_by_tag(tag: String, page: Option<i32>, conn: DbConn) -> Result<
     view_data.add_viewbag("title", tag_find.display_text.to_string());
     view_data.add_viewbag("list_title", tag_find.display_text.to_string());
     view_data.load_posts_page_meta_data(&conn);
-    
-    match post_service::get_posts_list(&conn, page.unwrap_or(1), None, Some(tag_find.id)) {
+    match post_service::get_posts_list(&conn, page.unwrap_or(1), None, Some(tag_find.id), None) {
         Ok(post_list_info) => {
             view_data.add("post_list_info", post_list_info);
             Ok(Template::render("index", view_data.to_json()))
-        },
-        Err(_) => Err(Status::InternalServerError)
+        }
+        Err(_) => Err(Status::InternalServerError),
     }
 }
 
 #[get("/category/<category>?<page>")]
-pub fn get_posts_by_category(category: String, page: Option<i32>, conn: DbConn) -> Result<Template, Status> {
-    let category_find = category_service::get_category_by_name(&conn, category).map_err(|_| Status::NotFound)?;
+pub fn get_posts_by_category(
+    category: String,
+    page: Option<i32>,
+    conn: DbConn,
+) -> Result<Template, Status> {
+    let category_find =
+        category_service::get_category_by_name(&conn, category).map_err(|_| Status::NotFound)?;
     let mut view_data = ViewData::default();
     view_data.add_viewbag("title", category_find.display_text.to_string());
     view_data.add_viewbag("list_title", category_find.display_text.to_string());
     view_data.load_posts_page_meta_data(&conn);
-    
-    match post_service::get_posts_list(&conn, page.unwrap_or(1), Some(category_find.id), None) {
+
+    match post_service::get_posts_list(&conn, page.unwrap_or(1), Some(category_find.id), None, None)
+    {
         Ok(post_list_info) => {
             view_data.add("post_list_info", post_list_info);
             Ok(Template::render("index", view_data.to_json()))
-        },
-        Err(_) => Err(Status::InternalServerError)
+        }
+        Err(_) => Err(Status::InternalServerError),
     }
 }
 
 #[get("/archive")]
-pub fn archive() {
+pub fn archive(conn: DbConn) -> Result<Template, Status> {
+    let mut view_data = ViewData::default();
+    view_data.add_viewbag("title", "归档");
+    view_data.add_viewbag("list_title", "归档");
+    view_data.load_posts_page_meta_data(&conn);
 
+    match post_service::archive_posts(&conn) {
+        Ok(archive) => {
+            view_data.add("archive", archive);
+            Ok(Template::render("archive", view_data.to_json()))
+        }
+        Err(_) => Err(Status::InternalServerError),
+    }
 }
 
-#[get("/archive/<year>/<month>")]
-pub fn archive_month(year: String, month: String, conn: DbConn) {
-    
+#[get("/archive/<year>/<month>?<page>")]
+pub fn archive_month(
+    year: i32,
+    month: i32,
+    page: Option<i32>,
+    conn: DbConn,
+) -> Result<Template, Status> {
+    let mut view_data = ViewData::default();
+    view_data.add_viewbag("title", format!("{:04}年{:02}月", year, month));
+    view_data.add_viewbag("list_title", format!("{}年{}月", year, month));
+    view_data.load_posts_page_meta_data(&conn);
+    match post_service::get_posts_list(&conn, page.unwrap_or(1), None, None, Some((year, month))) {
+        Ok(post_list_info) => {
+            view_data.add("post_list_info", post_list_info);
+            Ok(Template::render("index", view_data.to_json()))
+        }
+        Err(_) => Err(Status::InternalServerError),
+    }
 }
 
 pub fn routes() -> Vec<rocket::Route> {

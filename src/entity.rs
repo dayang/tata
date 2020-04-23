@@ -1,5 +1,5 @@
-use crate::sqltypes::*;
 use crate::schema::*;
+use crate::sqltypes::*;
 
 #[derive(Identifiable, Queryable, Serialize, AsChangeset)]
 #[table_name = "book"]
@@ -42,7 +42,7 @@ pub struct Post {
     pub create_time: String,
     #[diesel(deserialize_as = "FormatedTime<HHMMDDHMTime>")]
     pub edit_time: String,
-    pub category_id: i32
+    pub category_id: i32,
 }
 
 #[derive(Identifiable, Queryable, Serialize, Associations, AsChangeset)]
@@ -68,7 +68,7 @@ pub struct Comment {
 
 #[derive(Identifiable, Queryable, Serialize, AsChangeset)]
 #[table_name = "dict"]
-#[primary_key (d_key)]
+#[primary_key(d_key)]
 pub struct Dict {
     pub d_key: String,
     pub d_value: String,

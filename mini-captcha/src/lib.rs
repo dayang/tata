@@ -1,18 +1,16 @@
 use image::DynamicImage::ImageRgb8;
-use image::{Rgb, RgbImage, ImageFormat};
+use image::{ImageFormat, Rgb, RgbImage};
 use imageproc::drawing::{
-    draw_text_mut, 
-    draw_filled_rect_mut, 
-    draw_line_segment_mut, 
-    draw_cubic_bezier_curve};
+    draw_cubic_bezier_curve, draw_filled_rect_mut, draw_line_segment_mut, draw_text_mut,
+};
 use imageproc::noise::gaussian_noise_mut;
 use imageproc::rect::Rect;
 use rusttype::{FontCollection, Scale};
 
 use rand::{thread_rng, Rng};
-use std::path::Path;
 use std::fs::File;
 use std::io::prelude::*;
+use std::path::Path;
 
 pub struct Captcha {
     width: u32,
@@ -23,7 +21,7 @@ pub struct Captcha {
 pub struct CaptchaResult {
     pub captcha_code: String,
     /// captcha image buffer with .png format
-    pub img_buffer: Vec<u8>
+    pub img_buffer: Vec<u8>,
 }
 
 impl CaptchaResult {
@@ -35,17 +33,16 @@ impl CaptchaResult {
 }
 
 impl Captcha {
-    fn coerce_font_size(&self) -> f32
-    {
+    fn coerce_font_size(&self) -> f32 {
         std::cmp::min(self.height, self.width / self.chars) as f32
     }
 
-    pub fn draw(&self) -> CaptchaResult{
+    pub fn draw(&self) -> CaptchaResult {
         let font = Vec::from(include_bytes!("DejaVuSans.ttf") as &[u8]);
         let font = FontCollection::from_bytes(font)
-        .unwrap()
-        .into_font()
-        .unwrap();
+            .unwrap()
+            .into_font()
+            .unwrap();
 
         let mut rng = thread_rng();
         let mut image = RgbImage::new(self.width, self.height);
@@ -54,30 +51,39 @@ impl Captcha {
         let light_green = rng.gen_range(160, 210);
         let light_blue = rng.gen_range(160, 210);
 
-        draw_filled_rect_mut(&mut image, Rect::at(0, 0).of_size(self.width, self.height), Rgb([light_red, light_green, light_blue]));
+        draw_filled_rect_mut(
+            &mut image,
+            Rect::at(0, 0).of_size(self.width, self.height),
+            Rgb([light_red, light_green, light_blue]),
+        );
 
         let mut captcha_code = String::new();
-        for _ in 0..self.chars{
+        for _ in 0..self.chars {
             captcha_code.push(match rng.gen_range(0, 3) {
                 0 => (rng.gen_range(0, 10) + b'0') as char,
                 1 => (rng.gen_range(0, 26) + b'a') as char,
                 2 => (rng.gen_range(0, 26) + b'A') as char,
-                _ => unreachable!()
+                _ => unreachable!(),
             });
         }
-        
+
         let font_size = self.coerce_font_size();
-        
+
         let scale = Scale {
             x: font_size,
             y: font_size,
         };
 
         for (i, ch) in captcha_code.chars().enumerate() {
-            let deep_font_color = Rgb([rng.gen_range(0, 140), rng.gen_range(0, 140), rng.gen_range(0, 140)]);
+            let deep_font_color = Rgb([
+                rng.gen_range(0, 140),
+                rng.gen_range(0, 140),
+                rng.gen_range(0, 140),
+            ]);
 
             let bubble_px = font_size / 6.0;
-            let mut x = i as f32 * font_size + rng.gen_range((bubble_px * -1.0) as f64, bubble_px as f64 ) as f32;
+            let mut x = i as f32 * font_size
+                + rng.gen_range((bubble_px * -1.0) as f64, bubble_px as f64) as f32;
             if x < 0.0 {
                 x = 2.0;
             }
@@ -98,45 +104,73 @@ impl Captcha {
             );
         }
 
-        for _ in 0..rng.gen_range(1,3){
-            let deep_line_color = Rgb([rng.gen_range(0, 140), rng.gen_range(0, 140), rng.gen_range(0, 140)]);
+        for _ in 0..rng.gen_range(1, 3) {
+            let deep_line_color = Rgb([
+                rng.gen_range(0, 140),
+                rng.gen_range(0, 140),
+                rng.gen_range(0, 140),
+            ]);
 
-            let start_point = (rng.gen_range(0, self.width) as f32, rng.gen_range(0, self.height) as f32);
-            let end_point = (rng.gen_range(0, self.width) as f32, rng.gen_range(0, self.height) as f32);
+            let start_point = (
+                rng.gen_range(0, self.width) as f32,
+                rng.gen_range(0, self.height) as f32,
+            );
+            let end_point = (
+                rng.gen_range(0, self.width) as f32,
+                rng.gen_range(0, self.height) as f32,
+            );
             draw_line_segment_mut(&mut image, start_point, end_point, deep_line_color);
         }
 
-        for _ in 0..rng.gen_range(1,2) {
-            let deep_line_color = Rgb([rng.gen_range(0, 140), rng.gen_range(0, 140), rng.gen_range(0, 140)]);
+        for _ in 0..rng.gen_range(1, 2) {
+            let deep_line_color = Rgb([
+                rng.gen_range(0, 140),
+                rng.gen_range(0, 140),
+                rng.gen_range(0, 140),
+            ]);
 
-            let start_point = (rng.gen_range(0, self.width) as f32, rng.gen_range(0, self.height) as f32);
-            let end_point = (rng.gen_range(0, self.width) as f32, rng.gen_range(0, self.height) as f32);
-            let bezier_point1 = (rng.gen_range(0, self.width) as f32, rng.gen_range(0, self.height) as f32);
-            let bezier_point2 = (rng.gen_range(0, self.width) as f32, rng.gen_range(0, self.height) as f32);
+            let start_point = (
+                rng.gen_range(0, self.width) as f32,
+                rng.gen_range(0, self.height) as f32,
+            );
+            let end_point = (
+                rng.gen_range(0, self.width) as f32,
+                rng.gen_range(0, self.height) as f32,
+            );
+            let bezier_point1 = (
+                rng.gen_range(0, self.width) as f32,
+                rng.gen_range(0, self.height) as f32,
+            );
+            let bezier_point2 = (
+                rng.gen_range(0, self.width) as f32,
+                rng.gen_range(0, self.height) as f32,
+            );
 
-            image = draw_cubic_bezier_curve(&image, start_point, end_point, bezier_point1, bezier_point2, deep_line_color);
+            image = draw_cubic_bezier_curve(
+                &image,
+                start_point,
+                end_point,
+                bezier_point1,
+                bezier_point2,
+                deep_line_color,
+            );
         }
 
-        gaussian_noise_mut(
-            &mut image,
-            30.0,
-            15.0,
-            10
-        );
+        gaussian_noise_mut(&mut image, 30.0, 15.0, 10);
 
         let mut img_buffer = vec![];
         let _ = ImageRgb8(image).write_to(&mut img_buffer, ImageFormat::Png);
 
         CaptchaResult {
             captcha_code: captcha_code,
-            img_buffer: img_buffer
+            img_buffer: img_buffer,
         }
     }
 }
 
 /// CaptchaBuilder
 pub struct CaptchaBuilder {
-    inner_captcha: Captcha
+    inner_captcha: Captcha,
 }
 
 impl CaptchaBuilder {
@@ -146,7 +180,7 @@ impl CaptchaBuilder {
                 width: 50,
                 height: 50,
                 chars: 4,
-            }
+            },
         }
     }
 
@@ -176,14 +210,14 @@ mod tests {
     #[test]
     fn it_works() {
         let captcha = CaptchaBuilder::default()
-        .width(100)
-        .height(25)
-        .chars(4)
-        .build();
+            .width(100)
+            .height(25)
+            .chars(4)
+            .build();
 
         match captcha.draw().save_png("captcha.png") {
             Err(s) => println!("{}", &s),
-            _ => ()
+            _ => (),
         }
     }
 }

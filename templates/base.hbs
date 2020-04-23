@@ -297,7 +297,7 @@
         <ul class="tata-nav-side">
             <li class="nav-item"><a href="/">首页</a></li>
             <li class="nav-item"><a href="/posts/tags">标签</a></li>
-            <li class="nav-item"><a href="/archive">归档</a></li>
+            <li class="nav-item"><a href="/posts/archive">归档</a></li>
             <li class="nav-item"><a href="/about">关于</a></li>
         </ul>
     </div>
@@ -331,7 +331,7 @@
                         <ul class="layui-inline tata-nav">
                             <li class="nav-item"><a href="/">首页</a></li>
                             <li class="nav-item"><a href="/posts/tags">标签</a></li>
-                            <li class="nav-item"><a href="/archive">归档</a></li>
+                            <li class="nav-item"><a href="/posts/archive">归档</a></li>
                             <li class="nav-item"><a href="/about">关于</a></li>
                         </ul>
                     </div>
@@ -417,8 +417,11 @@
 <script src="/static/dist/iconfont/iconfont.js"></script>
 <script src="https://www.layuicdn.com/layui-v2.5.6/layui.js"></script>
 <script>
-    layui.use(['jquery'], function(){
+    layui.use(['jquery','util'], function(){
         var $ = layui.jquery;
+        var util = layui.util;
+
+        util.fixbar();
         
         $('.side-open-close').each(function(i, e){
             $(e).click(function(){
@@ -432,14 +435,14 @@
 
         $('.post-categorys a').each(function(i, e) {
             var a = $(e);
-            if(a.attr('href') === location.pathname) {
+            if(location.pathname == a.attr('href')) {
                 a.addClass('active');
             }
         });
 
         $('.tata-nav a').each(function(i, e) {
             var a = $(e);
-            if(a.attr('href') === location.pathname) {
+            if(location.pathname == a.attr('href')) {
                 a.addClass('active');
             }
         });

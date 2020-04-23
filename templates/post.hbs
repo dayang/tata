@@ -1,16 +1,15 @@
 {{#*inline "header-block"}}
-<link rel="stylesheet"
-    href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/vs.min.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/vs.min.css">
 {{#if post.allow_comment}}
 <link href="https://cdn.bootcss.com/simplemde/1.11.2/simplemde.min.css" rel="stylesheet">
 {{/if}}
 <style>
-    #main-content ul li{
+    #main-content ul li {
         list-style: disc;
         margin-left: 20px;
     }
 
-    #main-content ol li{
+    #main-content ol li {
         list-style: decimal;
         margin-left: 20px;
     }
@@ -29,12 +28,12 @@
         transition: all .6s;
     }
 
-    #article-body{
+    #article-body {
         padding: 0 10px;
         margin-bottom: 40px;
     }
 
-    #article-body :not(code){
+    #article-body :not(code) {
         letter-spacing: .6px;
     }
 
@@ -48,36 +47,42 @@
         color: #34495e;
     }
 
-    #article-body h1{
+    #article-body h1 {
         font-size: 1.5rem;
     }
 
-    #article-body h2{
+    #article-body h2 {
         font-size: 1.4rem;
     }
 
-    #article-body h3{
+    #article-body h3 {
         font-size: 1.3rem;
     }
 
-    #article-body h4{
+    #article-body h4 {
         font-size: 1.2rem;
     }
 
-    #article-body h5{
+    #article-body h5 {
         font-size: 1.1rem;
     }
 
-    #article-body h6{
+    #article-body h6 {
         font-size: 1.05rem;
     }
 
-    #article-body p{
-        {{!-- text-indent: 2rem; --}}
+    #article-body p {
+            {
+                {
+                 !-- text-indent: 2rem;
+                --
+            }
+        }
+
         color: #34495e;
         font-size: 1rem;
         line-height: 1.8em;
-        margin: 12px 0!important;
+        margin: 12px 0 !important;
     }
 
     #article-body img {
@@ -117,8 +122,8 @@
         color: #2474b5;
     }
 
-    .copyright-item a{
-        color:#2474b5;
+    .copyright-item a {
+        color: #2474b5;
     }
 
     .hljs {
@@ -141,8 +146,8 @@
         border-radius: 2px;
     }
 
-    #toggle-left-side:hover{
-        color:#2474b5;
+    #toggle-left-side:hover {
+        color: #2474b5;
         border-color: #2474b5;
     }
 
@@ -156,33 +161,39 @@
         border-radius: 2px;
     }
 
-    .article-category{
+    .article-category {
         display: inline-block;
 
     }
 
-    .like-area div{
+    .like-area div {
         text-align: center;
     }
 
-    #post-likes{
+    #post-likes {
         line-height: 1.7rem;
         font-size: 1.1rem;
         vertical-align: middle;
     }
 
-    #like-btn{
+    #like-btn {
         vertical-align: middle;
         cursor: pointer;
     }
 
-    .comment-card{
+    .comment-card {
         box-shadow: none;
         border: 1px solid #e6e6e6;
     }
 
-    .CodeMirror, .CodeMirror-scroll {
+    .CodeMirror,
+    .CodeMirror-scroll {
         min-height: 100px;
+    }
+
+    #post-qrcode svg {
+        width: 200px;
+        height: 200px;
     }
 </style>
 {{/inline}}
@@ -194,21 +205,31 @@
 {{#*inline "content"}}
 <article>
     <header>
-        <h1 class="article-title"><i id="toggle-left-side" class="layui-hide-xs layui-hide-sm layui-show-md-inline-block layui-show-lg-inline-block layui-icon layui-icon-prev"></i> {{ post.title }}</h1>
+        <h1 class="article-title">
+            <i id="toggle-left-side"
+                class="layui-hide-xs layui-hide-sm layui-show-md-inline-block layui-show-lg-inline-block layui-icon layui-icon-prev"></i>
+            {{ post.title }}
+
+            <svg id="post-qrcode-btn" class="icon-symbol layui-hide-xs" title="文章二维码" aria-hidden="true"
+                style="float:right; margin-right: 10px; margin-top: 10px; cursor: pointer;">
+                <use xlink:href="#icon-A"></use>
+            </svg>
+        </h1>
         <hr class="article-header-hr">
         <div class="article-publish-info">
-            <time>{{ post.create_time }}</time> / 
+            <time>{{ post.create_time }}</time> /
             <span class="">阅读 {{ post.reads }}</span>
         </div>
         <div>
-            <a href="/posts/category/{{post.category.name}}" class="article-category layui-badge layui-bg-blue">{{ post.category.display_text }}</a>
+            <a href="/posts/category/{{post.category.name}}"
+                class="article-category layui-badge layui-bg-blue">{{ post.category.display_text }}</a>
             {{#each post.tags}}
             <a class="article-tag layui-badge-rim" href="/posts/tag/{{name}}">{{display_text}}</a>
             {{/each}}
         </div>
         <hr class="article-header-hr">
     </header>
-    
+
     <div id="article-body">{{{ post.html_content }}}</div>
     <div class="like-area">
         <div>
@@ -241,39 +262,46 @@
                     <div class="layui-form-item">
                         <div class="layui-inline">
                             <div class="layui-input-inline" style="width: 150px;">
-                                <input type="text" name="commentor-name" placeholder="姓名" required lay-verify="required" autocomplete="off" class="layui-input">
+                                <input type="text" name="commentor-name" placeholder="姓名" required lay-verify="required"
+                                    autocomplete="off" class="layui-input">
                             </div>
                             <div class="layui-input-inline" style="width: 200px;">
-                                <input type="text" name="commentor-email" placeholder="邮箱" required lay-verify="required|email" autocomplete="off" class="layui-input">
+                                <input type="text" name="commentor-email" placeholder="邮箱" required
+                                    lay-verify="required|email" autocomplete="off" class="layui-input">
                             </div>
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <textarea name="comment-content" id="comment-editor" placeholder="请输入评论内容（支持 markdown 格式）" class="layui-textarea"></textarea>
+                        <textarea name="comment-content" id="comment-editor" placeholder="请输入评论内容（支持 markdown 格式）"
+                            class="layui-textarea"></textarea>
                     </div>
-                    
+
                     <div class="layui-form-item">
                         <div class="layui-inline">
-                            <label class="layui-form-label" style="padding: 0; width: 100px; height: 38px; line-height: 38px; text-align:center;">
-                                <img src="/captcha/get" id="captcha" alt="验证码" style="vertical-align: middle; cursor: pointer;">
+                            <label class="layui-form-label"
+                                style="padding: 0; width: 100px; height: 38px; line-height: 38px; text-align:center;">
+                                <img src="/captcha/get" id="captcha" alt="验证码"
+                                    style="vertical-align: middle; cursor: pointer; border: 1px solid #ccc;">
                             </label>
                             <div class="layui-input-inline" style="width: 100px;">
-                                <input type="text" name="captcha-code" placeholder="验证码" required lay-verify="required" autocomplete="off" class="layui-input">
+                                <input type="text" name="captcha-code" placeholder="验证码" required lay-verify="required"
+                                    autocomplete="off" class="layui-input">
                             </div>
                             <div class="layui-input-inline">
-                                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="commentForm">提交</button>
+                                <button class="layui-btn layui-btn-normal" lay-submit
+                                    lay-filter="commentForm">提交</button>
                             </div>
                         </div>
-                    </div>    
+                    </div>
                 </form>
                 <hr>
                 <div id="post-comments">
-                    
+
                 </div>
             </div>
         </div>
     </section>
-    {{else}} 
+    {{else}}
     <section class="post-comments-area">
         <p style="color: #999; text-align: center;">评论已关闭</p>
     </section>
@@ -284,8 +312,10 @@
 {{#*inline "script-block"}}
 {{#if post.allow_comment }}
 <script src="https://cdn.bootcss.com/simplemde/1.11.2/simplemde.min.js"></script>
+<script src="https://cdn.bootcss.com/marked/0.8.2/marked.min.js"></script>
 {{/if}}
 <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script id="comment-template" type="text/template">
     <%# if(d.total_num > 0) { %>
         <%# layui.each(d.page_items, function(i, item){ %>
@@ -308,21 +338,21 @@
     <%# }else{ %>
     <p style="color: #999; text-align: center;">暂时还没有评论</p>
     <%# } %>
-    <%# if(d.total_pages > 0) { %>
+    <%# if(d.total_pages > 1) { %>
     <div id="comment-pagination" style="text-align: center"></div>
     <%# } %>
 </script>
 <script>
     hljs.initHighlighting();
 
-    layui.use(['jquery','laytpl','layer', 'laypage','form'], function(){
+    layui.use(['jquery', 'laytpl', 'layer', 'laypage', 'form'], function () {
         var $ = layui.jquery;
         var laytpl = layui.laytpl;
         var layer = layui.layer;
         var laypage = layui.laypage;
         var form = layui.form;
 
-        $('#captcha').click(function(){
+        $('#captcha').click(function () {
             $(this).attr("src", "/captcha/get?k=" + Math.random());
         })
 
@@ -344,7 +374,7 @@
             }
         }
 
-        $('#toggle-left-side').click(function(){
+        $('#toggle-left-side').click(function () {
             toggle_left_side();
         });
 
@@ -353,13 +383,13 @@
         var speed = 5;
         var toggle = $('#toggle-left-side');
         var wobble = 0;
-        function animate(time){
+        function animate(time) {
             var step = Math.min(time - start, 100.0) / 1000.0;
-            while(step > 0) {
+            while (step > 0) {
                 var this_step = Math.min(step, 0.05);
                 wobble += this_step * speed;
                 left = Math.sin(wobble) * max_move;
-                toggle.css('left',left + 'px');
+                toggle.css('left', left + 'px');
                 step -= this_step;
             }
             start = time;
@@ -368,12 +398,12 @@
 
         window.requestAnimationFrame(animate);
 
-        $('#like-btn').click(function(){
+        $('#like-btn').click(function () {
             // send like request
-            $.ajax("/posts/post/{{post.url}}/like",{
+            $.ajax("/posts/post/{{post.url}}/like", {
                 method: "put",
                 dataType: "json",
-                success: function(data) {
+                success: function (data) {
                     if (data.Ok) {
                         var n = $("#post-likes").html();
                         $('#post-likes').html(Number(n) + 1);
@@ -385,12 +415,26 @@
                     });
                 }
             })
-
-            
         });
 
-        {{#if post.allow_comment }}
-        var editor = new SimpleMDE({ 
+        $('#post-qrcode-btn').click(function () {
+            layer.open({
+                type: 1,
+                shadeClose: true,
+                offset: "100px",
+                title: "文章二维码",
+                content: '<div id="post-qrcode" style="text-align:center;"></div>',
+                success: function (layero, index) {
+                    var qr = qrcode(4, 'M');
+                    qr.addData(window.location.href, 'Byte');
+                    qr.make();
+                    $('#post-qrcode').html(qr.createSvgTag());
+                }
+            });
+        })
+
+        { {#if post.allow_comment } }
+        var editor = new SimpleMDE({
             element: document.getElementById("comment-editor"),
             spellChecker: false,
             hideIcons: ['image'],
@@ -398,28 +442,26 @@
             status: false,
         });
 
-        form.on('submit(commentForm)', function(data){
-            if (editor.value() === ''){
-                layer.msg('评论内容不能为空', {icon: 5}); 
+        form.on('submit(commentForm)', function (data) {
+            if (editor.value() === '') {
+                layer.msg('评论内容不能为空', { icon: 5 });
                 return false;
             }
             var new_comment = JSON.stringify({
-                "url" : "{{ post.url }}",
+                "url": "{{ post.url }}",
                 "user_name": data.field["commentor-name"],
                 "email": data.field["commentor-email"],
                 "raw_content": editor.value(),
-                // todo: 获取html内容
-                "html_content": editor.value(),
+                "html_content": marked(editor.value()),
                 "captcha": data.field["captcha-code"]
             });
-            
+
             $.ajax('/posts/post/{{post.url}}/comment', {
                 method: 'post',
                 dataType: 'json',
                 contentType: 'application/json',
                 data: new_comment,
-                success: function(data) {
-                    console.log(data)
+                success: function (data) {
                     if (data.Ok) {
                         layer.msg("评论成功");
                         document.getElementById("comment-form").reset();
@@ -444,9 +486,9 @@
             $.ajax("/posts/post/{{post.url}}/comments?page=" + page, {
                 method: "get",
                 dataType: "json",
-                success: function(data) {
+                success: function (data) {
                     if (data.Ok) {
-                        laytpl($('#comment-template').html()).render(data.Ok, function(html) {
+                        laytpl($('#comment-template').html()).render(data.Ok, function (html) {
                             $("#post-comments").html(html);
 
                             laypage.render({
@@ -457,9 +499,9 @@
                                 curr: data.Ok.curr_page,
                                 prev: 'prev',
                                 next: 'next',
-                                jump: function(obj, first){
+                                jump: function (obj, first) {
                                     // doing nothing when init call
-                                    if(!first){
+                                    if (!first) {
                                         load_comments(obj.curr);
                                     }
                                 }
@@ -472,8 +514,10 @@
 
         load_comments(1);
 
-        {{/if}}
-    });
+        {
+            {
+                /if}}
+            });
 </script>
 {{/inline}}
 

@@ -1,35 +1,36 @@
 // pub mod admin;
-pub mod post;
 pub mod captcha;
+pub mod category;
+pub mod comment;
+pub mod friendlink;
+pub mod post;
+pub mod tag;
 
+use crate::consts::*;
+use crate::service::get_dict_value;
+use crate::service::{category as category_service, friendlinks as friendlink_service};
 use crate::DbConn;
 use diesel::prelude::*;
-use rocket_contrib::templates::Template;
-use rocket_contrib::json::JsonValue;
-use rocket::request::{self, Request, FromRequest, State};
 use rocket::outcome::IntoOutcome;
-use rocket::response::{Redirect};
-use serde_json::{Value as SerdeJsonValue, to_value};
+use rocket::request::{self, FromRequest, Request, State};
+use rocket::response::Redirect;
+use rocket_contrib::json::JsonValue;
+use rocket_contrib::templates::Template;
 use serde::Serialize;
+use serde_json::{to_value, Value as SerdeJsonValue};
 use std::collections::HashMap;
-use crate::service::{
-    category as category_service,
-    friendlinks as friendlink_service
-};
-use crate::service::get_dict_value;
-use crate::consts::*;
 
 type JsonErr = Result<(), String>;
 
 #[derive(Clone)]
-pub struct ViewData{
+pub struct ViewData {
     view_bag: HashMap<String, SerdeJsonValue>,
     data: HashMap<String, SerdeJsonValue>,
 }
 
-impl Default for ViewData{
+impl Default for ViewData {
     fn default() -> Self {
-        ViewData{
+        ViewData {
             view_bag: HashMap::new(),
             data: HashMap::new(),
         }
@@ -38,7 +39,8 @@ impl Default for ViewData{
 
 impl ViewData {
     pub fn add_viewbag<K: ToString, V: Serialize>(&mut self, key: K, value: V) {
-        self.view_bag.insert(key.to_string(), Self::json_value(value));
+        self.view_bag
+            .insert(key.to_string(), Self::json_value(value));
     }
 
     fn json_value<V: Serialize>(value: V) -> SerdeJsonValue {
@@ -61,19 +63,24 @@ impl ViewData {
 
     pub fn load_posts_page_meta_data(&mut self, conn: &SqliteConnection) {
         match category_service::all_categorys(conn) {
-            Ok(categorys) => {self.view_bag.insert("categorys".into(), Self::json_value(categorys));},
-            Err(_) => ()
+            Ok(categorys) => {
+                self.view_bag
+                    .insert("categorys".into(), Self::json_value(categorys));
+            }
+            Err(_) => (),
         };
 
-        get_dict_value(DICT_INDEX_QUOTE.into(), conn).into_iter().for_each(|v| {
-            self.view_bag.insert("index_quote".into(), Self::json_value(v));
-        });
+        get_dict_value(DICT_INDEX_QUOTE.into(), conn)
+            .into_iter()
+            .for_each(|v| {
+                self.view_bag
+                    .insert("index_quote".into(), Self::json_value(v));
+            });
     }
 }
 
-
 #[derive(FromForm)]
-pub struct Auth{
+pub struct Auth {
     #[form(field = "username")]
     pub admin: String,
     pub password: String,
@@ -82,7 +89,7 @@ pub struct Auth{
 pub struct User(bool);
 
 impl User {
-    pub fn is_admin(&self) -> bool{
+    pub fn is_admin(&self) -> bool {
         self.0
     }
 }
@@ -92,7 +99,8 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
 
     fn from_request(request: &'a Request<'r>) -> request::Outcome<User, ()> {
         let auth = request.guard::<State<Auth>>()?;
-        request.cookies()
+        request
+            .cookies()
             .get_private("auth")
             .and_then(|cookie| cookie.value().parse().ok())
             .and_then(|id: String| Some(User(auth.admin == id)))
@@ -109,7 +117,7 @@ pub fn about(conn: DbConn) -> Template {
 
     match friendlink_service::all_friendlinks(&conn) {
         Ok(links) => view_data.add("friend_links", links),
-        Err(_) => ()
+        Err(_) => (),
     };
 
     Template::render("about", view_data.to_json())

@@ -4,7 +4,7 @@ pub struct CommentListInfo {
     pub total_pages: i64,
     pub per_page: i32,
     pub curr_page: i32,
-    pub page_items: Vec<CommentListItem>
+    pub page_items: Vec<CommentListItem>,
 }
 
 impl Default for CommentListInfo {
@@ -14,7 +14,7 @@ impl Default for CommentListInfo {
             total_pages: 0,
             per_page: 0,
             curr_page: 0,
-            page_items: vec![]
+            page_items: vec![],
         }
     }
 }

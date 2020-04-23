@@ -1,0 +1,52 @@
+{{#*inline "title"}}
+{{ viewbag.title }}
+{{/inline}}
+
+{{#*inline "header-block"}}
+<style>
+.archive-item a{
+    display: inline-block;
+    width: 35px;
+    color: #222;
+}
+</style>
+{{/inline}}
+
+{{#*inline "content"}}
+<div class="layui-card">
+    <div class="layui-card-header">{{ viewbag.list_title }}</div>
+    <div class="layui-card-body">
+        <ul class="layui-timeline">
+            {{#each archive}}
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-icon-time layui-timeline-axis"></i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">{{ year }}</h3>
+                    <ul>
+                        {{#each months}}
+                        <li class="archive-item">
+                            <a href="/posts/archive/{{../year}}/{{month}}">{{ month }}月</a>
+                            <span class="layui-badge layui-bg-blue">{{ num }}</span>
+                        </li>
+                        {{/each}}
+                    </ul>
+                </div>
+            </li>
+             {{/each}}
+             <li class="layui-timeline-item">
+                <i class="layui-icon layui-icon-time layui-timeline-axis"></i>
+                <div class="layui-timeline-content layui-text">
+                <div class="layui-timeline-title">开始</div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div id="pagination"></div>
+</div>
+{{/inline}}
+
+{{#*inline "script-block"}}
+
+{{/inline}}
+
+{{~> base ~}}

@@ -5,7 +5,7 @@
 {{#*inline "header-block"}}
 <style>
     .about a{
-        color: cadetblue;
+        color: #01AAED;
     }
 
     .about-page{
@@ -14,11 +14,15 @@
 
     .friend-links a{
         display: inline-block;
-        margin: 4px 0;
+        margin-top: 6px;
     }
 
     .friend-links a:hover{
-        color:darkcyan;
+        color:#1E9FFF;
+    }
+
+    #apply-for-btn{
+        float: right;
     }
 </style>
 {{/inline}}
@@ -28,10 +32,10 @@
     <div class="about-page">
         {{{ about_page }}}
     </div>
-    <h3>
-        友情链接：
-    </h3>
-    <ul class="friend-links">
+
+    <blockquote class="layui-elem-quote layui-quote-nm">
+        <h3>友情链接：<button id="apply-for-btn" class="layui-btn layui-btn-xs layui-btn-normal">友链申请</button></h3>
+        <ul class="friend-links">
         {{#each friend_links}}
         <li>
             <svg class="icon-symbol" aria-hidden="true">
@@ -41,11 +45,74 @@
         </li>
         {{/each}}
     </ul>
+    </blockquote>
 </div>
 {{/inline}}
 
 {{#*inline "script-block"}}
+<script id="test" type="text/template">
+<form class="layui-form" action="" style="margin: 20px;">
+  <div class="layui-form-item">
+    <label class="layui-form-label">博客名称</label>
+    <div class="layui-input-block">
+      <input type="text" name="display_text" required  lay-verify="required" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">博客链接</label>
+    <div class="layui-input-block">
+      <input type="text" name="link" required  lay-verify="required|url" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">留言</label>
+    <div class="layui-input-block">
+        <textarea name="remark" lay-verify="required" placeholder="有什么想说的" class="layui-textarea"></textarea>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <div class="layui-input-block">
+      <button class="layui-btn layui-btn-normal layui-btn-sm" lay-submit lay-filter="applyFriendlinkForm">申请</button>
+    </div>
+  </div>
+</form>
+</script>
+<script>
+    layui.use(['jquery','layer', 'form'], function() {
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        var form = layui.form;
 
+        $('#apply-for-btn').click(function() {
+            layer.open({
+                type: 1,
+                title: "申请友链",
+                area: "400px",
+                offset: '100px',
+                content: $('#test').html(),
+                success: function(layero, index){
+                    form.on('submit(applyFriendlinkForm)', function(data){
+                        $.ajax('/friendlink/apply', {
+                            method: 'post',
+                            dataType: 'json',
+                            contentType: 'application/json',
+                            data: JSON.stringify(data.field),
+                            success: function(data) {
+                                if (data.Ok) {
+                                    layer.msg("申请成功，待博主确认哦~");
+                                    layer.close(index);
+                                } else {
+                                    layer.msg(data.Err);
+                                }
+                            }
+                        })
+                        return false;
+                    });
+                }
+            });
+        });
+    });
+</script>
 {{/inline}}
 
 {{~> base ~}}

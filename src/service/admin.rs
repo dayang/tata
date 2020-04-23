@@ -4,7 +4,6 @@
 // use diesel::{self, prelude::*, SqliteConnection, dsl::not};
 // use crate::dto::admin as dto;
 
-
 // pub fn get_admin_article_briefs(conn: &SqliteConnection) -> Vec<dto::GetArticleBriefDto> {
 //     let data = article_dsl::articles.inner_join(categorys_dsl::categorys.on(categorys_dsl::id.eq(article_dsl::category_id)))
 //         .load::<(models::Article, models::Category)>(conn).unwrap();

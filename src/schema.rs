@@ -144,15 +144,5 @@ joinable!(posttag -> post (post_id));
 joinable!(posttag -> tag (tag_id));
 
 allow_tables_to_appear_in_same_query!(
-    book,
-    category,
-    comment,
-    dict,
-    friendlink,
-    logininfo,
-    page,
-    post,
-    posttag,
-    tag,
-    user,
+    book, category, comment, dict, friendlink, logininfo, page, post, posttag, tag, user,
 );

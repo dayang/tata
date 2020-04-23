@@ -1,4 +1,4 @@
-use crate::entity::{Tag, Category};
+use crate::entity::{Category, Tag};
 
 #[derive(Serialize)]
 pub struct PostListInfo {
@@ -10,13 +10,13 @@ pub struct PostListInfo {
 }
 
 impl Default for PostListInfo {
-    fn default() -> Self{
-        PostListInfo{
+    fn default() -> Self {
+        PostListInfo {
             total_num: 0,
             total_pages: 0,
             per_page: 0,
             curr_page: 0,
-            page_items : vec![]
+            page_items: vec![],
         }
     }
 }
@@ -48,4 +48,16 @@ pub struct PostDetail {
     pub edit_time: String,
     pub tags: Vec<Tag>,
     pub category: Category,
+}
+
+#[derive(Serialize, Ord, PartialOrd, Eq, PartialEq)]
+pub struct PostYearArchive {
+    pub year: String,
+    pub months: Vec<PostMonthArchive>,
+}
+
+#[derive(Serialize, Ord, PartialOrd, Eq, PartialEq)]
+pub struct PostMonthArchive {
+    pub month: String,
+    pub num: i32,
 }

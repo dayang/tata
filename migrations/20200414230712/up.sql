@@ -94,7 +94,7 @@ CREATE TABLE posttag (
 );
 
 CREATE TABLE dict (
-    d_key VARCHAR(30) PRIMARY KEY NOT NULL UNIQUE,
+    d_key VARCHAR(50) PRIMARY KEY NOT NULL UNIQUE,
     d_value TEXT NOT NULL
 );
 
@@ -162,7 +162,7 @@ insert into friendlink values(1, "狼煞博客", "https://blog.wolfogre.com/", 1
 insert into friendlink values(2, "老增", "https://oldzeng.com/", 1, "老方的博客");
 insert into friendlink values(3, "一南向北", "https://blog.wongwongsu.com/", 1, "老王的博客");
 
-insert into comment (user_name, email, raw_content, html_content, show, foreign_id, comment_type)  values("guest", "guest@test.com","学到了！","学到了！",1,4,1);
-insert into comment (user_name, email, raw_content, html_content, show, foreign_id, comment_type, reply)  values("Alan", "guest@test.com","博主，这个怎么做到的？","博主，这个怎么做到的？",1,4,1,"哈哈，我也不知道呢");
+insert into comment (user_name, email, raw_content, html_content, show, foreign_id, comment_type, create_time, edit_time)  values("guest", "guest@test.com","学到了！","学到了！",1,4,1,"2019-12-20 11:00:23","2019-12-20 11:00:23");
+insert into comment (user_name, email, raw_content, html_content, show, foreign_id, comment_type, reply, create_time, edit_time)  values("Alan", "guest@test.com","博主，这个怎么做到的？","博主，这个怎么做到的？",1,4,1,"哈哈，我也不知道呢","2020-03-20 11:00:23","2020-03-20 11:00:23");
 insert into comment (user_name, email, raw_content, html_content, show, foreign_id, comment_type, reply)  values("Smith", "guest@test.com","I have learned a lot, thanks","I have learned a lot, thanks",1,4,1,"you are welcome");
 insert into comment (user_name, email, raw_content, html_content, show, foreign_id, comment_type, reply)  values("Smith", "guest@test.com","I have learned a lot, thanks","I have learned a lot, thanks",1,3,1,"you are welcome");

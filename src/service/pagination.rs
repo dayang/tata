@@ -1,8 +1,8 @@
 use diesel::prelude::*;
-use diesel::query_dsl::methods::LoadQuery;
 use diesel::query_builder::*;
-use diesel::sqlite::Sqlite;
+use diesel::query_dsl::methods::LoadQuery;
 use diesel::sql_types::BigInt;
+use diesel::sqlite::Sqlite;
 
 pub trait Paginate: Sized {
     fn paginate(self, page: i64) -> Paginated<Self>;

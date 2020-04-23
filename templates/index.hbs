@@ -88,7 +88,9 @@
         </div>
         {{/each}}
     </div>
+    {{#if (gt post_list_info.total_pages 1)}}
     <div id="pagination"></div>
+    {{/if}}
 </div>
 {{/inline}}
 

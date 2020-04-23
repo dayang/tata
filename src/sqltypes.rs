@@ -1,5 +1,5 @@
 use chrono::NaiveDateTime;
-use diesel::{Queryable, backend::Backend};
+use diesel::{backend::Backend, Queryable};
 
 pub struct FormatedTime<T>(T);
 
@@ -17,7 +17,7 @@ impl<DB, ST, T> Queryable<ST, DB> for FormatedTime<T>
 where
     DB: Backend,
     NaiveDateTime: Queryable<ST, DB>,
-    T: FromNaiveDateTime
+    T: FromNaiveDateTime,
 {
     type Row = <NaiveDateTime as Queryable<ST, DB>>::Row;
 
@@ -34,7 +34,7 @@ impl FromNaiveDateTime for HHMMDDDate {
     }
 }
 
-impl Into<String> for HHMMDDDate{
+impl Into<String> for HHMMDDDate {
     fn into(self) -> String {
         self.0
     }
@@ -48,7 +48,7 @@ impl FromNaiveDateTime for HHMMDDHMTime {
     }
 }
 
-impl Into<String> for HHMMDDHMTime{
+impl Into<String> for HHMMDDHMTime {
     fn into(self) -> String {
         self.0
     }
