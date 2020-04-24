@@ -1,0 +1,95 @@
+<div class="layuimini-main">
+
+    <div class="layui-form layuimini-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label required">标签名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" lay-verify="required" lay-reqtext="标签名称不能为空" value="{{{ tag.name }}}" class="layui-input">
+                <tip>url中显示的英文名称，不能重复</tip>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label required">显示名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="display_text" lay-verify="required" lay-reqtext="显示名称不能为空" value="{{{ tag.display_text }}}" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <textarea name="remark" class="layui-textarea" value="">{{{ tag.remark }}}</textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label required">权重</label>
+            <div class="layui-input-block">
+                <select name="weight" lay-verify="required">
+                    <option value=""></option>
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="saveBtn">确认保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['form', 'table'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            table = layui.table,
+            $ = layui.$;
+
+        $('select[name="weight"] option').each(function(i, option) {
+            if ($(option).attr("value") == "{{{ tag.weight }}}") {
+                $(option).attr("selected", "selected");
+            }
+        })
+
+        /**
+         * 初始化表单，要加上，不然刷新部分组件可能会不加载
+         */
+        form.render();
+
+        // 当前弹出层，防止ID被覆盖
+        var parentIndex = layer.index;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            $.ajax("/admin/tags/edit", {
+                method: "put",
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify({
+                    id: {{{ tag.id }}},
+                    name: data.field.name,
+                    display_text: data.field.display_text,
+                    remark: data.field.remark,
+                    weight: parseInt(data.field.weight)
+                }),
+                success: function(data) {
+                    if(data.Ok) {
+                        layer.msg("修改成功，刷新显示", {time: 1000 }, function () {
+                            layer.close(parentIndex);
+                        });
+                    } else {
+                        layer.msg(data.Err);
+                    }
+                }
+            });
+            return false;
+        });
+
+    });
+</script>

@@ -433,7 +433,7 @@
             });
         })
 
-        { {#if post.allow_comment } }
+        {{#if post.allow_comment }}
         var editor = new SimpleMDE({
             element: document.getElementById("comment-editor"),
             spellChecker: false,
@@ -514,10 +514,8 @@
 
         load_comments(1);
 
-        {
-            {
-                /if}}
-            });
+        {{/if}}
+ });
 </script>
 {{/inline}}
 

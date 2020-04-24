@@ -1,0 +1,72 @@
+<div class="layuimini-main">
+
+    <div class="layui-form layuimini-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label required">分类名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" lay-verify="required" lay-reqtext="分类名称不能为空" value="" class="layui-input">
+                <tip>url中显示的英文名称，不能重复</tip>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label required">显示名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="display_text" lay-verify="required" lay-reqtext="显示名称不能为空" value="" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <textarea name="remark" class="layui-textarea" value=""/>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="saveBtn">确认保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['form', 'table'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            table = layui.table,
+            $ = layui.$;
+
+        /**
+         * 初始化表单，要加上，不然刷新部分组件可能会不加载
+         */
+        form.render();
+
+        // 当前弹出层，防止ID被覆盖
+        var parentIndex = layer.index;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            $.ajax("/admin/categorys/add", {
+                method: "post",
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify({
+                    id: 0,
+                    name: data.field.name,
+                    display_text: data.field.display_text,
+                    remark: data.field.remark,
+                }),
+                success: function(data) {
+                    if(data.Ok) {
+                        layer.msg("添加成功，刷新显示", {time: 1000}, function () {
+                            layer.close(parentIndex);
+                        });
+                    } else {
+                        layer.msg(data.Err);
+                    }
+                }
+            });
+            return false;
+        });
+
+    });
+</script>

@@ -1,0 +1,121 @@
+<div class="layuimini-container layuimini-page-anim">
+    <div class="layuimini-main">
+        <script type="text/html" id="toolbarAdd">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm data-add-btn" lay-event="add"> 添加 </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+
+    </div>
+</div>
+
+<script>
+    layui.use(['form', 'table','miniPage','element'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table,
+            miniPage = layui.miniPage;
+
+        table.render({
+            elem: '#currentTableId',
+            url: '/admin/tags/api/all',
+            toolbar: '#toolbarAdd',
+            defaultToolbar: ['filter', 'exports', 'print'],
+            cols: [[
+                {field: 'id', width: 80, title: 'ID', sort: true},
+                {field: 'name', width: 120, title: '名称'},
+                {field: 'display_text', width: 150, title: '显示名称', sort: true},
+                {field: 'remark', minWidth: 150, title: '备注'},
+                {field: 'weight', title: '权重', width: 80},
+                {title: '操作', width: 160, toolbar: '#currentTableBar', fixed: "right", align: "center"}
+            ]],
+            parseData: function(res){
+                if(res.Ok) {
+                    return {
+                        "code": 0,
+                        "msg": "全部标签", //解析提示文本
+                        "count": res.Ok.length, //解析数据长度
+                        "data": res.Ok //解析数据列表
+                    };
+                } else {
+                    return {
+                        "code": 1,
+                        "msg": res.Err,
+                    }
+                }
+            },
+            page: false
+        });
+
+        /**
+         * toolbar事件监听
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'add') {   // 监听添加操作
+                var content = miniPage.getHrefContent('/admin/tags/add');
+                var openWH = miniPage.getOpenWidthHeight();
+
+                var index = layer.open({
+                    title: '添加标签',
+                    type: 1,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: [openWH[0] + 'px', openWH[1] + 'px'],
+                    offset: [openWH[2] + 'px', openWH[3] + 'px'],
+                    content: content,
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            }
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                var content = miniPage.getHrefContent('/admin/tags/edit/' + data.id);
+                var openWH = miniPage.getOpenWidthHeight();
+
+                var index = layer.open({
+                    title: '编辑标签',
+                    type: 1,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: [openWH[0] + 'px', openWH[1] + 'px'],
+                    offset: [openWH[2] + 'px', openWH[3] + 'px'],
+                    content: content,
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
+            } else if (obj.event === 'delete') {
+                layer.confirm('确定删除该标签？', function (index) {
+                    $.ajax("/admin/tags/delete/" + data.id, {
+                        method: "delete",
+                        dataType: "json",
+                        success: function(data) {
+                            if(data.Ok) {
+                                layer.msg("删除成功", {time: 1000 }, function () {
+                                    obj.del();
+                                });
+                            } else {
+                                layer.msg(data.Err);
+                            }
+                        }
+                    });
+                    layer.close(index);
+                });
+            }
+        });
+    });
+</script>

@@ -1,0 +1,75 @@
+{
+  "homeInfo": {
+    "title": "首页",
+    "href": "/admin/dashboard"
+  },
+  "logoInfo": {
+    "title": "TATA",
+    "image": "/static/dist/img/brand.png",
+    "href": ""
+  },
+  "menuInfo": [
+    {
+      "title": "常规管理",
+      "icon": "fa fa-address-book",
+      "href": "",
+      "target": "_self",
+      "child": [
+        {
+          "title": "标签管理",
+          "href": "/admin/tags/list",
+          "icon": "fa fa-tags",
+          "target": "_self"
+        },
+        {
+          "title": "分类管理",
+          "href": "/admin/categorys/list",
+          "icon": "fa fa-leaf",
+          "target": "_self"
+        },
+        {
+          "title": "文章管理",
+          "href": "/admin/posts/list",
+          "icon": "fa fa-file-word-o",
+          "target": "_self"
+        },
+        {
+          "title": "书本管理",
+          "href": "/admin/books/list",
+          "icon": "fa fa-book",
+          "target": "_self"
+        },
+        {
+          "title": "评论管理",
+          "href": "/admin/comments/list",
+          "icon": "fa fa-comment",
+          "target": "_self"
+        },
+        {
+          "title": "友链管理",
+          "href": "/admin/friendlinks/list",
+          "icon": "fa fa-link",
+          "target": "_self"
+        },
+        {
+          "title": "设置",
+          "href": "/admin/dicts/list",
+          "icon": "fa fa-gear",
+          "target": "_self"
+        },
+        {
+          "title": "用户管理",
+          "href": "/admin/users/list",
+          "icon": "fa fa-user",
+          "target": "_self"
+        },
+        {
+          "title": "登录信息",
+          "href": "/admin/logininfos/list",
+          "icon": "fa fa-file-archive-o",
+          "target": "_self"
+        }
+      ]
+    }
+  ]
+}

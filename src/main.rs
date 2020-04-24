@@ -71,7 +71,7 @@ fn rocket() -> Rocket {
                 .expect("password should be string")
                 .to_string();
 
-            Ok(rocket.manage(controllers::Auth { admin, password }))
+            Ok(rocket.manage(controllers::Auth { username: admin, password, captcha: "".into() }))
         }))
         .mount(
             "/",
@@ -87,6 +87,7 @@ fn rocket() -> Rocket {
         .mount("/static", StaticFiles::from("static"))
         .mount("/captcha", routes![controllers::captcha::get_captcha])
         .mount("/friendlink", controllers::friendlink::routes())
+        .mount("/admin", controllers::admin::routes())
         .register(catchers![catchers::not_found])
         .attach(Template::custom(|engines| {
             engines

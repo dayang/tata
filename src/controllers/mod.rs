@@ -1,10 +1,7 @@
-// pub mod admin;
+pub mod admin;
 pub mod captcha;
-pub mod category;
-pub mod comment;
 pub mod friendlink;
 pub mod post;
-pub mod tag;
 
 use crate::consts::*;
 use crate::service::get_dict_value;
@@ -20,7 +17,7 @@ use serde::Serialize;
 use serde_json::{to_value, Value as SerdeJsonValue};
 use std::collections::HashMap;
 
-type JsonErr = Result<(), String>;
+type JsonErr = Result<String, String>;
 
 #[derive(Clone)]
 pub struct ViewData {
@@ -79,20 +76,23 @@ impl ViewData {
     }
 }
 
-#[derive(FromForm)]
+#[derive(Serialize, Deserialize)]
 pub struct Auth {
-    #[form(field = "username")]
-    pub admin: String,
+    pub username: String,
     pub password: String,
+    pub captcha: String,
 }
 
-pub struct User(bool);
-
-impl User {
-    pub fn is_admin(&self) -> bool {
-        self.0
-    }
+pub struct User {
+    pub user_id: i32,
+    pub user_name: String,
 }
+
+// impl User {
+//     pub fn is_logined(&self) -> bool {
+//         self.0
+//     }
+// }
 
 impl<'a, 'r> FromRequest<'a, 'r> for User {
     type Error = ();
@@ -103,8 +103,13 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
             .cookies()
             .get_private("auth")
             .and_then(|cookie| cookie.value().parse().ok())
-            .and_then(|id: String| Some(User(auth.admin == id)))
-            .or(Some(User(false)))
+            .and_then(|user_name: String| match user_name == auth.username {
+                true => Some(User {
+                    user_id: 0,
+                    user_name: user_name,
+                }),
+                false => None,
+            })
             .or_forward(())
     }
 }
@@ -115,7 +120,7 @@ pub fn about(conn: DbConn) -> Template {
     view_data.load_posts_page_meta_data(&conn);
     view_data.add("about_page", get_dict_value(DICT_ABOUT_PAGE.into(), &conn));
 
-    match friendlink_service::all_friendlinks(&conn) {
+    match friendlink_service::all_friendlinks(&conn, true) {
         Ok(links) => view_data.add("friend_links", links),
         Err(_) => (),
     };

@@ -1,7 +1,7 @@
 use crate::schema::*;
 use crate::sqltypes::*;
 
-#[derive(Identifiable, Queryable, Serialize, AsChangeset)]
+#[derive(Identifiable, Queryable, Serialize, Deserialize, AsChangeset)]
 #[table_name = "book"]
 pub struct Book {
     pub id: i32,
@@ -14,7 +14,7 @@ pub struct Book {
     pub create_time: String,
 }
 
-#[derive(Identifiable, Queryable, Serialize, AsChangeset)]
+#[derive(Identifiable, Queryable, Serialize, Deserialize, AsChangeset)]
 #[table_name = "category"]
 pub struct Category {
     pub id: i32,
@@ -23,7 +23,7 @@ pub struct Category {
     pub remark: String,
 }
 
-#[derive(Identifiable, Queryable, Associations, Serialize, AsChangeset)]
+#[derive(Identifiable, Queryable, Associations, Serialize, Deserialize, AsChangeset)]
 #[table_name = "post"]
 #[belongs_to(Category)]
 pub struct Post {
@@ -45,7 +45,7 @@ pub struct Post {
     pub category_id: i32,
 }
 
-#[derive(Identifiable, Queryable, Serialize, Associations, AsChangeset)]
+#[derive(Identifiable, Queryable, Serialize, Deserialize, Associations, AsChangeset)]
 // #[belongs_to(Post, foreign_key = "foreign_id")]
 // #[belongs_to(Page, foreign_key = "foreign_id")]
 #[table_name = "comment"]
@@ -66,7 +66,7 @@ pub struct Comment {
     pub user_agent: Option<String>,
 }
 
-#[derive(Identifiable, Queryable, Serialize, AsChangeset)]
+#[derive(Identifiable, Queryable, Serialize, Deserialize, AsChangeset)]
 #[table_name = "dict"]
 #[primary_key(d_key)]
 pub struct Dict {
@@ -74,7 +74,7 @@ pub struct Dict {
     pub d_value: String,
 }
 
-#[derive(Identifiable, Queryable, Serialize, AsChangeset)]
+#[derive(Identifiable, Queryable, Serialize, Deserialize, AsChangeset)]
 #[table_name = "friendlink"]
 pub struct FriendLink {
     pub id: i32,
@@ -84,7 +84,7 @@ pub struct FriendLink {
     pub remark: Option<String>,
 }
 
-#[derive(Identifiable, Queryable, Serialize, AsChangeset)]
+#[derive(Identifiable, Queryable, Serialize, Deserialize, AsChangeset)]
 #[table_name = "logininfo"]
 pub struct LoginInfo {
     pub id: i32,
@@ -98,7 +98,7 @@ pub struct LoginInfo {
     pub user_agent: Option<String>,
 }
 
-#[derive(Identifiable, Queryable, Associations, Serialize, AsChangeset)]
+#[derive(Identifiable, Queryable, Associations, Serialize, Deserialize, AsChangeset)]
 #[table_name = "page"]
 #[belongs_to(Book)]
 pub struct Page {
@@ -120,7 +120,7 @@ pub struct Page {
     pub display_order: i32,
 }
 
-#[derive(Identifiable, Queryable, Associations, Serialize, AsChangeset)]
+#[derive(Identifiable, Queryable, Associations, Serialize, Deserialize, AsChangeset)]
 #[table_name = "posttag"]
 #[belongs_to(Tag)]
 #[belongs_to(Post)]
@@ -130,7 +130,7 @@ pub struct Posttag {
     pub tag_id: i32,
 }
 
-#[derive(Identifiable, Queryable, Serialize, AsChangeset)]
+#[derive(Identifiable, Queryable, Serialize, Deserialize, AsChangeset)]
 #[table_name = "tag"]
 pub struct Tag {
     pub id: i32,
@@ -140,7 +140,7 @@ pub struct Tag {
     pub weight: i32,
 }
 
-#[derive(Identifiable, Queryable, Serialize, AsChangeset)]
+#[derive(Identifiable, Queryable, Serialize, Deserialize, AsChangeset)]
 #[table_name = "user"]
 pub struct User {
     pub id: i32,
