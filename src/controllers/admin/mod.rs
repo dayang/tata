@@ -9,13 +9,13 @@ pub mod tag;
 pub mod user;
 
 // use crate::DbConn;
-use rocket_contrib::json::{Json, JsonValue};
 use rocket::http::{Cookie, Cookies, Status};
+use rocket::request::State;
+use rocket::response::Redirect;
+use rocket_contrib::json::{Json, JsonValue};
 use rocket_contrib::templates::Template;
-use rocket::response::{ Redirect};
-use rocket::request::{State};
 
-use super::{User, Auth, JsonErr};
+use super::{Auth, JsonErr, User};
 
 #[get("/index")]
 pub fn index(_user: User) -> Result<Template, Status> {
@@ -37,7 +37,7 @@ pub fn login_page() -> Result<Template, Status> {
     Ok(Template::render("admin/login", json!({})))
 }
 
-#[post("/login", format="json", data="<login_form>")]
+#[post("/login", format = "json", data = "<login_form>")]
 pub fn login(mut cookies: Cookies, login_form: Json<Auth>, auth: State<Auth>) -> JsonValue {
     let err_captcha = cookies
         .get_private("code")
@@ -86,6 +86,8 @@ pub fn routes() -> Vec<rocket::Route> {
     routes.append(&mut tag::routes());
     routes.append(&mut category::routes());
     routes.append(&mut friendlink::routes());
+    routes.append(&mut comment::routes());
+    routes.append(&mut post::routes());
 
     routes
 }

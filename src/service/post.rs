@@ -1,14 +1,14 @@
 #![allow(dead_code, unused_imports)]
 use super::err_str;
 use crate::consts::*;
-use crate::dto::post::*;
+use crate::dto::{pagination::*, post::*};
 use crate::entity::*;
 use crate::schema::category::{dsl as category_dsl, dsl::*};
 use crate::schema::post::{dsl as post_dsl, dsl::*};
 use crate::schema::posttag::{dsl as posttag_dsl, dsl::*};
 use crate::schema::tag::{dsl as tag_dsl, dsl::*};
-use crate::service::get_dict_value;
 use crate::service::pagination::*;
+use crate::service::{category as category_service, get_dict_value};
 use crate::util::*;
 use chrono::{Datelike, NaiveDate, NaiveDateTime};
 use diesel::prelude::*;
@@ -24,14 +24,16 @@ fn get_post_tags(conn: &SqliteConnection, by_post_id: i32) -> Result<Vec<Tag>, S
 
 pub fn get_posts_list(
     conn: &SqliteConnection,
-    page_index: i32,
+    page: i32,
+    limit: Option<i32>,
     by_category_id: Option<i32>,
     by_tag_id: Option<i32>,
     year_month: Option<(i32, i32)>,
-) -> Result<PostListInfo, String> {
-    let mut post_list_info = PostListInfo::default();
+    is_published: Option<bool>,
+) -> Result<PaginationData<PostListItem>, String> {
+    let mut post_list_info = PaginationData::default();
 
-    if page_index < 1 {
+    if page < 1 {
         return Ok(post_list_info);
     }
 
@@ -41,9 +43,11 @@ pub fn get_posts_list(
         }
     }
 
-    let page_num = get_dict_value(DICT_POST_PAGE_NUM.into(), &conn)
-        .map(|v| v.parse().unwrap_or(DEFAULT_POST_PAGE_NUM))
-        .unwrap_or(DEFAULT_POST_PAGE_NUM);
+    let page_num = limit.unwrap_or_else(|| {
+        get_dict_value(DICT_POST_PAGE_NUM.into(), &conn)
+            .map(|v| v.parse().unwrap_or(DEFAULT_POST_PAGE_NUM))
+            .unwrap_or(DEFAULT_POST_PAGE_NUM)
+    });
 
     let paged_posts: (Vec<Post>, i64, i64);
 
@@ -52,58 +56,83 @@ pub fn get_posts_list(
             .find(by_id)
             .load::<Category>(conn)
             .map_err(err_str)?;
-        paged_posts = Post::belonging_to(&category_find)
-            .filter(published.eq(true))
-            .paginate(page_index as i64)
+        let mut paged_posts_query = Post::belonging_to(&category_find).into_boxed();
+        paged_posts_query = match is_published {
+            Some(v) => paged_posts_query.filter(published.eq(v)),
+            None => paged_posts_query,
+        };
+        paged_posts = paged_posts_query
+            .paginate(page as i64)
             .per_page(page_num as i64)
             .load_and_count_pages::<Post>(conn)
             .map_err(err_str)?;
     } else if let Some(by_id) = by_tag_id {
         let tag_find = tag.find(by_id).load::<Tag>(conn).map_err(err_str)?;
-        paged_posts = Posttag::belonging_to(&tag_find)
+
+        let mut paged_posts_query = Posttag::belonging_to(&tag_find)
             .inner_join(post)
-            .filter(published.eq(true))
-            .paginate(page_index as i64)
+            .into_boxed();
+        paged_posts_query = match is_published {
+            Some(v) => paged_posts_query.filter(published.eq(v)),
+            None => paged_posts_query,
+        };
+        paged_posts = paged_posts_query
+            .paginate(page as i64)
             .per_page(page_num as i64)
             .load_and_count_pages::<(Posttag, Post)>(conn)
             .map_err(err_str)
             .map(|t| (t.0.into_iter().map(|r| r.1).collect(), t.1, t.2))?;
     } else if let Some((year, month)) = year_month {
         sql_function!(fn strftime(x: Text, y: Timestamp) -> Text);
-        // sql_function!(strftime, Strftime, (x: Text, y: Timestamp) -> Text);
-        paged_posts = post
-            .filter(published.eq(true))
+        let mut paged_posts_query = post.into_boxed();
+        paged_posts_query = match is_published {
+            Some(v) => paged_posts_query.filter(published.eq(v)),
+            None => paged_posts_query,
+        };
+        paged_posts = paged_posts_query
             .filter(strftime("%Y%m", create_time).eq(format!("{:04}{:02}", year, month)))
-            .paginate(page_index as i64)
+            .paginate(page as i64)
             .per_page(page_num as i64)
             .load_and_count_pages::<Post>(conn)
             .map_err(err_str)?;
     } else {
-        paged_posts = post
-            .filter(published.eq(true))
-            .paginate(page_index as i64)
+        let mut paged_posts_query = post.into_boxed();
+        paged_posts_query = match is_published {
+            Some(v) => paged_posts_query.filter(published.eq(v)),
+            None => paged_posts_query,
+        };
+        paged_posts = paged_posts_query
+            .paginate(page as i64)
             .per_page(page_num as i64)
             .load_and_count_pages::<Post>(conn)
             .map_err(err_str)?;
     }
 
-    post_list_info.total_num = paged_posts.2 as i32;
-    post_list_info.total_pages = paged_posts.1 as i32;
+    post_list_info.total_num = paged_posts.2;
+    post_list_info.total_pages = paged_posts.1;
     post_list_info.per_page = page_num;
-    post_list_info.curr_page = page_index;
+    post_list_info.curr_page = page;
 
     for p in paged_posts.0 {
         post_list_info.page_items.push(PostListItem {
+            id: p.id,
             title: p.title,
             url: p.url,
             summary: p.summary,
             thumbnail: p.thumbnail,
             reads: p.reads,
+            likes: p.likes,
             create_time: p.create_time,
+            edit_time: p.edit_time,
+            category: match category_service::get_category(&conn, p.category_id) {
+                Ok(t) => t,
+                Err(_) => continue,
+            },
             tags: match self::get_post_tags(&conn, p.id) {
                 Ok(t) => t,
                 Err(_) => continue,
             },
+            published: p.published,
         });
     }
 
@@ -114,6 +143,11 @@ pub fn get_post_by_url(conn: &SqliteConnection, post_url: String) -> Result<Post
     post.filter(url.eq(post_url))
         .first::<Post>(conn)
         .map_err(err_str)
+}
+
+/// TODO should be post_detail_admin
+pub fn get_post(conn: &SqliteConnection, by_id: i32) -> Result<Post, String> {
+    post.find(by_id).first::<Post>(conn).map_err(err_str)
 }
 
 pub fn get_post_detail(
@@ -138,8 +172,7 @@ pub fn get_post_detail(
     Ok(PostDetail {
         title: post_find.title,
         url: post_find.url,
-        // pub raw_content: String,
-        html_content: post_find.html_content,
+        content: post_find.content,
         summary: post_find.summary,
         thumbnail: post_find.thumbnail,
         reads: post_find.reads,
@@ -200,4 +233,17 @@ pub fn archive_posts(conn: &SqliteConnection) -> Result<Vec<PostYearArchive>, St
     year_archive.sort_by_key(|a| std::cmp::Reverse(a.year.clone()));
 
     Ok(year_archive)
+}
+
+pub fn create_or_update(
+    conn: &SqliteConnection,
+    create_or_update: CreateOrUpdatePost,
+) -> Result<usize, String> {
+    Err("ok".into())
+}
+
+pub fn delete(conn: &SqliteConnection, delete_id: i32) -> Result<usize, String> {
+    diesel::delete(post.filter(post_dsl::id.eq(delete_id)))
+        .execute(conn)
+        .map_err(err_str)
 }

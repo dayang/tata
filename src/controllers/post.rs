@@ -25,13 +25,17 @@ pub fn get_posts(page: Option<i32>, conn: DbConn) -> Result<Template, Status> {
     );
     view_data.add_viewbag("list_title", "所有文章");
     view_data.load_posts_page_meta_data(&conn);
-    match post_service::get_posts_list(&conn, page.unwrap_or(1), None, None, None) {
+    match post_service::get_posts_list(&conn, page.unwrap_or(1), None, None, None, None, Some(true))
+    {
         Ok(post_list_info) => {
             view_data.add("post_list_info", post_list_info);
             //println!("{}", view_data.clone().to_json().to_string());
             Ok(Template::render("index", view_data.to_json()))
         }
-        Err(_) => Err(Status::InternalServerError),
+        Err(e) => {
+            println!("{}", e);
+            Err(Status::InternalServerError)
+        }
     }
 }
 
@@ -143,7 +147,15 @@ pub fn get_posts_by_tag(tag: String, page: Option<i32>, conn: DbConn) -> Result<
     view_data.add_viewbag("title", tag_find.display_text.to_string());
     view_data.add_viewbag("list_title", tag_find.display_text.to_string());
     view_data.load_posts_page_meta_data(&conn);
-    match post_service::get_posts_list(&conn, page.unwrap_or(1), None, Some(tag_find.id), None) {
+    match post_service::get_posts_list(
+        &conn,
+        page.unwrap_or(1),
+        None,
+        None,
+        Some(tag_find.id),
+        None,
+        Some(true),
+    ) {
         Ok(post_list_info) => {
             view_data.add("post_list_info", post_list_info);
             Ok(Template::render("index", view_data.to_json()))
@@ -165,8 +177,15 @@ pub fn get_posts_by_category(
     view_data.add_viewbag("list_title", category_find.display_text.to_string());
     view_data.load_posts_page_meta_data(&conn);
 
-    match post_service::get_posts_list(&conn, page.unwrap_or(1), Some(category_find.id), None, None)
-    {
+    match post_service::get_posts_list(
+        &conn,
+        page.unwrap_or(1),
+        None,
+        Some(category_find.id),
+        None,
+        None,
+        Some(true),
+    ) {
         Ok(post_list_info) => {
             view_data.add("post_list_info", post_list_info);
             Ok(Template::render("index", view_data.to_json()))
@@ -202,7 +221,15 @@ pub fn archive_month(
     view_data.add_viewbag("title", format!("{:04}年{:02}月", year, month));
     view_data.add_viewbag("list_title", format!("{}年{}月", year, month));
     view_data.load_posts_page_meta_data(&conn);
-    match post_service::get_posts_list(&conn, page.unwrap_or(1), None, None, Some((year, month))) {
+    match post_service::get_posts_list(
+        &conn,
+        page.unwrap_or(1),
+        None,
+        None,
+        None,
+        Some((year, month)),
+        Some(true),
+    ) {
         Ok(post_list_info) => {
             view_data.add("post_list_info", post_list_info);
             Ok(Template::render("index", view_data.to_json()))

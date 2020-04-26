@@ -1,8 +1,7 @@
-
 use crate::entity::Category;
 use crate::service::category as category_service;
 use crate::DbConn;
-use rocket::http::{Status};
+use rocket::http::Status;
 use rocket_contrib::json::{Json, JsonValue};
 use rocket_contrib::templates::Template;
 
@@ -24,7 +23,10 @@ pub fn edit_page(_user: User, conn: DbConn, id: i32) -> Result<Template, Status>
     match category_service::get_category(&conn, id) {
         Ok(category) => {
             view_data.add("category", category);
-            Ok(Template::render("admin/category/editcategory", view_data.to_json()))
+            Ok(Template::render(
+                "admin/category/editcategory",
+                view_data.to_json(),
+            ))
         }
         Err(_) => Err(Status::InternalServerError),
     }
@@ -53,7 +55,7 @@ pub fn delete(_user: User, conn: DbConn, id: i32) -> JsonValue {
 pub fn routes() -> Vec<rocket::Route> {
     routes![
         list_page,
-        edit_page, 
+        edit_page,
         edit,
         add_page,
         add,

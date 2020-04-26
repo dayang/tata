@@ -2,6 +2,7 @@ use self::handlebars::{
     to_json, Context, Handlebars, Helper, HelperDef, HelperResult, JsonRender, Output,
     RenderContext, RenderError, ScopedJson,
 };
+use ammonia::clean;
 use pulldown_cmark::{html, Parser};
 use rocket_contrib::templates::handlebars;
 pub fn markdown_helper(
@@ -16,7 +17,30 @@ pub fn markdown_helper(
         let parser = Parser::new(&markdown_text);
         let mut html_output = String::new();
         html::push_html(&mut html_output, parser);
-        out.write(&html_output)?;
+        let safe_html = clean(&*html_output);
+        out.write(&safe_html)?;
+    }
+
+    Ok(())
+}
+
+pub fn comment_type_helper(
+    h: &Helper<'_, '_>,
+    _: &Handlebars,
+    _: &Context,
+    _: &mut RenderContext<'_>,
+    out: &mut dyn Output,
+) -> HelperResult {
+    if let Some(param) = h.param(0) {
+        let comment_type = param.value().as_i64();
+        let label = match comment_type {
+            Some(1) => "博客",
+            Some(2) => "Book",
+            Some(3) => "留言",
+            _ => "未知",
+        };
+
+        out.write(label)?;
     }
 
     Ok(())

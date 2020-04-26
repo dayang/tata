@@ -1,7 +1,7 @@
 use crate::entity::Tag;
 use crate::service::tag as tag_service;
 use crate::DbConn;
-use rocket::http::{Status};
+use rocket::http::Status;
 use rocket_contrib::json::{Json, JsonValue};
 use rocket_contrib::templates::Template;
 
@@ -52,7 +52,7 @@ pub fn delete(_user: User, conn: DbConn, id: i32) -> JsonValue {
 pub fn routes() -> Vec<rocket::Route> {
     routes![
         list_page,
-        edit_page, 
+        edit_page,
         edit,
         add_page,
         add,

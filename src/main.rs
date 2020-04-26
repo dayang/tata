@@ -71,7 +71,11 @@ fn rocket() -> Rocket {
                 .expect("password should be string")
                 .to_string();
 
-            Ok(rocket.manage(controllers::Auth { username: admin, password, captcha: "".into() }))
+            Ok(rocket.manage(controllers::Auth {
+                username: admin,
+                password,
+                captcha: "".into(),
+            }))
         }))
         .mount(
             "/",
@@ -96,6 +100,10 @@ fn rocket() -> Rocket {
             engines
                 .handlebars
                 .register_helper("not_empty_str", Box::new(crate::helpers::NotEmptyStrHelper));
+            engines.handlebars.register_helper(
+                "comment_type_label",
+                Box::new(crate::helpers::comment_type_helper),
+            );
         }))
 }
 

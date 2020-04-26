@@ -1,5 +1,6 @@
 pub mod comment;
 pub mod friendlink;
+pub mod pagination;
 pub mod post;
 
 #[derive(Serialize)]

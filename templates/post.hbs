@@ -230,7 +230,7 @@
         <hr class="article-header-hr">
     </header>
 
-    <div id="article-body">{{{ post.html_content }}}</div>
+    <div id="article-body">{{ markdown post.content }}</div>
     <div class="like-area">
         <div>
             <svg id="like-btn" class="icon-symbol" aria-hidden="true" style="width:1.7rem;height:1.7rem;">
@@ -313,6 +313,7 @@
 {{#if post.allow_comment }}
 <script src="https://cdn.bootcss.com/simplemde/1.11.2/simplemde.min.js"></script>
 <script src="https://cdn.bootcss.com/marked/0.8.2/marked.min.js"></script>
+<script src="https://cdn.bootcss.com/dompurify/2.0.8/purify.min.js"></script>
 {{/if}}
 <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
 <script src="https://cdn.bootcss.com/qrcode-generator/1.4.4/qrcode.min.js"></script>
@@ -326,11 +327,11 @@
                 <span style="font-size: .7rem;color: #999;"><%= item.comment_time %></span>
             </div>
             <div class="layui-card-body">
-                <% item.html_content %>
+                <% DOMPurify.sanitize(marked(item.content)) %>
                 <%# if(item.reply){ %>
                 <hr>
                 <span style="color:#2474b5;">博主回复：</span>
-                <%= item.reply %>
+                <% DOMPurify.sanitize(marked(item.reply)) %>
                 <%# } %>
             </div>
         </div>
@@ -451,8 +452,7 @@
                 "url": "{{ post.url }}",
                 "user_name": data.field["commentor-name"],
                 "email": data.field["commentor-email"],
-                "raw_content": editor.value(),
-                "html_content": marked(editor.value()),
+                "content": editor.value(),
                 "captcha": data.field["captcha-code"]
             });
 
@@ -466,7 +466,8 @@
                         layer.msg("评论成功");
                         document.getElementById("comment-form").reset();
                         editor.value("");
-
+                        // 刷新验证码
+                        $('#captcha').attr("src", "/captcha/get?k=" + Math.random());
                     } else {
                         layer.msg(data.Err);
                     }

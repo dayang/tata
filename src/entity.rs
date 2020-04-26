@@ -7,8 +7,8 @@ pub struct Book {
     pub id: i32,
     pub name: String,
     pub display_text: String,
-    pub description: Option<String>,
-    pub cover: Option<String>,
+    pub description: String,
+    pub cover: String,
     pub published: bool,
     #[diesel(deserialize_as = "FormatedTime<HHMMDDHMTime>")]
     pub create_time: String,
@@ -30,8 +30,7 @@ pub struct Post {
     pub id: i32,
     pub title: String,
     pub url: String,
-    pub raw_content: String,
-    pub html_content: String,
+    pub content: String,
     pub summary: String,
     pub thumbnail: String,
     pub reads: i32,
@@ -53,17 +52,17 @@ pub struct Comment {
     pub id: i32,
     pub user_name: String,
     pub email: String,
-    pub raw_content: String,
-    pub html_content: String,
+    pub content: String,
     #[diesel(deserialize_as = "FormatedTime<HHMMDDHMTime>")]
     pub comment_time: String,
-    pub reply: Option<String>,
+    pub reply: String,
     #[diesel(deserialize_as = "FormatedTime<HHMMDDHMTime>")]
     pub reply_time: String,
     pub show: bool,
     pub foreign_id: i32,
     pub comment_type: i32,
-    pub user_agent: Option<String>,
+    pub unread: bool,
+    pub user_agent: String,
 }
 
 #[derive(Identifiable, Queryable, Serialize, Deserialize, AsChangeset)]
@@ -81,7 +80,7 @@ pub struct FriendLink {
     pub display_text: String,
     pub link: String,
     pub show: bool,
-    pub remark: Option<String>,
+    pub remark: String,
 }
 
 #[derive(Identifiable, Queryable, Serialize, Deserialize, AsChangeset)]
@@ -93,9 +92,9 @@ pub struct LoginInfo {
     #[diesel(deserialize_as = "FormatedTime<HHMMDDHMTime>")]
     pub login_time: String,
     pub is_success: bool,
-    pub ip: Option<String>,
-    pub mac: Option<String>,
-    pub user_agent: Option<String>,
+    pub ip: String,
+    pub mac: String,
+    pub user_agent: String,
 }
 
 #[derive(Identifiable, Queryable, Associations, Serialize, Deserialize, AsChangeset)]
@@ -105,8 +104,7 @@ pub struct Page {
     pub id: i32,
     pub title: String,
     pub url: String,
-    pub raw_content: String,
-    pub html_content: String,
+    pub content: String,
     pub reads: i32,
     pub likes: i32,
     pub allow_comment: bool,
@@ -145,13 +143,13 @@ pub struct Tag {
 pub struct User {
     pub id: i32,
     pub name: String,
-    pub nick_name: Option<String>,
-    pub description: Option<String>,
+    pub nick_name: String,
+    pub description: String,
     pub password: String,
-    pub avator: Option<String>,
-    pub email: Option<String>,
+    pub avator: String,
+    pub email: String,
     pub notify_comment: bool,
     pub notify_type: i32,
-    pub notify_email: Option<String>,
+    pub notify_email: String,
     pub session_period: i32,
 }

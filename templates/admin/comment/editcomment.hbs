@@ -1,0 +1,113 @@
+<link href="https://cdn.bootcss.com/simplemde/1.11.2/simplemde.min.css" rel="stylesheet">
+<div class="layuimini-main">
+
+    <div class="layui-form layuimini-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-form-mid">{{ comment.user_name }}</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-form-mid">{{ comment.email }}</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">评论类型</label>
+            <div class="layui-form-mid">
+                {{comment_type_label comment.comment_type}}
+            </div>
+        </div>
+
+        {{#if viewbag.url}}
+        <div class="layui-form-item">
+            <label class="layui-form-label">评论原文</label>
+            <div class="layui-form-mid">
+                <a href="{{ viewbag.url }}" target="_blank" style="color: #01AAED;">{{ viewbag.url }}</a>
+            </div>
+        </div>
+        {{/if}}
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">评论时间</label>
+            <div class="layui-form-mid">{{ comment.comment_time }}</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">评论内容</label>
+            <div class="layui-input-block">
+                <div style="padding: 9px 0;">
+                    {{ markdown comment.content }}
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">回复内容</label>
+            <div class="layui-input-block">
+                <textarea name="reply" id="reply-editor" placeholder="请输入回复内容（支持 markdown 格式）"
+                            class="layui-textarea">{{ comment.reply }}</textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否展示</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="show" lay-skin="switch" lay-text="展示|不展示" value="true" {{#if comment.show}}checked{{/if}}>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="saveBtn">确认保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    layui.use(['form', 'table'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            table = layui.table,
+            $ = layui.$;
+
+        /**
+         * 初始化表单，要加上，不然刷新部分组件可能会不加载
+         */
+        form.render();
+
+        var editor = new SimpleMDE({
+            element: document.getElementById("reply-editor"),
+            spellChecker: false,
+            toolbarTips: false,
+            status: false,
+        });
+
+        // 当前弹出层，防止ID被覆盖
+        var parentIndex = layer.index;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            $.ajax("/admin/comments/edit", {
+                method: "put",
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify({
+                    id: {{{ comment.id }}},
+                    reply: editor.value(),
+                    show: data.field.show === 'true',
+                }),
+                success: function(data) {
+                    if(data.Ok) {
+                        layer.msg("修改成功，刷新显示", {time: 1000 }, function () {
+                            layer.close(parentIndex);
+                        });
+                    } else {
+                        layer.msg(data.Err);
+                    }
+                }
+            });
+            return false;
+        });
+
+    });
+</script>

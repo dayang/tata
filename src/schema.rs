@@ -3,8 +3,8 @@ table! {
         id -> Integer,
         name -> Text,
         display_text -> Text,
-        description -> Nullable<Text>,
-        cover -> Nullable<Text>,
+        description -> Text,
+        cover -> Text,
         published -> Bool,
         create_time -> Timestamp,
     }
@@ -24,15 +24,15 @@ table! {
         id -> Integer,
         user_name -> Text,
         email -> Text,
-        raw_content -> Text,
-        html_content -> Text,
+        content -> Text,
         comment_time -> Timestamp,
-        reply -> Nullable<Text>,
+        reply -> Text,
         reply_time -> Timestamp,
         show -> Bool,
         foreign_id -> Integer,
         comment_type -> Integer,
-        user_agent -> Nullable<Text>,
+        unread -> Bool,
+        user_agent -> Text,
     }
 }
 
@@ -49,7 +49,7 @@ table! {
         display_text -> Text,
         link -> Text,
         show -> Bool,
-        remark -> Nullable<Text>,
+        remark -> Text,
     }
 }
 
@@ -60,9 +60,9 @@ table! {
         username -> Text,
         login_time -> Timestamp,
         is_success -> Bool,
-        ip -> Nullable<Text>,
-        mac -> Nullable<Text>,
-        user_agent -> Nullable<Text>,
+        ip -> Text,
+        mac -> Text,
+        user_agent -> Text,
     }
 }
 
@@ -71,8 +71,7 @@ table! {
         id -> Integer,
         title -> Text,
         url -> Text,
-        raw_content -> Text,
-        html_content -> Text,
+        content -> Text,
         reads -> Integer,
         likes -> Integer,
         allow_comment -> Bool,
@@ -90,8 +89,7 @@ table! {
         id -> Integer,
         title -> Text,
         url -> Text,
-        raw_content -> Text,
-        html_content -> Text,
+        content -> Text,
         summary -> Text,
         thumbnail -> Text,
         reads -> Integer,
@@ -126,14 +124,14 @@ table! {
     user (id) {
         id -> Integer,
         name -> Text,
-        nick_name -> Nullable<Text>,
-        description -> Nullable<Text>,
+        nick_name -> Text,
+        description -> Text,
         password -> Text,
-        avator -> Nullable<Text>,
-        email -> Nullable<Text>,
+        avator -> Text,
+        email -> Text,
         notify_comment -> Bool,
         notify_type -> Integer,
-        notify_email -> Nullable<Text>,
+        notify_email -> Text,
         session_period -> Integer,
     }
 }
