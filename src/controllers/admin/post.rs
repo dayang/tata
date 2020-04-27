@@ -71,6 +71,11 @@ pub fn add(_user: User, conn: DbConn, create_post: Json<CreateOrUpdatePost>) -> 
     json!(post_service::create_or_update(&conn, create_post.0))
 }
 
+#[get("/posts/post/<id>/tags")]
+pub fn get_tags(_user:User, conn: DbConn, id: i32) -> JsonValue {
+    json!(post_service::get_post_tags(&conn, id))
+}
+
 pub fn routes() -> Vec<rocket::Route> {
     routes![
         list_page,
@@ -79,6 +84,7 @@ pub fn routes() -> Vec<rocket::Route> {
         api_posts_list,
         delete,
         add_page,
-        add
+        add,
+        get_tags,
     ]
 }

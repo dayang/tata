@@ -1,5 +1,48 @@
 <div class="layuimini-container layuimini-page-anim">
     <div class="layuimini-main">
+        <fieldset class="table-search-fieldset">
+            <legend>过滤条件</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">评论姓名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="username_filter" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">评论邮箱</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="email_filter" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">评论类型</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="type_filter" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">文章ID</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="id_filter" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">评论状态</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="unread_filter" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon layui-icon-search"></i> 查询</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
         <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
 
         <script type="text/html" id="currentTableBar">

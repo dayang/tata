@@ -13,23 +13,23 @@ pub fn list_page(_user: User) -> Result<Template, Status> {
     Ok(Template::render("admin/comment/comments", json!({})))
 }
 
-#[get("/comments/api/list?<page>&<limit>&<for_type>&<for_id>&<only_read>")]
+#[get("/comments/api/list?<page>&<limit>&<comment_type>&<for_id>&<unread>")]
 pub fn api_comments_list(
     _user: User,
     conn: DbConn,
     page: Option<i32>,
     limit: Option<i32>,
-    for_type: Option<i32>,
+    comment_type: Option<i32>,
     for_id: Option<i32>,
-    only_read: Option<bool>,
+    unread: Option<bool>,
 ) -> JsonValue {
     json!(comment_service::get_paged_comment_admin(
         &conn,
-        for_type,
+        comment_type,
         for_id,
         page.unwrap_or(1),
         limit.unwrap_or(10),
-        only_read.unwrap_or(false)
+        unread
     ))
 }
 

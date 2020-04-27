@@ -14,7 +14,7 @@ use chrono::{Datelike, NaiveDate, NaiveDateTime};
 use diesel::prelude::*;
 use diesel::sql_types::{Text, Timestamp};
 
-fn get_post_tags(conn: &SqliteConnection, by_post_id: i32) -> Result<Vec<Tag>, String> {
+pub fn get_post_tags(conn: &SqliteConnection, by_post_id: i32) -> Result<Vec<Tag>, String> {
     tag.inner_join(posttag)
         .filter(post_id.eq(by_post_id))
         .load::<(Tag, Posttag)>(conn)

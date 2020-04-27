@@ -9,10 +9,10 @@
         <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
 
         <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-xs data-count-edit" lay-event="view_comment">查看评论</a>
             <a class="layui-btn layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
-
     </div>
 </div>
 
@@ -30,7 +30,7 @@
             defaultToolbar: ['filter', 'exports', 'print'],
             cols: [[
                 {field: 'id', width: 60, title: 'ID', sort: true},
-                {field: 'title', minWidth: 200, title: '标题'},
+                {field: 'title', width: 200, title: '标题'},
                 {field: 'url', title: '链接', minWidth: 150, 
                     templet: function(d){
                         return '<a href="/posts/post/' + d.url + '" target="_blank" class="layui-table-link">' + d.url +'</a>';
@@ -41,9 +41,9 @@
                         return d.category.display_text;
                     }
                 },
-                {field: 'reads', minWidth: 70, title: '阅读'},
-                {field: 'likes', minWidth: 70, title: '点赞'},
-                {field: 'published', minWidth: 90, title: '发布状态',
+                {field: 'reads', width: 70, title: '阅读'},
+                {field: 'likes', width: 70, title: '点赞'},
+                {field: 'published', width: 90, title: '发布状态',
                     templet: function(d){
                         if (!d.published) {
                             return '<span style="color:red;">未发布</span>'
@@ -52,8 +52,9 @@
                         }
                     }
                 },
-                {field: 'create_time', minWidth: 150, title: '创建时间'},
-                {title: '操作', width: 160, toolbar: '#currentTableBar', fixed: "right", align: "center"}
+                {field: 'create_time', width: 150, title: '创建时间'},
+                {field: 'edit_time', width: 150, title: '编辑时间'},
+                {title: '操作', minWidth: 200, toolbar: '#currentTableBar', fixed: "right", align: "center"}
             ]],
             parseData: function(res){
                 if(res.Ok) {
@@ -70,7 +71,9 @@
                     }
                 }
             },
-            page: false
+            page: true,
+            limit: 10,
+            limits: [10,20,30,50]
         });
 
         /**

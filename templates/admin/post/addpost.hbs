@@ -18,9 +18,16 @@
         </div>
 
         <div class="layui-form-item">
-            <label class="layui-form-label required">封面图片</label>
+            <label class="layui-form-label">封面图片链接</label>
             <div class="layui-input-block">
-                <input type="text" name="thumbnail" lay-verify="required" lay-reqtext="图片地址不能为空" value="" class="layui-input">
+                <input type="text" name="thumbnail" value="" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">上传图片</label>
+            <div class="layui-input-block">
+                <button type="button" id="upload-img-btn" class="layui-btn">上传图片</button>
             </div>
         </div>
 
@@ -35,14 +42,14 @@
         <div class="layui-form-item">
             <label class="layui-form-label">分类</label>
             <div class="layui-input-block">
-                
+                <div id="post-category-selector"></div>
             </div>
         </div>
 
         <div class="layui-form-item">
             <label class="layui-form-label">标签</label>
             <div class="layui-input-block">
-                
+                <div id="post-tags-selector"></div>
             </div>
         </div>
 
@@ -69,7 +76,6 @@
         </div>
 
 
-
         <div class="layui-form-item">
             <div class="layui-input-block">
                 <button class="layui-btn" lay-submit lay-filter="saveBtn">确认保存</button>
@@ -78,10 +84,12 @@
     </div>
 </div>
 <script type="text/javascript">
-    layui.use(['form', 'table'], function () {
+    layui.use(['form', 'table', 'xmSelect', 'simplemde', 'upload', 'layer'], function () {
         var form = layui.form,
             layer = layui.layer,
             table = layui.table,
+            xmSelect = layui.xmSelect,
+            upload = layui.upload,
             $ = layui.$;
 
         /**
@@ -90,10 +98,84 @@
         form.render();
 
         var editor = new SimpleMDE({
-            element: document.getElementById("reply-editor"),
+            element: document.getElementById("post-editor"),
             spellChecker: false,
             toolbarTips: false,
             status: false,
+        });
+
+        var category_selector = xmSelect.render({
+            el: '#post-category-selector', 
+            radio: true,
+	        clickClose: true,
+            name: 'category',
+            layVerify: 'required',
+            layVerType: 'msg',
+            data: []
+        });
+
+        $.ajax('/admin/categorys/api/all', {
+            accept: 'json',
+            success: function(data) {
+                if(data.Ok) {
+                    var selector_data = [];
+                    data.Ok.forEach(function(category) {
+                        selector_data.push({name: category['display_text'], value: category.id})
+                    })
+
+                    category_selector.update({
+                        data: selector_data
+                    })
+                }
+            }
+        });
+
+        var tags_selector = xmSelect.render({
+            el: '#post-tags-selector',
+            name: 'tags',
+            layVerify: 'required',
+            layVerType: 'msg',
+            data: []
+        });
+
+        $.ajax('/admin/tags/api/all', {
+            accept: 'json',
+            success: function(data) {
+                if(data.Ok) {
+                    var selector_data = [];
+                    data.Ok.forEach(function(tag) {
+                        selector_data.push({name: tag['display_text'], value: tag.id})
+                    })
+
+                    tags_selector.update({
+                        data: selector_data
+                    })
+                }
+            }
+        });
+
+        upload.render({
+            elem: '#upload-img-btn',
+            url: '/upload/',
+            accept: 'images',
+            acceptMime: 'image/*',
+            done: function(res){
+                layer.open({
+                    title: "上传成功",
+                    shadeClose: false,
+                    content: '\<input type="text" class="layui-input" id="img-src-link" readonly value="图片链接">\<\/input>',
+                    btn: ['复制链接'],
+                    btnAlign: 'c',
+                    yes: function(index, layero){
+                        layero.context.getElementById("img-src-link").select();
+                        document.execCommand("Copy");
+                        layer.close(index);
+                    }
+                });
+            },
+            error: function(){
+                layer.msg("出错了", {icon: 2});
+            }
         });
 
         // 当前弹出层，防止ID被覆盖
@@ -101,7 +183,8 @@
 
         //监听提交
         form.on('submit(saveBtn)', function (data) {
-            $.ajax("/admin/comments/edit", {
+            console.log(data.field);
+            {{!-- $.ajax("/admin/comments/edit", {
                 method: "put",
                 contentType: "application/json",
                 dataType: "json",
@@ -120,7 +203,7 @@
                     }
                 }
             });
-            return false;
+            return false; --}}
         });
 
     });

@@ -128,7 +128,7 @@ pub fn get_paged_comment_admin(
     master_id: Option<i32>,
     page: i32,
     limit: i32,
-    only_unread: bool,
+    unread_filter: Option<bool>,
 ) -> Result<PaginationData<CommentListItemAdmin>, String> {
     if page < 1 {
         return Err("page must greater than 0".into());
@@ -139,14 +139,17 @@ pub fn get_paged_comment_admin(
     }
 
     let mut query = comment.into_boxed();
-    if only_unread {
-        query = query.filter(unread.eq(true));
+    if let Some(v) = unread_filter {
+        query = query.filter(unread.eq(v));
     }
-
-    if let Some(for_id) = master_id {
-        query = query.filter(foreign_id.eq(for_id));
-    } else if let Some(for_type) = comment_for {
+    
+    if let Some(for_type) = comment_for {
         query = query.filter(comment_type.eq(for_type));
+        if for_type != COMMENT_FOR_MESSAGE_BORD {
+            if let Some(for_id) = master_id {
+                query = query.filter(foreign_id.eq(for_id));
+            } 
+        }
     }
 
     let (comments, total_pages, total_num) = query
