@@ -1,5 +1,53 @@
 <div class="layuimini-container layuimini-page-anim">
     <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>过滤条件</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" lay-filter="comment-search-form">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">url</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="url_filter" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">分类</label>
+                            <div class="layui-input-inline">
+                                <div id="post-category-selector"></div>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">标签</label>
+                            <div class="layui-input-inline">
+                                <div id="post-tags-selector"></div>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">年月</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="yearmonth_selector" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">发布状态</label>
+                            <div class="layui-input-inline">
+                                <select name="published_filter">
+                                    <option value="all" selected>全部</option>
+                                    <option value="unread">未发布</option>
+                                    <option value="readed">已发布</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon layui-icon-search"></i> 查询</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
         <script type="text/html" id="toolbarAdd">
             <div class="layui-btn-container">
                 <button class="layui-btn layui-btn-sm data-add-btn" lay-event="add"> 添加 </button>
@@ -17,11 +65,69 @@
 </div>
 
 <script>
-    layui.use(['form', 'table','miniPage','element'], function () {
+    layui.use(['form', 'table','miniPage','element','laydate','xmSelect'], function () {
         var $ = layui.jquery,
             form = layui.form,
             table = layui.table,
+            laydate = layui.laydate,
+            xmSelect = layui.xmSelect,
             miniPage = layui.miniPage;
+
+        form.render('select');
+
+        laydate.render({ 
+            elem: '#yearmonth_selector',
+            type: 'month',
+        });
+
+        var category_selector = xmSelect.render({
+            el: '#post-category-selector', 
+            radio: true,
+	        clickClose: true,
+            name: 'category_filter',
+            data: []
+        });
+
+        $.ajax('/admin/categorys/api/all', {
+            accept: 'json',
+            success: function(data) {
+                if(data.Ok) {
+                    var selector_data = [];
+                    data.Ok.forEach(function(category) {
+                        selector_data.push({name: category['display_text'], value: category.id})
+                    })
+
+                    category_selector.update({
+                        data: selector_data
+                    })
+                }
+            }
+        });
+
+        var tags_selector = xmSelect.render({
+            el: '#post-tags-selector',
+            name: 'tag_filter',
+            radio: true,
+	        clickClose: true,
+            filterable: true,
+            data: []
+        });
+
+        $.ajax('/admin/tags/api/all', {
+            accept: 'json',
+            success: function(data) {
+                if(data.Ok) {
+                    var selector_data = [];
+                    data.Ok.forEach(function(tag) {
+                        selector_data.push({name: tag['display_text'], value: tag.id})
+                    })
+
+                    tags_selector.update({
+                        data: selector_data
+                    })
+                }
+            }
+        });
 
         table.render({
             elem: '#currentTableId',

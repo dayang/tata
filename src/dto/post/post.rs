@@ -34,38 +34,18 @@ pub struct PostDetail {
     pub category: Category,
 }
 
-#[derive(Serialize)]
-pub struct PostDetailAdmin {
-    pub title: String,
-    pub url: String,
-    pub content: String,
-    pub summary: String,
-    pub thumbnail: String,
-    pub reads: i32,
-    pub likes: i32,
-    pub allow_comment: bool,
-    // pub comment_list_info: CommentListInfo,
-    pub create_time: String,
-    pub edit_time: String,
-    pub tags: Vec<Tag>,
-    pub category: Category,
-}
-
 #[derive(Serialize, Deserialize)]
 pub struct CreateOrUpdatePost {
+    pub id: i32,
     pub title: String,
     pub url: String,
     pub content: String,
     pub summary: String,
     pub thumbnail: String,
-    pub reads: i32,
-    pub likes: i32,
     pub allow_comment: bool,
-    // pub comment_list_info: CommentListInfo,
-    pub create_time: String,
-    pub edit_time: String,
-    pub tags: Vec<Tag>,
-    pub category: Category,
+    pub published: bool,
+    pub tags: Vec<i32>,
+    pub category_id: i32,
 }
 
 #[derive(Serialize, Ord, PartialOrd, Eq, PartialEq)]

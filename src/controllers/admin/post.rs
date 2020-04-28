@@ -53,7 +53,7 @@ pub fn edit_page(_user: User, conn: DbConn, id: i32) -> Result<Template, Status>
 
 #[put("/posts/edit", format = "json", data = "<update_post>")]
 pub fn edit(_user: User, conn: DbConn, update_post: Json<CreateOrUpdatePost>) -> JsonValue {
-    json!(post_service::create_or_update(&conn, update_post.0))
+    json!(post_service::update_post(&conn, update_post.0))
 }
 
 #[delete("/posts/delete/<id>")]
@@ -68,7 +68,7 @@ pub fn add_page() -> Result<Template, Status> {
 
 #[post("/posts/add", format = "json", data = "<create_post>")]
 pub fn add(_user: User, conn: DbConn, create_post: Json<CreateOrUpdatePost>) -> JsonValue {
-    json!(post_service::create_or_update(&conn, create_post.0))
+    json!(post_service::create_post(&conn, create_post.0))
 }
 
 #[get("/posts/post/<id>/tags")]

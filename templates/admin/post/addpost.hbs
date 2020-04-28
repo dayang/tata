@@ -108,7 +108,7 @@
             el: '#post-category-selector', 
             radio: true,
 	        clickClose: true,
-            name: 'category',
+            name: 'category_id',
             layVerify: 'required',
             layVerType: 'msg',
             data: []
@@ -183,19 +183,26 @@
 
         //监听提交
         form.on('submit(saveBtn)', function (data) {
-            console.log(data.field);
-            {{!-- $.ajax("/admin/comments/edit", {
-                method: "put",
+            var field = data.field;
+            $.ajax("/admin/posts/add", {
+                method: "post",
                 contentType: "application/json",
                 dataType: "json",
                 data: JSON.stringify({
                     id: 0,
-                    reply: editor.value(),
-                    show: data.field.show === 'true',
+                    title: field.title,
+                    url: field.url,
+                    summary: field.summary,
+                    thumbnail: field.thumbnail,
+                    content: editor.value(),
+                    allow_comment: field.allow_comment === 'true',
+                    published: field.published === 'true',
+                    tags: field.tags.split(',').map(function(t) {return parseInt(t);}),
+                    category_id: parseInt(field.category_id),
                 }),
                 success: function(data) {
                     if(data.Ok) {
-                        layer.msg("修改成功，刷新显示", {time: 1000 }, function () {
+                        layer.msg("新建成功，刷新显示", {time: 1000 }, function () {
                             layer.close(parentIndex);
                         });
                     } else {
@@ -203,7 +210,7 @@
                     }
                 }
             });
-            return false; --}}
+            return false;
         });
 
     });

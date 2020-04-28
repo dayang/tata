@@ -12,7 +12,7 @@ use crate::service::{category as category_service, get_dict_value};
 use crate::util::*;
 use chrono::{Datelike, NaiveDate, NaiveDateTime};
 use diesel::prelude::*;
-use diesel::sql_types::{Text, Timestamp};
+use diesel::sql_types::{Text, Timestamp, Integer};
 
 pub fn get_post_tags(conn: &SqliteConnection, by_post_id: i32) -> Result<Vec<Tag>, String> {
     tag.inner_join(posttag)
@@ -235,11 +235,63 @@ pub fn archive_posts(conn: &SqliteConnection) -> Result<Vec<PostYearArchive>, St
     Ok(year_archive)
 }
 
-pub fn create_or_update(
+pub fn create_post(
     conn: &SqliteConnection,
-    create_or_update: CreateOrUpdatePost,
+    create_feild: CreateOrUpdatePost,
 ) -> Result<usize, String> {
-    Err("ok".into())
+    use diesel::result::Error;
+    conn.transaction::<usize, Error, _>(|| {
+        diesel::insert_into(post).values((
+            title.eq(create_feild.title),
+            url.eq(create_feild.url),
+            summary.eq(create_feild.summary),
+            thumbnail.eq(create_feild.thumbnail),
+            content.eq(create_feild.content),
+            allow_comment.eq(create_feild.allow_comment),
+            published.eq(create_feild.published),
+            category_id.eq(create_feild.category_id),
+        )).execute(conn)?;
+
+        no_arg_sql_function!(last_insert_rowid, Integer);
+        let insert_id = post.select(last_insert_rowid).first::<i32>(conn)?;
+
+        let mut post_tags = vec![];
+        for tid in create_feild.tags {
+            post_tags.push((tag_id.eq(tid), post_id.eq(insert_id)));
+        }
+        let n = diesel::insert_into(posttag).values(&post_tags).execute(conn)?;
+        Ok(n)
+    }).map_err(err_str)
+}
+
+pub fn update_post(
+    conn: &SqliteConnection,
+    update_field: CreateOrUpdatePost,
+) -> Result<usize, String> {
+    use diesel::result::Error;
+    use diesel::dsl::now;
+    conn.transaction::<usize, Error, _>(|| {
+        diesel::update(post).filter(post_dsl::id.eq(update_field.id)).set((
+            title.eq(update_field.title),
+            url.eq(update_field.url),
+            summary.eq(update_field.summary),
+            thumbnail.eq(update_field.thumbnail),
+            content.eq(update_field.content),
+            allow_comment.eq(update_field.allow_comment),
+            published.eq(update_field.published),
+            category_id.eq(update_field.category_id),
+            edit_time.eq(now)
+        )).execute(conn)?;
+
+        diesel::delete(posttag.filter(posttag_dsl::post_id.eq(update_field.id))).execute(conn)?;
+
+        let mut post_tags = vec![];
+        for tid in update_field.tags {
+            post_tags.push((tag_id.eq(tid), post_id.eq(update_field.id)));
+        }
+        let n = diesel::insert_into(posttag).values(&post_tags).execute(conn)?;
+        Ok(n)
+    }).map_err(err_str)
 }
 
 pub fn delete(conn: &SqliteConnection, delete_id: i32) -> Result<usize, String> {
