@@ -3,7 +3,7 @@
         <fieldset class="table-search-fieldset">
             <legend>过滤条件</legend>
             <div style="margin: 10px 10px 10px 10px">
-                <form class="layui-form layui-form-pane" action="">
+                <form class="layui-form layui-form-pane" lay-filter="comment-search-form">
                     <div class="layui-form-item">
                         <div class="layui-inline">
                             <label class="layui-form-label">评论姓名</label>
@@ -20,19 +20,28 @@
                         <div class="layui-inline">
                             <label class="layui-form-label">评论类型</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="type_filter" autocomplete="off" class="layui-input">
+                                <select name="type_filter">
+                                    <option value="all" selected>全部</option>
+                                    <option value="post">博客</option>
+                                    <option value="page">Book</option>
+                                    <option value="message">留言</option>
+                                </select>
                             </div>
                         </div>
                         <div class="layui-inline">
                             <label class="layui-form-label">文章ID</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="id_filter" autocomplete="off" class="layui-input">
+                                <input type="text" name="postid_filter" autocomplete="off" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-inline">
                             <label class="layui-form-label">评论状态</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="unread_filter" autocomplete="off" class="layui-input">
+                                <select name="status_filter">
+                                    <option value="all" selected>全部</option>
+                                    <option value="unread">未读</option>
+                                    <option value="readed">已读</option>
+                                </select>
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -54,11 +63,63 @@
 </div>
 
 <script>
-    layui.use(['form', 'table','miniPage','element'], function () {
+    layui.use(['form', 'table','miniPage','element', 'tataUtil'], function () {
         var $ = layui.jquery,
             form = layui.form,
             table = layui.table,
+            util = layui.tataUtil,
             miniPage = layui.miniPage;
+
+        var hash = window.location.hash;
+        var form_value = {};
+        if(util.getQueryParam(hash, 'post_id') != null) {
+            form_value['postid_filter'] = util.getQueryParam(hash, 'post_id');
+        }
+    
+        if(util.getQueryParam(hash, 'type') != null) {
+            form_value['type_filter'] = util.getQueryParam(hash, 'type');
+        }
+        
+        form.val('comment-search-form', form_value);
+
+        // 渲染，否则select 显示不了
+        form.render('select');
+
+        function get_where_params() {
+            var v = form.val('comment-search-form');
+            var params = {};
+            if(v.username_filter) {
+                params.username = v.username_filter;
+            }
+
+            if(v.email_filter) {
+                params.email = v.email_filter;
+            }
+
+            if(v.type_filter === 'post') {
+                params.comment_type = 1;
+            } else if(v.type_filter === 'page') {
+                params.comment_type = 2;
+            } else if(v.type_filter === 'message') {
+                params.comment_type = 3;
+            } else {
+                params.comment_type = null;
+            }
+
+            if(v.postid_filter) {
+                params.for_id = parseInt(v.postid_filter);
+            }
+
+            if(v.status_filter === 'unread') {
+                params.unread = true;
+            } else if(v.status_filter === 'readed') {
+                params.unread = false;
+            } else {
+                params.unread = null;
+            }
+
+            return params;
+        }
 
         table.render({
             elem: '#currentTableId',
@@ -101,9 +162,7 @@
                 },
                 {title: '操作', width: 160, toolbar: '#currentTableBar', fixed: "right", align: "center"}
             ]],
-            where: {
-
-            },
+            where: get_where_params(),
             parseData: function(res){
                 if(res.Ok) {
                     return {
@@ -162,6 +221,19 @@
                     layer.close(index);
                 });
             }
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            table.reload('currentTableId', {
+                page: {
+                    curr: 1
+                },
+                where: get_where_params(),
+            });
+
+            return false;
         });
     });
 </script>

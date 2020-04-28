@@ -137,6 +137,8 @@
                     });
                     layer.close(index);
                 });
+            } else if (obj.event === 'view_comment') {
+                miniPage.hashChange('/admin/comments/list?type=post&post_id=' + data.id);
             }
         });
     });

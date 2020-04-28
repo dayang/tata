@@ -27,6 +27,7 @@ layui.config({
     wangEditor: 'wangEditor/wangEditor', // wangEditor富文本扩展
     layarea: 'layarea/layarea', //  省市县区三级联动下拉选择器
     xmSelect: 'xm-select/xm-select',// 多选下拉框
+    tataUtil: 'tatautil/tatautil'
 });
 
 // 加载非layui模块js文件

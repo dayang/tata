@@ -138,6 +138,16 @@ layui.define(["element", "jquery"], function (exports) {
             }
         },
 
+        // 获取href路径，不包含查询参数
+        getHrefPath: function(href) {
+            var index = href.indexOf("?");
+            if (index == -1) {
+                return href;
+            } else {
+                return href.substring(0, index);
+            }
+        },
+
         /**
          * 构建页面标题数组
          * @param href
@@ -148,7 +158,7 @@ layui.define(["element", "jquery"], function (exports) {
                 newArray = [];
             for (key in menuList) {
                 var item = menuList[key];
-                if (item.href === href) {
+                if (miniPage.getHrefPath(item.href) === miniPage.getHrefPath(href)) {
                     array.push(item.title);
                     break;
                 }
@@ -204,6 +214,8 @@ layui.define(["element", "jquery"], function (exports) {
          * @param tabId
          */
         listenSwitchSingleModule: function (tabId) {
+            tabId = miniPage.getHrefPath(tabId);
+            console.log("single module:" + tabId);
             $("[layuimini-href]").each(function () {
                 if ($(this).attr("layuimini-href") === tabId) {
                     // 自动展开菜单栏
@@ -235,8 +247,9 @@ layui.define(["element", "jquery"], function (exports) {
          * @param tabId
          */
         listenSwitchMultiModule: function (tabId) {
+            tabId = miniPage.getHrefPath(tabId);
             $("[layuimini-href]").each(function () {
-                if ($(this).attr("layuimini-href") === tabId) {
+                if (miniPage.getHrefPath($(this).attr("layuimini-href")) === tabId) {
 
                     // 自动展开菜单栏
                     var addMenuClass = function ($element, type) {
@@ -383,7 +396,7 @@ layui.define(["element", "jquery"], function (exports) {
                     } else {
                         miniPage.listenSwitchSingleModule(href);
                     }
-                }
+               }
             };
         },
 
