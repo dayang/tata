@@ -88,13 +88,8 @@
         function get_where_params() {
             var v = form.val('comment-search-form');
             var params = {};
-            if(v.username_filter) {
-                params.username = v.username_filter;
-            }
-
-            if(v.email_filter) {
-                params.email = v.email_filter;
-            }
+            params.username = v.username_filter;
+            params.email = v.email_filter;
 
             if(v.type_filter === 'post') {
                 params.comment_type = 1;
@@ -106,9 +101,7 @@
                 params.comment_type = null;
             }
 
-            if(v.postid_filter) {
-                params.for_id = parseInt(v.postid_filter);
-            }
+            params.for_id = v.postid_filter;
 
             if(v.status_filter === 'unread') {
                 params.unread = true;
