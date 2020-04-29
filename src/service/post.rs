@@ -51,62 +51,30 @@ pub fn get_posts_list(
 
     let paged_posts: (Vec<Post>, i64, i64);
 
-    if let Some(by_id) = by_category_id {
-        let category_find = category
-            .find(by_id)
-            .load::<Category>(conn)
-            .map_err(err_str)?;
-        let mut paged_posts_query = Post::belonging_to(&category_find).into_boxed();
-        paged_posts_query = match is_published {
-            Some(v) => paged_posts_query.filter(published.eq(v)),
-            None => paged_posts_query,
-        };
-        paged_posts = paged_posts_query
-            .paginate(page as i64)
-            .per_page(page_num as i64)
-            .load_and_count_pages::<Post>(conn)
-            .map_err(err_str)?;
-    } else if let Some(by_id) = by_tag_id {
-        let tag_find = tag.find(by_id).load::<Tag>(conn).map_err(err_str)?;
+    let mut paged_posts_query = post.into_boxed();
+    if let Some(by_id) = by_tag_id {
+        paged_posts_query = paged_posts_query.filter(post_dsl::id.eq_any(posttag.filter(tag_id.eq(by_id)).select(post_id)));
+    } 
+    
 
-        let mut paged_posts_query = Posttag::belonging_to(&tag_find)
-            .inner_join(post)
-            .into_boxed();
-        paged_posts_query = match is_published {
-            Some(v) => paged_posts_query.filter(published.eq(v)),
-            None => paged_posts_query,
-        };
-        paged_posts = paged_posts_query
-            .paginate(page as i64)
-            .per_page(page_num as i64)
-            .load_and_count_pages::<(Posttag, Post)>(conn)
-            .map_err(err_str)
-            .map(|t| (t.0.into_iter().map(|r| r.1).collect(), t.1, t.2))?;
-    } else if let Some((year, month)) = year_month {
-        sql_function!(fn strftime(x: Text, y: Timestamp) -> Text);
-        let mut paged_posts_query = post.into_boxed();
-        paged_posts_query = match is_published {
-            Some(v) => paged_posts_query.filter(published.eq(v)),
-            None => paged_posts_query,
-        };
-        paged_posts = paged_posts_query
-            .filter(strftime("%Y%m", create_time).eq(format!("{:04}{:02}", year, month)))
-            .paginate(page as i64)
-            .per_page(page_num as i64)
-            .load_and_count_pages::<Post>(conn)
-            .map_err(err_str)?;
-    } else {
-        let mut paged_posts_query = post.into_boxed();
-        paged_posts_query = match is_published {
-            Some(v) => paged_posts_query.filter(published.eq(v)),
-            None => paged_posts_query,
-        };
-        paged_posts = paged_posts_query
-            .paginate(page as i64)
-            .per_page(page_num as i64)
-            .load_and_count_pages::<Post>(conn)
-            .map_err(err_str)?;
+    if let Some(by_id) = by_category_id {
+        paged_posts_query = paged_posts_query.filter(category_id.eq(by_id));
     }
+    
+    if let Some(v) = is_published {
+        paged_posts_query = paged_posts_query.filter(published.eq(v));
+    }
+
+    if let Some((year, month)) = year_month {
+        sql_function!(fn strftime(x: Text, y: Timestamp) -> Text);
+        paged_posts_query = paged_posts_query.filter(strftime("%Y%m", create_time).eq(format!("{:04}{:02}", year, month)));
+    }
+
+    paged_posts = paged_posts_query
+            .paginate(page as i64)
+            .per_page(page_num as i64)
+            .load_and_count_pages::<Post>(conn)
+            .map_err(err_str)?;
 
     post_list_info.total_num = paged_posts.2;
     post_list_info.total_pages = paged_posts.1;
