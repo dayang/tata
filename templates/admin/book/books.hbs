@@ -1,0 +1,153 @@
+<div class="layuimini-container layuimini-page-anim">
+    <div class="layuimini-main">
+        <script type="text/html" id="toolbarAdd">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm data-add-btn" lay-event="add"> 添加 </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-xs data-count-edit" lay-event="edit_pages">编辑内容</a>
+            <a class="layui-btn layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+    </div>
+</div>
+
+<script>
+    layui.use(['table','miniPage','element'], function () {
+        var $ = layui.jquery,
+            table = layui.table,
+            miniPage = layui.miniPage;
+
+        table.render({
+            elem: '#currentTableId',
+            url: '/admin/books/api/list',
+            toolbar: '#toolbarAdd',
+            defaultToolbar: ['filter', 'exports', 'print'],
+            cols: [[
+                {field: 'id', width: 60, title: 'ID', sort: true},
+                {field: 'display_text', width: 200, title: '名称'},
+                {field: 'name', title: '链接', minWidth: 80, 
+                    templet: function(d){
+                        return '<a href="/books/book/' + d.name + '" target="_blank" class="layui-table-link">' + d.name +'</a>';
+                    }
+                },
+                {field: 'description', width: 250, title: '描述'},
+                {field: 'published', width: 90, title: '发布状态',
+                    templet: function(d){
+                        if (!d.published) {
+                            return '<span style="color:red;">未发布</span>'
+                        } else {
+                            return '<span>已发布</span>'
+                        }
+                    }
+                },
+                {field: 'create_time', width: 150, title: '创建时间'},
+                {title: '操作', minWidth: 200, toolbar: '#currentTableBar', fixed: "right", align: "center"}
+            ]],
+            parseData: function(res){
+                if(res.Ok) {
+                    return {
+                        "code": 0,
+                        "msg": "书籍列表", //解析提示文本
+                        "count": res.Ok.total_num, //解析数据长度
+                        "data": res.Ok.page_items //解析数据列表
+                    };
+                } else {
+                    return {
+                        "code": 1,
+                        "msg": res.Err,
+                    }
+                }
+            },
+            page: true,
+            limit: 10,
+            limits: [10,20,30,50]
+        });
+
+        /**
+         * toolbar事件监听
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'add') {   // 监听添加操作
+                var content = miniPage.getHrefContent('/admin/books/add');
+                var openWH = miniPage.getOpenWidthHeight();
+
+                var index = layer.open({
+                    title: '添加书籍',
+                    type: 1,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: [openWH[0] + 'px', openWH[1] + 'px'],
+                    offset: [openWH[2] + 'px', openWH[3] + 'px'],
+                    content: content,
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            }
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                var content = miniPage.getHrefContent('/admin/books/edit/' + data.id);
+                var openWH = miniPage.getOpenWidthHeight();
+
+                var index = layer.open({
+                    title: '编辑书籍信息',
+                    type: 1,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: [openWH[0] + 'px', openWH[1] + 'px'],
+                    offset: [openWH[2] + 'px', openWH[3] + 'px'],
+                    content: content,
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
+            } else if (obj.event === 'edit_pages') {
+                var content = miniPage.getHrefContent('/admin/books/edit_pages/' + data.id);
+                var openWH = miniPage.getOpenWidthHeight();
+
+                var index = layer.open({
+                    title: '编辑书籍内容',
+                    type: 1,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: [openWH[0] + 'px', openWH[1] + 'px'],
+                    offset: [openWH[2] + 'px', openWH[3] + 'px'],
+                    content: content,
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
+            } else if (obj.event === 'delete') {
+                layer.confirm('确定删除该书籍？删除不可恢复，三思', function (index) {
+                    $.ajax("/admin/books/delete/" + data.id, {
+                        method: "delete",
+                        dataType: "json",
+                        success: function(data) {
+                            if(data.Ok) {
+                                layer.msg("删除成功", {time: 1000 }, function () {
+                                    obj.del();
+                                });
+                            } else {
+                                layer.msg(data.Err);
+                            }
+                        }
+                    });
+                    layer.close(index);
+                });
+            }
+        });
+    });
+</script>

@@ -12,7 +12,7 @@ use crate::service::{category as category_service, get_dict_value};
 use crate::util::*;
 use chrono::{Datelike, NaiveDate, NaiveDateTime};
 use diesel::prelude::*;
-use diesel::sql_types::{Text, Timestamp, Integer};
+use diesel::sql_types::{Integer, Text, Timestamp};
 
 pub fn get_post_tags(conn: &SqliteConnection, by_post_id: i32) -> Result<Vec<Tag>, String> {
     tag.inner_join(posttag)
@@ -53,28 +53,29 @@ pub fn get_posts_list(
 
     let mut paged_posts_query = post.into_boxed();
     if let Some(by_id) = by_tag_id {
-        paged_posts_query = paged_posts_query.filter(post_dsl::id.eq_any(posttag.filter(tag_id.eq(by_id)).select(post_id)));
-    } 
-    
+        paged_posts_query = paged_posts_query
+            .filter(post_dsl::id.eq_any(posttag.filter(tag_id.eq(by_id)).select(post_id)));
+    }
 
     if let Some(by_id) = by_category_id {
         paged_posts_query = paged_posts_query.filter(category_id.eq(by_id));
     }
-    
+
     if let Some(v) = is_published {
         paged_posts_query = paged_posts_query.filter(published.eq(v));
     }
 
     if let Some((year, month)) = year_month {
         sql_function!(fn strftime(x: Text, y: Timestamp) -> Text);
-        paged_posts_query = paged_posts_query.filter(strftime("%Y%m", create_time).eq(format!("{:04}{:02}", year, month)));
+        paged_posts_query = paged_posts_query
+            .filter(strftime("%Y%m", create_time).eq(format!("{:04}{:02}", year, month)));
     }
 
     paged_posts = paged_posts_query
-            .paginate(page as i64)
-            .per_page(page_num as i64)
-            .load_and_count_pages::<Post>(conn)
-            .map_err(err_str)?;
+        .paginate(page as i64)
+        .per_page(page_num as i64)
+        .load_and_count_pages::<Post>(conn)
+        .map_err(err_str)?;
 
     post_list_info.total_num = paged_posts.2;
     post_list_info.total_pages = paged_posts.1;
@@ -209,16 +210,18 @@ pub fn create_post(
 ) -> Result<usize, String> {
     use diesel::result::Error;
     conn.transaction::<usize, Error, _>(|| {
-        diesel::insert_into(post).values((
-            title.eq(create_feild.title),
-            url.eq(create_feild.url),
-            summary.eq(create_feild.summary),
-            thumbnail.eq(create_feild.thumbnail),
-            content.eq(create_feild.content),
-            allow_comment.eq(create_feild.allow_comment),
-            published.eq(create_feild.published),
-            category_id.eq(create_feild.category_id),
-        )).execute(conn)?;
+        diesel::insert_into(post)
+            .values((
+                title.eq(create_feild.title),
+                url.eq(create_feild.url),
+                summary.eq(create_feild.summary),
+                thumbnail.eq(create_feild.thumbnail),
+                content.eq(create_feild.content),
+                allow_comment.eq(create_feild.allow_comment),
+                published.eq(create_feild.published),
+                category_id.eq(create_feild.category_id),
+            ))
+            .execute(conn)?;
 
         no_arg_sql_function!(last_insert_rowid, Integer);
         let insert_id = post.select(last_insert_rowid).first::<i32>(conn)?;
@@ -227,29 +230,35 @@ pub fn create_post(
         for tid in create_feild.tags {
             post_tags.push((tag_id.eq(tid), post_id.eq(insert_id)));
         }
-        let n = diesel::insert_into(posttag).values(&post_tags).execute(conn)?;
+        let n = diesel::insert_into(posttag)
+            .values(&post_tags)
+            .execute(conn)?;
         Ok(n)
-    }).map_err(err_str)
+    })
+    .map_err(err_str)
 }
 
 pub fn update_post(
     conn: &SqliteConnection,
     update_field: CreateOrUpdatePost,
 ) -> Result<usize, String> {
-    use diesel::result::Error;
     use diesel::dsl::now;
+    use diesel::result::Error;
     conn.transaction::<usize, Error, _>(|| {
-        diesel::update(post).filter(post_dsl::id.eq(update_field.id)).set((
-            title.eq(update_field.title),
-            url.eq(update_field.url),
-            summary.eq(update_field.summary),
-            thumbnail.eq(update_field.thumbnail),
-            content.eq(update_field.content),
-            allow_comment.eq(update_field.allow_comment),
-            published.eq(update_field.published),
-            category_id.eq(update_field.category_id),
-            edit_time.eq(now)
-        )).execute(conn)?;
+        diesel::update(post)
+            .filter(post_dsl::id.eq(update_field.id))
+            .set((
+                title.eq(update_field.title),
+                url.eq(update_field.url),
+                summary.eq(update_field.summary),
+                thumbnail.eq(update_field.thumbnail),
+                content.eq(update_field.content),
+                allow_comment.eq(update_field.allow_comment),
+                published.eq(update_field.published),
+                category_id.eq(update_field.category_id),
+                edit_time.eq(now),
+            ))
+            .execute(conn)?;
 
         diesel::delete(posttag.filter(posttag_dsl::post_id.eq(update_field.id))).execute(conn)?;
 
@@ -257,9 +266,12 @@ pub fn update_post(
         for tid in update_field.tags {
             post_tags.push((tag_id.eq(tid), post_id.eq(update_field.id)));
         }
-        let n = diesel::insert_into(posttag).values(&post_tags).execute(conn)?;
+        let n = diesel::insert_into(posttag)
+            .values(&post_tags)
+            .execute(conn)?;
         Ok(n)
-    }).map_err(err_str)
+    })
+    .map_err(err_str)
 }
 
 pub fn delete(conn: &SqliteConnection, delete_id: i32) -> Result<usize, String> {

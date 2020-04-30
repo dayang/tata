@@ -142,13 +142,13 @@ pub fn get_paged_comment_admin(
     if let Some(v) = unread_filter {
         query = query.filter(unread.eq(v));
     }
-    
+
     if let Some(for_type) = comment_for {
         query = query.filter(comment_type.eq(for_type));
         if for_type != COMMENT_FOR_MESSAGE_BORD {
             if let Some(for_id) = master_id {
                 query = query.filter(foreign_id.eq(for_id));
-            } 
+            }
         }
     }
 

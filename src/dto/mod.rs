@@ -1,3 +1,4 @@
+pub mod book;
 pub mod comment;
 pub mod friendlink;
 pub mod pagination;

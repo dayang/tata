@@ -72,7 +72,7 @@ pub fn add(_user: User, conn: DbConn, create_post: Json<CreateOrUpdatePost>) -> 
 }
 
 #[get("/posts/post/<id>/tags")]
-pub fn get_tags(_user:User, conn: DbConn, id: i32) -> JsonValue {
+pub fn get_tags(_user: User, conn: DbConn, id: i32) -> JsonValue {
     json!(post_service::get_post_tags(&conn, id))
 }
 

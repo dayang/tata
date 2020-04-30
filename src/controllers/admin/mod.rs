@@ -4,6 +4,7 @@ pub mod comment;
 pub mod dict;
 pub mod friendlink;
 pub mod logininfo;
+pub mod page;
 pub mod post;
 pub mod tag;
 pub mod user;
@@ -88,6 +89,7 @@ pub fn routes() -> Vec<rocket::Route> {
     routes.append(&mut friendlink::routes());
     routes.append(&mut comment::routes());
     routes.append(&mut post::routes());
+    routes.append(&mut book::routes());
 
     routes
 }

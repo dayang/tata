@@ -164,3 +164,13 @@ insert into comment (user_name, email, content, show, foreign_id, comment_type) 
 insert into comment (user_name, email, content, show, foreign_id, comment_type, reply)  values("Alan", "guest@test.com","博主，这个怎么做到的？",1,4,1,"哈哈，我也不知道呢");
 insert into comment (user_name, email, content, show, foreign_id, comment_type, reply)  values("Smith", "guest@test.com","I have learned a lot, thanks",1,4,1,"you are welcome");
 insert into comment (user_name, email, content, show, foreign_id, comment_type, reply)  values("Smith", "guest@test.com","I have learned a lot, thanks",1,3,1,"you are welcome");
+
+
+insert into book (name, display_text, cover, description, published) values("leetcode-rs", "leetcode刷题", "", "leetcode刷题题解和总结", 1);
+insert into book (name, display_text, cover, description, published) values("rust-series", "rust系列", "", "测试", 1);
+insert into book (name, display_text, cover, description, published) values("rocket", "rocket框架", "", "测试rocket", 1);
+
+insert into page (title, url, content, reads, likes, allow_comment, published, create_time, edit_time, parent_id, book_id, display_order) values("git 学习", "learn-git",  "这是一篇学习git的文章", 45, 2, 0, 1,"2019-12-20 11:00:23","2019-12-20 11:00:23", -1, 1, 0);
+insert into page (title, url, content, reads, likes, allow_comment, published, create_time, edit_time, parent_id, book_id, display_order) values("《堂吉诃德》", "man-of-la-mancha", "《堂吉诃德》读后感", 120, 30, 1, 1,"2020-03-20 11:00:23","2020-03-20 11:00:23",1,1,0);
+insert into page (title, url, content, reads, likes, allow_comment, published, parent_id, book_id, display_order) values("2020年总结", "2020-year-self-summary", "2020 是这么过得",45, 2, 1, 1,2,1,0);
+insert into page (title, url, content, reads, likes, allow_comment, published, parent_id, book_id, display_order) values("golang 发送接收组播数据", "golang-multicast", "test test test", 45, 2, 1, 1,1,1,1);
