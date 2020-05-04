@@ -123,6 +123,10 @@
         var $ = layui.jquery,
             layer = layui.layer,
             miniAdmin = layui.miniAdmin;
+        
+        // 将jquery 暴露给全局
+        window.jQuery = $;
+        window.$ = $;
 
         var options = {
             iniUrl: "/static/dist/api/init.json",    // 初始化接口

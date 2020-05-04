@@ -1,0 +1,231 @@
+<link href="https://cdn.bootcss.com/simplemde/1.11.2/simplemde.min.css" rel="stylesheet">
+<div class="layuimini-main">
+
+    <div class="layui-form layuimini-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label required">url</label>
+            <div class="layui-input-block">
+                <input type="text" name="url" lay-verify="required" lay-reqtext="url不能为空" value="{{post.url}}" class="layui-input">
+                <tip>url中显示的英文名称，不能重复，一般不要修改</tip>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">标题</label>
+            <div class="layui-input-block">
+                <input type="text" name="title" lay-verify="required" lay-reqtext="标题不能为空" value="{{post.title}}" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">封面图片链接</label>
+            <div class="layui-input-block">
+                <input type="text" name="thumbnail" value="{{post.thumbnail}}" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">上传图片</label>
+            <div class="layui-input-block">
+                <button type="button" id="upload-img-btn" class="layui-btn">上传图片</button>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">摘要</label>
+            <div class="layui-input-block">
+                <textarea name="summary" lay-verify="required" lay-reqtext="摘要内容不能为空" placeholder="请输入摘要"
+                            class="layui-textarea">{{post.summary}}</textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">分类</label>
+            <div class="layui-input-block">
+                <div id="post-category-selector"></div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">标签</label>
+            <div class="layui-input-block">
+                <div id="post-tags-selector"></div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">开启评论</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="allow_comment" lay-skin="switch" lay-text="开启|不开启" value="true" {{#if post.allow_comment}}checked{{/if}}>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否发布</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="published" {{#if post.published}}checked{{/if}} lay-skin="switch" lay-text="发布|不发布" value="true">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">内容</label>
+            <div class="layui-input-block">
+                <textarea name="content" id="post-editor" placeholder="请输入内容（支持 markdown 格式）"
+                            class="layui-textarea">{{ post.content }}</textarea>
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="saveBtn">确认保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    layui.use(['form', 'table', 'xmSelect', 'simplemde', 'upload', 'layer'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            table = layui.table,
+            xmSelect = layui.xmSelect,
+            upload = layui.upload,
+            $ = layui.$;
+
+        /**
+         * 初始化表单，要加上，不然刷新部分组件可能会不加载
+         */
+        form.render();
+
+        var editor = new SimpleMDE({
+            element: document.getElementById("post-editor"),
+            spellChecker: false,
+            toolbarTips: false,
+            status: false,
+        });
+
+        var category_selector = xmSelect.render({
+            el: '#post-category-selector', 
+            radio: true,
+	        clickClose: true,
+            name: 'category_id',
+            layVerify: 'required',
+            layVerType: 'msg',
+            data: []
+        });
+
+        $.ajax('/admin/categorys/api/all', {
+            accept: 'json',
+            success: function(data) {
+                if(data.Ok) {
+                    var selector_data = [];
+                    data.Ok.forEach(function(category) {
+                        selector_data.push({name: category['display_text'], value: category.id, selected: category.id === {{post.category_id}}})
+                    })
+
+                    category_selector.update({
+                        data: selector_data
+                    })
+                }
+            }
+        });
+
+        var tags_selector = xmSelect.render({
+            el: '#post-tags-selector',
+            name: 'tags',
+            layVerify: 'required',
+            layVerType: 'msg',
+            filterable: true,
+            data: []
+        });
+
+        $.ajax('/admin/tags/api/all', {
+            accept: 'json',
+            success: function(data) {
+                if(data.Ok) {
+                    var selector_data = [];
+                    data.Ok.forEach(function(tag) {
+                        selector_data.push({name: tag['display_text'], value: tag.id})
+                    });
+
+                    $.ajax('/admin/posts/post/{{post.id}}/tags', {
+                        accept: 'json',
+                        success: function(post_tags) {
+                            post_tags.Ok.forEach(function(post_tag){
+                                for(var i in selector_data) {
+                                    if(selector_data[i].value === post_tag.id) {
+                                        selector_data[i].selected = true;
+                                    }
+                                }
+                            });
+
+                            tags_selector.update({
+                                data: selector_data
+                            });
+                        }
+                    })
+                }
+            }
+        });
+
+        upload.render({
+            elem: '#upload-img-btn',
+            url: '/upload/',
+            accept: 'images',
+            acceptMime: 'image/*',
+            done: function(res){
+                layer.open({
+                    title: "上传成功",
+                    shadeClose: false,
+                    content: '\<input type="text" class="layui-input" id="img-src-link" readonly value="图片链接">\<\/input>',
+                    btn: ['复制链接'],
+                    btnAlign: 'c',
+                    yes: function(index, layero){
+                        layero.context.getElementById("img-src-link").select();
+                        document.execCommand("Copy");
+                        layer.close(index);
+                    }
+                });
+            },
+            error: function(){
+                layer.msg("出错了", {icon: 2});
+            }
+        });
+
+        // 当前弹出层，防止ID被覆盖
+        var parentIndex = layer.index;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            var field = data.field;
+            $.ajax("/admin/posts/edit", {
+                method: "put",
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify({
+                    id: {{post.id}},
+                    title: field.title,
+                    url: field.url,
+                    summary: field.summary,
+                    thumbnail: field.thumbnail,
+                    content: editor.value(),
+                    allow_comment: field.allow_comment === 'true',
+                    published: field.published === 'true',
+                    tags: field.tags.split(',').map(function(t) {return parseInt(t);}),
+                    category_id: parseInt(field.category_id),
+                }),
+                success: function(data) {
+                    if(data.Ok) {
+                        layer.msg("修改成功，刷新显示", {time: 1000 }, function () {
+                            layer.close(parentIndex);
+                        });
+                    } else {
+                        layer.msg(data.Err);
+                    }
+                }
+            });
+            return false;
+        });
+
+    });
+</script>

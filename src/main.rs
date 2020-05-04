@@ -87,6 +87,8 @@ fn rocket() -> Rocket {
         )
         // .mount("/category", routes![controllers::category])
         .mount("/posts", controllers::post::routes())
+        .mount("/books/page", controllers::page::routes())
+        .mount("/books", controllers::book::routes())
         //.mount("/admin", controllers::admin::routes())
         .mount("/static", StaticFiles::from("static"))
         .mount("/captcha", routes![controllers::captcha::get_captcha])
@@ -103,6 +105,10 @@ fn rocket() -> Rocket {
             engines.handlebars.register_helper(
                 "comment_type_label",
                 Box::new(crate::helpers::comment_type_helper),
+            );
+            engines.handlebars.register_helper(
+                "book_catalog",
+                Box::new(crate::helpers::book_catalog_helper),
             );
         }))
 }

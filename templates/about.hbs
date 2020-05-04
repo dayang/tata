@@ -50,7 +50,7 @@
 {{/inline}}
 
 {{#*inline "script-block"}}
-<script id="test" type="text/template">
+<script id="friendlink-form" type="text/template">
 <form class="layui-form" action="" style="margin: 20px;">
   <div class="layui-form-item">
     <label class="layui-form-label">博客名称</label>
@@ -89,7 +89,7 @@
                 title: "申请友链",
                 area: "400px",
                 offset: '100px',
-                content: $('#test').html(),
+                content: $('#friendlink-form').html(),
                 success: function(layero, index){
                     form.on('submit(applyFriendlinkForm)', function(data){
                         $.ajax('/friendlink/apply', {

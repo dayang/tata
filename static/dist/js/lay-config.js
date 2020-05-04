@@ -25,8 +25,13 @@ layui.config({
 // 加载非layui模块js文件
 layui.extend({
     simplemde: 'simplemde/simplemde.min',
+    jqtree: 'jqtree/tree.jquery'
 });
 
 layui.define(function(exports){
     exports('simplemde', null);
+});
+
+layui.define(function(exports) {
+    exports('jqtree', null);
 });

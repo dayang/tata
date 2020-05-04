@@ -1,0 +1,54 @@
+{{#*inline "header-block"}}
+<style>
+.book-catalogs a{
+    display: block;
+    border: 1px dotted #ddd;
+    padding: 3px 10px;
+    margin: 3px 0;
+}
+.book-catalogs a:hover{
+    color: #2474b5;
+}
+.level-1{
+    margin-left: 0px;
+}
+.level-2{
+    margin-left: 20px;
+}
+.level-3{
+    margin-left: 40px;
+}
+.level-4{
+    margin-left: 60px;
+}
+.level-5{
+    margin-left: 80px;
+}
+</style>
+{{/inline}}
+
+{{#*inline "title"}}
+{{ viewbag.title }}
+{{/inline}}
+
+{{#*inline "content"}}
+
+<div class="layui-card">
+    <div class="layui-card-header">{{ book.display_text }}</div>
+    <div class="layui-card-body">
+        <p>{{book.description}}</p>
+        <h3>目录：</h3>
+        <div class="book-catalogs">
+            {{book_catalog catalog}}
+        </div>
+    </div>
+</div>
+{{/inline}}
+
+{{#*inline "script-block"}}
+<script>
+    
+</script>
+{{/inline}}
+
+{{~> base ~}}

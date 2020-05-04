@@ -9,7 +9,7 @@
         <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
 
         <script type="text/html" id="currentTableBar">
-            <a class="layui-btn layui-btn-xs data-count-edit" lay-event="edit_pages">编辑内容</a>
+            <a class="layui-btn layui-btn-xs data-count-edit" lay-event="edit_catalog">编辑目录</a>
             <a class="layui-btn layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
@@ -29,8 +29,8 @@
             defaultToolbar: ['filter', 'exports', 'print'],
             cols: [[
                 {field: 'id', width: 60, title: 'ID', sort: true},
-                {field: 'display_text', width: 200, title: '名称'},
-                {field: 'name', title: '链接', minWidth: 80, 
+                {field: 'display_text', width: 160, title: '名称'},
+                {field: 'name', title: '链接', minWidth: 120, 
                     templet: function(d){
                         return '<a href="/books/book/' + d.name + '" target="_blank" class="layui-table-link">' + d.name +'</a>';
                     }
@@ -108,16 +108,17 @@
                     offset: [openWH[2] + 'px', openWH[3] + 'px'],
                     content: content,
                 });
+        
                 $(window).on("resize", function () {
                     layer.full(index);
                 });
                 return false;
-            } else if (obj.event === 'edit_pages') {
-                var content = miniPage.getHrefContent('/admin/books/edit_pages/' + data.id);
+            } else if (obj.event === 'edit_catalog') {
+                var content = miniPage.getHrefContent('/admin/books/edit_catalog/' + data.id);
                 var openWH = miniPage.getOpenWidthHeight();
 
                 var index = layer.open({
-                    title: '编辑书籍内容',
+                    title: '编辑目录',
                     type: 1,
                     shade: 0.2,
                     maxmin:true,

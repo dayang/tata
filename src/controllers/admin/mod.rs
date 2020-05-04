@@ -90,6 +90,7 @@ pub fn routes() -> Vec<rocket::Route> {
     routes.append(&mut comment::routes());
     routes.append(&mut post::routes());
     routes.append(&mut book::routes());
+    routes.append(&mut page::routes());
 
     routes
 }

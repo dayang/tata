@@ -58,14 +58,14 @@ pub fn add(_user: User, conn: DbConn, create_book: Json<Book>) -> JsonValue {
     json!(book_service::create_book(&conn, create_book.0))
 }
 
-#[get("/books/edit_pages/<id>")]
-pub fn edit_pages_page(_user: User, conn: DbConn, id: i32) -> Result<Template, Status> {
+#[get("/books/edit_catalog/<id>")]
+pub fn edit_catalog_page(_user: User, conn: DbConn, id: i32) -> Result<Template, Status> {
     let mut view_data = ViewData::default();
     match book_service::get_book(&conn, id) {
         Ok(book) => {
             view_data.add("book", book);
             Ok(Template::render(
-                "admin/book/editbookpages",
+                "admin/book/editbookcatalog",
                 view_data.to_json(),
             ))
         }
@@ -87,7 +87,7 @@ pub fn routes() -> Vec<rocket::Route> {
         delete,
         add_page,
         add,
-        edit_pages_page,
+        edit_catalog_page,
         get_book_catalog
     ]
 }

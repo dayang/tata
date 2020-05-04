@@ -1,0 +1,116 @@
+{{#*inline "header-block"}}
+<style>  
+    .book-list-item {
+        border-top: 1px dashed #ddd;
+    }
+
+    .book-info{
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .book-title a{
+        display: inline-block;
+        width: 100%;
+        margin: 15px 0 3px 0;
+        color: #585356;
+        font-weight: 500;
+        font-family: Lato,"Microsoft YaHei",sans-serif;
+    }
+
+    .book-title a:hover{
+        color: #2474b5;
+        transition: color 0.3s ease;
+    }
+
+    .book-thumb {
+        width: 180px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .book-meta span{
+        font-size: .7rem;
+        color: #999;
+        line-height: .7rem;
+    }
+
+    .book-meta a:hover{
+        color: #eee;
+        background-color: #2474b5;
+        transition: all .2s ease;
+    }
+
+    .book-summary{
+        padding: 5px 0;
+    }
+
+    #pagination{
+        text-align: center;
+    }
+
+</style>
+{{/inline}}
+
+{{#*inline "title"}}
+{{ viewbag.title }}
+{{/inline}}
+
+{{#*inline "content"}}
+
+<div class="layui-card">
+    <div class="layui-card-header">{{ viewbag.list_title }}</div>
+    <div class="layui-card-body">
+        {{#each book_list_info.page_items}}
+        <div class="book-list-item">
+            {{#if (not_empty_str cover) }}
+            <div class="book-thumb layui-hide-xs">
+                <a href="/books/book/{{name}}">
+    	            <img style="width: 160px;max-height: 100%;" src="{{cover}}" alt="图片呢？(｡•ˇ‸ˇ•｡)">
+                </a>
+            </div>
+            {{/if}}
+            <div class="book-info">
+                <h2 class="book-title">
+                    <a href="/books/book/{{name}}">{{ display_text }}</a>
+                </h2>
+                
+                <div class="book-meta">
+                    <span>{{ create_time }}</span>
+                </div>
+                <p class="book-summary">{{ description }}</p>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+    {{#if (gt book_list_info.total_pages 1)}}
+    <div id="pagination"></div>
+    {{/if}}
+</div>
+{{/inline}}
+
+{{#*inline "script-block"}}
+<script>
+    layui.use('laypage', function(){
+        var laypage = layui.laypage;
+        
+        laypage.render({
+            elem: 'pagination',
+            theme: '#2474b5',
+            count: {{ book_list_info.total_num }},
+            limit: {{ book_list_info.per_page }},
+            curr: {{ book_list_info.curr_page }},
+            prev: 'prev',
+            next: 'next',
+            jump: function(obj, first){
+                // doing nothing when init call
+                if(!first){
+                    location.assign("/books?page=" + obj.curr);
+                }
+            }
+        });
+    });
+</script>
+{{/inline}}
+
+{{~> base ~}}

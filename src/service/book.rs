@@ -40,6 +40,12 @@ pub fn get_book(conn: &SqliteConnection, by_id: i32) -> Result<Book, String> {
     book.find(by_id).first::<Book>(conn).map_err(err_str)
 }
 
+pub fn get_book_by_name(conn: &SqliteConnection, by_name: String) -> Result<Book, String> {
+    book.filter(name.eq(by_name))
+        .first::<Book>(conn)
+        .map_err(err_str)
+}
+
 pub fn create_book(conn: &SqliteConnection, create_field: Book) -> Result<usize, String> {
     Err("no".into())
 }

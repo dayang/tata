@@ -1,0 +1,566 @@
+{{#*inline "header-block"}}
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/vs.min.css">
+{{#if page.allow_comment}}
+<link href="https://cdn.bootcss.com/simplemde/1.11.2/simplemde.min.css" rel="stylesheet">
+{{/if}}
+<style>
+    #main-content ul li {
+        list-style: disc;
+        margin-left: 20px;
+    }
+
+    #main-content ol li {
+        list-style: decimal;
+        margin-left: 20px;
+    }
+
+    code {
+        font-family: Consolas, Menlo, Monaco, Consolas, "Courier New", monospace;
+        padding: 2px 4px;
+        text-shadow: none;
+        word-wrap: break-word;
+        white-space: pre;
+    }
+
+    :not(pre)>code {
+        background-color: #f5f5f5;
+        color: #e96900;
+        transition: all .6s;
+    }
+
+    #article-body {
+        padding: 0 10px;
+        margin-bottom: 40px;
+    }
+
+    #article-body :not(code) {
+        letter-spacing: .6px;
+    }
+
+    #article-body h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 20px 0 20px;
+        color: #34495e;
+    }
+
+    #article-body h1 {
+        font-size: 1.5rem;
+    }
+
+    #article-body h2 {
+        font-size: 1.4rem;
+    }
+
+    #article-body h3 {
+        font-size: 1.3rem;
+    }
+
+    #article-body h4 {
+        font-size: 1.2rem;
+    }
+
+    #article-body h5 {
+        font-size: 1.1rem;
+    }
+
+    #article-body h6 {
+        font-size: 1.05rem;
+    }
+
+    #article-body p {
+            {
+                {
+                 !-- text-indent: 2rem;
+                --
+            }
+        }
+
+        color: #34495e;
+        font-size: 1rem;
+        line-height: 1.8em;
+        margin: 12px 0 !important;
+    }
+
+    #article-body img {
+        display: block;
+        padding: .25rem;
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: .25rem;
+        max-width: 100%;
+        height: auto;
+    }
+
+    .article-title {
+        font-size: 1.6rem;
+        font-weight: normal;
+        color: #34495e;
+    }
+
+    .article-publish-info {
+        color: #999;
+        font-size: .8rem;
+        padding: 3px 0;
+    }
+
+    .article-header-hr {
+        margin-bottom: 5px;
+    }
+
+    .copyright-item {
+        font-size: .8rem;
+        line-height: .8rem;
+        padding: 0 10px;
+        line-height: 1.8em;
+    }
+
+    #article-body a {
+        color: #2474b5;
+    }
+
+    .copyright-item a {
+        color: #2474b5;
+    }
+
+    .hljs {
+        padding: 10px 20px;
+        border: 1px solid #d3d6db;
+        background-color: #fafafa;
+    }
+
+    #toggle-left-side {
+        display: inline-block;
+        width: 30px;
+        height: 25px;
+        line-height: 25px;
+        text-align: center;
+        cursor: pointer;
+        vertical-align: baseline;
+        color: #1485FE;
+        position: relative;
+        border: 1px dotted #1485FE;
+        border-radius: 2px;
+    }
+
+    #toggle-left-side:hover {
+        color: #2474b5;
+        border-color: #2474b5;
+    }
+
+    blockquote {
+        margin: 10px 0;
+        padding: 1.5rem;
+        border-left: 5px solid #dbdbdb;
+        color: #6b778d;
+        word-break: break-all;
+        background: #f5f8fa;
+        border-radius: 2px;
+    }
+
+    .article-category {
+        display: inline-block;
+
+    }
+
+    .like-area div {
+        text-align: center;
+    }
+
+    #post-likes {
+        line-height: 1.7rem;
+        font-size: 1.1rem;
+        vertical-align: middle;
+    }
+
+    #like-btn {
+        vertical-align: middle;
+        cursor: pointer;
+    }
+
+    .comment-card {
+        box-shadow: none;
+        border: 1px solid #e6e6e6;
+    }
+
+    .CodeMirror,
+    .CodeMirror-scroll {
+        min-height: 100px;
+    }
+
+    #post-qrcode svg {
+        width: 200px;
+        height: 200px;
+    }
+
+    .book_catalog{
+        position: relative;
+        height: 42px;
+        margin-bottom: 10px;
+    }
+    .book_catalog .layui-collapse{
+        position: absolute;
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        background-color: #fff;
+    }
+
+    .book_catalog a{
+        display: block;
+        border: 1px dotted #ddd;
+        padding: 3px 10px;
+        margin: 3px 0;
+    }
+    .book_catalog a:hover{
+        color: #2474b5;
+    }
+    .level-1{
+        margin-left: 0px;
+    }
+    .level-2{
+        margin-left: 20px;
+    }
+    .level-3{
+        margin-left: 40px;
+    }
+    .level-4{
+        margin-left: 60px;
+    }
+    .level-5{
+        margin-left: 80px;
+    }
+</style>
+{{/inline}}
+
+{{#*inline "title"}}
+{{ viewbag.title }} - Yonghua's Blog
+{{/inline}}
+
+{{#*inline "content"}}
+<article>
+    <div class="book_catalog">
+        <div class="layui-collapse">
+            <div class="layui-colla-item">
+                <div class="layui-colla-title">{{ viewbag.book_title }} -- 目录</div>
+                <div class="layui-colla-content">
+                    {{book_catalog catalog }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <header>
+        <h1 class="article-title">
+            <i id="toggle-left-side"
+                class="layui-hide-xs layui-hide-sm layui-show-md-inline-block layui-show-lg-inline-block layui-icon layui-icon-prev"></i>
+            {{ page.title }}
+
+            <svg id="post-qrcode-btn" class="icon-symbol layui-hide-xs" title="文章二维码" aria-hidden="true"
+                style="float:right; margin-right: 10px; margin-top: 10px; cursor: pointer;">
+                <use xlink:href="#icon-A"></use>
+            </svg>
+        </h1>
+        <hr class="article-header-hr">
+        <div class="article-publish-info">
+            <time>{{ page.create_time }}</time> /
+            <span class="">阅读 {{ page.reads }}</span>
+        </div>
+        <hr class="article-header-hr">
+    </header>
+
+    <div id="article-body">{{ markdown page.content }}</div>
+    <div class="like-area">
+        <div>
+            <svg id="like-btn" class="icon-symbol" aria-hidden="true" style="width:1.7rem;height:1.7rem;">
+                <use xlink:href="#icon-like"></use>
+            </svg>
+            <span id="post-likes">{{ page.likes }}</span>
+        </div>
+        <div style="font-size: .7rem;margin-top:5px;">觉得有帮助的话，点个赞吧</div>
+    </div>
+    <hr>
+    <section class="article-copyright">
+        <p class="copyright-item">
+            <span>Author:</span>
+            <span>Yonghua</span>
+        </p>
+        <p class="copyright-item">
+            <span>License:</span>
+            <span>本文采用 知识共享<a target="_blank" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">
+                    署名-非商业性使用-禁止演绎4.0(CC BY-NC-ND 4.0)国际</a>许可协议 进行许可</span>
+        </p>
+    </section>
+    <hr>
+    {{#if page.allow_comment}}
+
+    <section class="post-comments-area">
+        <div class="layui-row">
+            <div class="layui-col-md10 layui-col-md-offset1">
+                <form class="layui-form" id="comment-form">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <div class="layui-input-inline">
+                                <input type="text" name="commentor-name" placeholder="姓名" required lay-verify="required"
+                                    autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" name="commentor-email" placeholder="邮箱" required
+                                    lay-verify="required|email" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <textarea name="comment-content" id="comment-editor" placeholder="请输入评论内容（支持 markdown 格式）"
+                            class="layui-textarea"></textarea>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label"
+                                style="padding: 0; width: 100px; height: 38px; line-height: 38px; text-align:center;">
+                                <img src="/captcha/get" id="captcha" alt="验证码"
+                                    style="vertical-align: middle; cursor: pointer; border: 1px solid #ccc;">
+                            </label>
+                            <div class="layui-input-inline" style="width: 100px;">
+                                <input type="text" name="captcha-code" placeholder="验证码" required lay-verify="required"
+                                    autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-input-inline">
+                                <button class="layui-btn layui-btn-normal" lay-submit
+                                    lay-filter="commentForm">提交</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <hr>
+                <div id="post-comments">
+
+                </div>
+            </div>
+        </div>
+    </section>
+    {{else}}
+    <section class="post-comments-area">
+        <p style="color: #999; text-align: center;">评论已关闭</p>
+    </section>
+    {{/if}}
+</article>
+{{/inline}}
+
+{{#*inline "script-block"}}
+{{#if page.allow_comment }}
+<script src="https://cdn.bootcss.com/simplemde/1.11.2/simplemde.min.js"></script>
+<script src="https://cdn.bootcss.com/marked/0.8.2/marked.min.js"></script>
+<script src="https://cdn.bootcss.com/dompurify/2.0.8/purify.min.js"></script>
+{{/if}}
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script id="comment-template" type="text/template">
+    <%# if(d.total_num > 0) { %>
+        <%# layui.each(d.page_items, function(i, item){ %>
+        <div class="layui-card comment-card">
+            <div class="layui-card-header">
+                <img src="https://cdn.v2ex.com/gravatar/<%= item.avatar %>" width="25" alt="头像">
+                <span style="color:#2474b5;"><%= item.user_name %></span> &nbsp;
+                <span style="font-size: .7rem;color: #999;"><%= item.comment_time %></span>
+            </div>
+            <div class="layui-card-body">
+                <% DOMPurify.sanitize(marked(item.content)) %>
+                <%# if(item.reply){ %>
+                <hr>
+                <span style="color:#2474b5;">博主回复：</span>
+                <% DOMPurify.sanitize(marked(item.reply)) %>
+                <%# } %>
+            </div>
+        </div>
+        <%# }) %>
+    <%# }else{ %>
+    <p style="color: #999; text-align: center;">暂时还没有评论</p>
+    <%# } %>
+    <%# if(d.total_pages > 1) { %>
+    <div id="comment-pagination" style="text-align: center"></div>
+    <%# } %>
+</script>
+<script>
+    hljs.initHighlighting();
+
+    layui.use(['jquery', 'laytpl', 'layer', 'laypage', 'form', 'element'], function () {
+        var $ = layui.jquery;
+        var laytpl = layui.laytpl;
+        var layer = layui.layer;
+        var laypage = layui.laypage;
+        var form = layui.form;
+        var element = layui.element;
+
+        $('#captcha').click(function () {
+            $(this).attr("src", "/captcha/get?k=" + Math.random());
+        })
+
+        var left_side_show = true;
+        function toggle_left_side() {
+            $('#tata-left-side').toggleClass('layui-show-md-block');
+            $('#tata-left-side').toggleClass('layui-show-lg-block');
+            left_side_show = !left_side_show;
+            if (left_side_show) {
+                $('#main-content').removeClass('layui-col-md12');
+                $('#main-content').addClass('layui-col-md9');
+                $('#toggle-left-side').removeClass('layui-icon-next');
+                $('#toggle-left-side').addClass('layui-icon-prev');
+            } else {
+                $('#main-content').removeClass('layui-col-md9');
+                $('#main-content').addClass('layui-col-md12');
+                $('#toggle-left-side').removeClass('layui-icon-prev');
+                $('#toggle-left-side').addClass('layui-icon-next');
+            }
+        }
+
+        $('#toggle-left-side').click(function () {
+            toggle_left_side();
+        });
+
+        var max_move = 3;
+        var start = Date.now();
+        var speed = 5;
+        var toggle = $('#toggle-left-side');
+        var wobble = 0;
+        function animate(time) {
+            var step = Math.min(time - start, 100.0) / 1000.0;
+            while (step > 0) {
+                var this_step = Math.min(step, 0.05);
+                wobble += this_step * speed;
+                left = Math.sin(wobble) * max_move;
+                toggle.css('left', left + 'px');
+                step -= this_step;
+            }
+            start = time;
+            window.requestAnimationFrame(animate);
+        }
+
+        window.requestAnimationFrame(animate);
+
+        $('#like-btn').click(function () {
+            // send like request
+            $.ajax("/books/page/{{page.url}}/like", {
+                method: "put",
+                dataType: "json",
+                success: function (data) {
+                    if (data.Ok) {
+                        var n = $("#post-likes").html();
+                        $('#post-likes').html(Number(n) + 1);
+                    }
+
+                    layer.tips(data.Ok ? "感谢点赞呢~" : data.Err, '#like-btn', {
+                        tips: [1, '#1E9FFF'],
+                        time: 1000
+                    });
+                }
+            })
+        });
+
+        $('#post-qrcode-btn').click(function () {
+            layer.open({
+                type: 1,
+                shadeClose: true,
+                offset: "100px",
+                title: "文章二维码",
+                content: '<div id="post-qrcode" style="text-align:center;"></div>',
+                success: function (layero, index) {
+                    var qr = qrcode(4, 'M');
+                    qr.addData(window.location.href, 'Byte');
+                    qr.make();
+                    $('#post-qrcode').html(qr.createSvgTag());
+                }
+            });
+        })
+
+        {{#if page.allow_comment }}
+        var editor = new SimpleMDE({
+            element: document.getElementById("comment-editor"),
+            spellChecker: false,
+            hideIcons: ['image'],
+            toolbarTips: false,
+            status: false,
+        });
+
+        form.on('submit(commentForm)', function (data) {
+            if (editor.value() === '') {
+                layer.msg('评论内容不能为空', { icon: 5 });
+                return false;
+            }
+            var new_comment = JSON.stringify({
+                "url": "{{ page.url }}",
+                "user_name": data.field["commentor-name"],
+                "email": data.field["commentor-email"],
+                "content": editor.value(),
+                "captcha": data.field["captcha-code"]
+            });
+
+            $.ajax('/books/page/{{page.url}}/comment', {
+                method: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: new_comment,
+                success: function (data) {
+                    if (data.Ok) {
+                        layer.msg("评论成功");
+                        document.getElementById("comment-form").reset();
+                        editor.value("");
+                        // 刷新验证码
+                        $('#captcha').attr("src", "/captcha/get?k=" + Math.random());
+                    } else {
+                        layer.msg(data.Err);
+                    }
+                }
+            })
+
+            return false;
+        });
+
+        // load comments
+        laytpl.config({
+            open: '<%',
+            close: '%>'
+        });
+
+        function load_comments(page) {
+            $.ajax("/books/page/{{page.url}}/comments?page=" + page, {
+                method: "get",
+                dataType: "json",
+                success: function (data) {
+                    if (data.Ok) {
+                        laytpl($('#comment-template').html()).render(data.Ok, function (html) {
+                            $("#post-comments").html(html);
+
+                            laypage.render({
+                                elem: 'comment-pagination',
+                                theme: '#2474b5',
+                                count: data.Ok.total_num,
+                                limit: data.Ok.per_page,
+                                curr: data.Ok.curr_page,
+                                prev: 'prev',
+                                next: 'next',
+                                jump: function (obj, first) {
+                                    // doing nothing when init call
+                                    if (!first) {
+                                        load_comments(obj.curr);
+                                    }
+                                }
+                            });
+                        })
+                    }
+                }
+            })
+        }
+
+        load_comments(1);
+
+        {{/if}}
+ });
+</script>
+{{/inline}}
+
+{{~> base ~}}

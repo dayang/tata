@@ -1,0 +1,278 @@
+<link href="/static/dist/css/jqtree.css" rel="stylesheet">
+<div class="layuimini-main">
+    <div class="layui-btn-group" style="margin-bottom: 10px;">
+        <button id="refresh_btn" type="button" class="layui-btn layui-btn-sm">
+            <i class="layui-icon layui-icon-refresh"></i>刷新
+        </button>
+        <button id="add_pre_btn" type="button" class="layui-btn layui-btn-sm">
+            <i class="layui-icon layui-icon-addition"></i>节点前
+        </button>
+        <button id="add_after_btn" type="button" class="layui-btn layui-btn-sm">
+            <i class="layui-icon layui-icon-addition"></i>节点后
+        </button>
+        <button id="add_child_btn" type="button" class="layui-btn layui-btn-sm">
+            <i class="layui-icon layui-icon-addition"></i>子节点
+        </button>
+        <button id="edit_page_btn" type="button" class="layui-btn layui-btn-sm">
+            <i class="layui-icon layui-icon-edit"></i>编辑
+        </button>
+        <button id="delete_page_btn" type="button" class="layui-btn layui-btn-sm">
+            <i class="layui-icon layui-icon-delete"></i>删除
+        </button>
+    </div>
+    <div id="book-catalog"></div>
+</div>
+<script id="addpage-form" type="text/template">
+<form class="layui-form" action="" style="margin: 20px;">
+  <div class="layui-form-item">
+    <label class="layui-form-label">url</label>
+    <div class="layui-input-block">
+      <input type="text" name="page_url" required  lay-verify="required" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">标题</label>
+    <div class="layui-input-block">
+      <input type="text" name="page_title" required  lay-verify="required" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <div class="layui-input-block">
+      <button class="layui-btn layui-btn-normal layui-btn-sm" lay-submit lay-filter="addPageForm">添加</button>
+    </div>
+  </div>
+</form>
+</script>
+<script type="text/javascript">
+    layui.use(['layer', 'jquery', 'jqtree', 'form'], function () {
+        var layer = layui.layer,
+            form = layui.form,
+            $ = layui.$;
+
+        var g_book_id = {{ book.id }};
+        var g_ajaxing = false;
+        var g_root_id = -1;
+        
+        var g_ajax_index;
+        function is_ajaxing() {
+            return g_ajaxing;
+        }
+
+        function start_ajax() {
+            g_ajaxing = true;
+            // 显示加载
+            g_ajax_index = layer.load(2, {time: 5*1000});
+        }
+
+        function end_ajax() {
+            g_ajaxing = false;
+            layer.close(g_ajax_index);
+        }
+
+        function set_button_enabled(btn, enabled) {
+            if (enabled) {
+                btn.removeClass('layui-btn-disabled');
+                btn.removeAttr('disabled');
+            } else {
+                btn.addClass('layui-btn-disabled');
+                btn.attr('disabled','disabled');
+            }
+        }
+
+        function update_operate_btns(node) {
+            set_button_enabled($('#add_pre_btn'), node != null && node.id && node.id != g_root_id);
+            set_button_enabled($('#add_after_btn'), node != null && node.id && node.id != g_root_id);
+            set_button_enabled($('#add_child_btn'), node != null);
+            set_button_enabled($('#edit_page_btn'), node != null && node.id && node.id != g_root_id);
+            set_button_enabled($('#delete_page_btn'), node != null && node.id && node.id != g_root_id && node.children.length == 0);
+        }
+
+        function index_of_me(node) {
+            var L = node.parent.children;
+            return L.findIndex(n => n == node);
+        }
+
+        function get_parent_id(node) {
+            return node.parent.getData(true)[0].id;
+        }
+
+        function move_api(moved, parent, index) {
+            start_ajax();
+
+        }
+
+        function move_node() {
+
+        }
+
+        function delete_page() {
+
+        }
+
+        update_operate_btns(null);
+
+        $('#book-catalog').tree({
+            dataUrl: "/admin/books/catalog/{{book.id}}",
+            dataFilter: function(data) {
+                return [{
+                    name: '{{ book.display_text }}(root)',
+                    id: g_root_id,
+                    children: data.Ok
+                }];
+            },
+            dragAndDrop: true,
+            autoOpen: true,
+            onCreateLi: function(node, $li) {
+
+            },
+            onCanMove: function(node) {
+                return !is_ajaxing() && node.id !== g_root_id;
+            },
+            onCanMoveTo: function(moved_node, target_node, position) {
+                // can move inside catalog, not before or after
+                return (target_node.parent != null);
+            },
+            onCanSelectNode: function(node) {
+                return !is_ajaxing();
+            }
+        });
+
+        $('#book-catalog').bind('tree.select', function(event) {
+            update_operate_btns(event.node);
+        });
+
+        $('#book-catalog').bind('tree.move', function(event) {
+            move_node();
+        });
+
+        function add_page(book_id, parent_id, node_index, callback) {
+            var i = layer.open({
+                type: 1,
+                title: "添加Page",
+                area: "400px",
+                offset: '100px',
+                content: $('#addpage-form').html(),
+                success: function(layero, index){
+                    form.on('submit(addPageForm)', function(data){
+                        start_ajax();
+                        $.ajax('/admin/pages/add', {
+                            method: 'post',
+                            dataType: 'json',
+                            contentType: 'application/json',
+                            data: JSON.stringify({
+                                book_id: book_id,
+                                parent_id: parent_id,
+                                url: data.field.page_url,
+                                title: data.field.page_title,
+                                display_order: node_index,
+                            }),
+                            success: function(data) {
+                                end_ajax();
+                                if (data.Ok) {
+                                    callback(data.Ok);
+                                    layer.close(index);
+                                } else {
+                                    layer.msg(data.Err);
+                                }
+                            },
+                            error: function(err) {
+                                end_ajax();
+                                layer.msg(err.statusText);
+                            }
+                        })
+                        return false;
+                    });
+                }
+            });
+        }
+
+        $('#add_pre_btn').click(function(){
+            var $tree = $('#book-catalog');
+            var node = $tree.tree('getSelectedNode');
+            var selected_index = index_of_me(node);
+            var new_index = selected_index == 0 ? 0 : selected_index - 1;
+
+            add_page(g_book_id, get_parent_id(node), new_index, function(result) {
+                $tree.tree(
+                    'addNodeBefore',
+                    result,
+                    node
+                );
+
+                $tree.tree('selectNode', $tree.tree('getNodeById', result.id));
+            });
+        });
+
+        $('#add_after_btn').click(function(){
+            var $tree = $('#book-catalog');
+            var node = $tree.tree('getSelectedNode');
+
+            var selected_index = index_of_me(node);
+            var new_index = selected_index + 1;
+
+            add_page(g_book_id, get_parent_id(node), new_index, function(result) {
+                $tree.tree(
+                    'addNodeAfter',
+                    result,
+                    node
+                );
+
+                $tree.tree('selectNode', $tree.tree('getNodeById', result.id));
+            });
+        });
+
+        $('#add_child_btn').click(function(){
+            var $tree = $('#book-catalog');
+            var node = $tree.tree('getSelectedNode');
+
+            add_page(g_book_id, node.getData(true)[0].id, node.children.length, function(result) {
+                $tree.tree(
+                    'appendNode',
+                    result,
+                    node
+                );
+
+                $tree.tree('openNode', node);
+                $tree.tree('selectNode', $tree.tree('getNodeById', result.id));
+            });
+            
+        });
+
+        $('#edit_page_btn').click(function(){
+            var $tree = $('#book-catalog');
+            var node = $tree.tree('getSelectedNode');
+            // TODO 打开新的layer，编辑page
+        });
+
+        $('#delete_page_btn').click(function(){
+            var $tree = $('#book-catalog');
+            var node = $tree.tree('getSelectedNode');
+            layer.confirm('确定删除该文章？删除不可恢复，三思', function (index) {
+                start_ajax();
+                $.ajax("/admin/pages/delete/" + node.getData(true)[0].id, {
+                    method: "delete",
+                    dataType: "json",
+                    success: function(data) {
+                        end_ajax();
+                        if(data.Ok) {
+                            $tree.tree('removeNode', node);
+                            layer.msg("删除成功");
+                        } else {
+                            layer.msg(data.Err);
+                        }
+                    },
+                    error: function(err) {
+                        end_ajax();
+                        layer.msg(err.statusText);
+                    }
+                });
+                layer.close(index);
+            });
+        });
+
+        $('#refresh_btn').click(function(){
+            $('#book-catalog').tree('reload');
+            update_operate_btns(null);
+        });
+    });
+</script>

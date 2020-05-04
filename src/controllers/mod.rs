@@ -1,6 +1,8 @@
 pub mod admin;
+pub mod book;
 pub mod captcha;
 pub mod friendlink;
+pub mod page;
 pub mod post;
 
 use crate::consts::*;

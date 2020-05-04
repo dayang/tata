@@ -2,9 +2,12 @@ use self::handlebars::{
     to_json, Context, Handlebars, Helper, HelperDef, HelperResult, JsonRender, Output,
     RenderContext, RenderError, ScopedJson,
 };
+
+use crate::dto::book::CatalogItem;
 use ammonia::clean;
 use pulldown_cmark::{html, Parser};
 use rocket_contrib::templates::handlebars;
+
 pub fn markdown_helper(
     h: &Helper<'_, '_>,
     _: &Handlebars,
@@ -41,6 +44,36 @@ pub fn comment_type_helper(
         };
 
         out.write(label)?;
+    }
+
+    Ok(())
+}
+
+fn print_catalog_item(out: &mut dyn Output, item: CatalogItem, level: i32) -> HelperResult {
+    out.write(&format!(
+        "<div class=\"level-{}\"><a href=\"/books/page/{}\">{}</a></div>",
+        level, item.url, item.title
+    ))?;
+    for child in item.children {
+        print_catalog_item(out, child, level + 1)?;
+    }
+
+    Ok(())
+}
+
+pub fn book_catalog_helper(
+    h: &Helper<'_, '_>,
+    _: &Handlebars,
+    _: &Context,
+    _: &mut RenderContext<'_>,
+    out: &mut dyn Output,
+) -> HelperResult {
+    if let Some(param) = h.param(0) {
+        let catalog_items: Vec<CatalogItem> =
+            serde_json::from_value(param.value().clone()).unwrap();
+        for item in catalog_items {
+            print_catalog_item(out, item, 1)?
+        }
     }
 
     Ok(())
