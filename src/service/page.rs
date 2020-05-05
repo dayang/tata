@@ -145,8 +145,7 @@ fn sort_display_order(
 
     for (order, pid) in page_ids.iter().enumerate() {
         diesel::update(page.find(pid))
-            .set(display_order.eq(order as i32))
-            .execute(conn)?;
+            .set((display_order.eq(order as i32), parent_id.eq(target_parent_id))).execute(conn)?;
     }
 
     Ok(0)

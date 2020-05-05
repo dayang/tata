@@ -98,15 +98,40 @@
 
         function move_api(moved, parent, index) {
             start_ajax();
-
+            $.ajax('/admin/pages/changeorder', {
+                method: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    id: moved.id,
+                    parent_id: parent.id,
+                    display_order: index,
+                }),
+                success: function(data) {
+                    end_ajax();
+                    if (data.Err != undefined) {
+                        layer.msg(data.Err);
+                    }
+                },
+                error: function(err) {
+                    end_ajax();
+                    //layer.msg(err.statusText);
+                }
+            });
         }
 
-        function move_node() {
-
-        }
-
-        function delete_page() {
-
+        function move_node(moved_node, target_node, position, previous_parent) {
+            if(position == 'inside') {
+                move_api(moved_node, target_node, 0);
+            }else if(position == 'after') {
+                // 同一父节点从前往后移
+                var index = index_of_me(target_node);
+                // 同一父节点从后往前移，或移动到另一个父节点
+                if(previous_parent != target_node.parent || index_of_me(target_node) < index_of_me(moved_node)) {
+                    index += 1;
+                }
+                move_api(moved_node, target_node.parent, index);
+            }
         }
 
         update_operate_btns(null);
@@ -129,8 +154,8 @@
                 return !is_ajaxing() && node.id !== g_root_id;
             },
             onCanMoveTo: function(moved_node, target_node, position) {
-                // can move inside catalog, not before or after
-                return (target_node.parent != null);
+                // can move inside catalog(root), not before or after
+                return target_node.id != -1 || position == "inside";
             },
             onCanSelectNode: function(node) {
                 return !is_ajaxing();
@@ -142,7 +167,8 @@
         });
 
         $('#book-catalog').bind('tree.move', function(event) {
-            move_node();
+            move_node(event.move_info.moved_node, event.move_info.target_node, 
+                event.move_info.position, event.move_info.previous_parent);
         });
 
         function add_page(book_id, parent_id, node_index, callback) {
@@ -168,7 +194,7 @@
                             }),
                             success: function(data) {
                                 end_ajax();
-                                if (data.Ok) {
+                                if (data.Ok != undefined) {
                                     callback(data.Ok);
                                     layer.close(index);
                                 } else {
