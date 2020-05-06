@@ -1,20 +1,33 @@
 <link href="https://cdn.bootcss.com/simplemde/1.11.2/simplemde.min.css" rel="stylesheet">
-<link href="/static/dist/css/jqtree.css" rel="stylesheet">
 <div class="layuimini-main">
 
     <div class="layui-form layuimini-form">
         <div class="layui-form-item">
             <label class="layui-form-label required">url</label>
             <div class="layui-input-block">
-                <input type="text" name="url" lay-verify="required" lay-reqtext="url不能为空" value="" class="layui-input">
-                <tip>url中显示的英文名称，不能重复</tip>
+                <input type="text" name="url" lay-verify="required" lay-reqtext="url不能为空" value="{{ page.url }}" class="layui-input">
+                <tip>url中显示的英文名称，不能重复，一般不要修改</tip>
             </div>
         </div>
 
         <div class="layui-form-item">
             <label class="layui-form-label required">标题</label>
             <div class="layui-input-block">
-                <input type="text" name="title" lay-verify="required" lay-reqtext="标题不能为空" value="" class="layui-input">
+                <input type="text" name="title" lay-verify="required" lay-reqtext="标题不能为空" value="{{ page.title }}" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">开启评论</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="allow_comment" lay-skin="switch" lay-text="开启|不开启" value="true" {{#if page.allow_comment}}checked{{/if}}>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否发布</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="published" lay-skin="switch" lay-text="发布|不发布" value="true" {{#if page.published}}checked{{/if}}>
             </div>
         </div>
 
@@ -26,41 +39,26 @@
         </div>
 
         <div class="layui-form-item">
-            <label class="layui-form-label">开启评论</label>
-            <div class="layui-input-block">
-                <input type="checkbox" name="allow_comment" lay-skin="switch" lay-text="开启|不开启" value="true">
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">是否发布</label>
-            <div class="layui-input-block">
-                <input type="checkbox" name="published" lay-skin="switch" lay-text="发布|不发布" value="true">
-            </div>
-        </div>
-
-        <div class="layui-form-item">
             <label class="layui-form-label">内容</label>
             <div class="layui-input-block">
-                <textarea name="content" id="post-editor" placeholder="请输入内容（支持 markdown 格式）"
-                    class="layui-textarea"></textarea>
+                <textarea name="content" id="page-editor" placeholder="请输入内容（支持 markdown 格式）"
+                    class="layui-textarea">{{ page.content }}</textarea>
             </div>
         </div>
 
 
         <div class="layui-form-item">
             <div class="layui-input-block">
-                <button class="layui-btn" lay-submit lay-filter="saveBtn">确认保存</button>
+                <button class="layui-btn" lay-submit lay-filter="savePageBtn">确认保存</button>
             </div>
         </div>
     </div>
 
 </div>
 <script type="text/javascript">
-    layui.use(['form', 'table', 'simplemde', 'upload', 'layer'], function () {
+    layui.use(['form', 'simplemde', 'upload', 'layer'], function () {
         var form = layui.form,
             layer = layui.layer,
-            table = layui.table,
             upload = layui.upload,
             $ = layui.$;
 
@@ -70,7 +68,7 @@
         form.render();
 
         var editor = new SimpleMDE({
-            element: document.getElementById("post-editor"),
+            element: document.getElementById("page-editor"),
             spellChecker: false,
             toolbarTips: false,
             status: false,
@@ -104,27 +102,23 @@
         var parentIndex = layer.index;
 
         //监听提交
-        form.on('submit(saveBtn)', function (data) {
+        form.on('submit(savePageBtn)', function (data) {
             var field = data.field;
-            $.ajax("/admin/posts/add", {
-                method: "post",
+            $.ajax("/admin/pages/edit", {
+                method: "put",
                 contentType: "application/json",
                 dataType: "json",
                 data: JSON.stringify({
-                    id: 0,
+                    id: {{ page.id }},
                     title: field.title,
                     url: field.url,
-                    summary: field.summary,
-                    thumbnail: field.thumbnail,
                     content: editor.value(),
                     allow_comment: field.allow_comment === 'true',
-                    published: field.published === 'true',
-                    tags: field.tags.split(',').map(function(t) {return parseInt(t);}),
-                    category_id: parseInt(field.category_id),
+                    published: field.published === 'true'
                 }),
                 success: function(data) {
                     if(data.Ok) {
-                        layer.msg("新建成功，刷新显示", {time: 1000 }, function () {
+                        layer.msg("修改成功", {time: 1000 }, function () {
                             layer.close(parentIndex);
                         });
                     } else {

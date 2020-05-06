@@ -23,6 +23,7 @@ pub fn api_books_list(
         &conn,
         page.unwrap_or(1),
         limit,
+        None
     ))
 }
 
@@ -75,7 +76,7 @@ pub fn edit_catalog_page(_user: User, conn: DbConn, id: i32) -> Result<Template,
 
 #[get("/books/catalog/<id>")]
 pub fn get_book_catalog(_user: User, conn: DbConn, id: i32) -> JsonValue {
-    json!(page_service::get_book_catalog(&conn, id))
+    json!(page_service::get_book_catalog(&conn, id, None))
 }
 
 pub fn routes() -> Vec<rocket::Route> {

@@ -11,7 +11,7 @@ pub fn get_books(page: Option<i32>, limit: Option<i32>, conn: DbConn) -> Result<
     view_data.add_viewbag("title", "所有Book");
     view_data.add_viewbag("list_title", "所有Book");
     view_data.load_posts_page_meta_data(&conn);
-    match book_service::get_books_list(&conn, page.unwrap_or(1), limit) {
+    match book_service::get_books_list(&conn, page.unwrap_or(1), limit, Some(true)) {
         Ok(book_list_info) => {
             view_data.add("book_list_info", book_list_info);
             //println!("{}", view_data.clone().to_json().to_string());
@@ -31,7 +31,7 @@ pub fn book_catalog(conn: DbConn, name: String) -> Result<Template, Status> {
             view_data.add_viewbag("title", book.display_text.clone());
             view_data.add("book", book);
 
-            match page_service::get_book_catalog(&conn, id) {
+            match page_service::get_book_catalog(&conn, id, Some(true)) {
                 Ok(catalog) => {
                     view_data.add("catalog", catalog);
                     Ok(Template::render("bookcatalog", view_data.to_json()))

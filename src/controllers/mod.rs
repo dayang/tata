@@ -121,6 +121,7 @@ pub fn about(conn: DbConn) -> Template {
     let mut view_data = ViewData::default();
     view_data.load_posts_page_meta_data(&conn);
     view_data.add("about_page", get_dict_value(DICT_ABOUT_PAGE.into(), &conn));
+    view_data.add("friendlink_apply_enabled", get_dict_value(DICT_FRIENDLINK_APPPLY_ENABLE, &conn).map(|b| b.parse::<bool>().unwrap_or(false)).unwrap_or(false));
 
     match friendlink_service::all_friendlinks(&conn, true) {
         Ok(links) => view_data.add("friend_links", links),

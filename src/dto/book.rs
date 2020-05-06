@@ -4,8 +4,10 @@ pub struct CatalogItem {
     pub url: String,
     #[serde(rename(serialize = "name", deserialize = "name"))]
     pub title: String,
-    pub display_order: i32,
+    pub published: bool,
+    pub create_time: String,
     pub parent_id: i32,
+    pub display_order: i32,
     pub children: Vec<CatalogItem>,
 }
 

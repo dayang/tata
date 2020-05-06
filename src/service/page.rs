@@ -1,5 +1,6 @@
 use super::err_str;
 use crate::dto::book::*;
+use crate::dto::page::*;
 use crate::entity::Page;
 use crate::schema::page::{dsl as page_dsl, dsl::*};
 use diesel::prelude::*;
@@ -22,11 +23,24 @@ fn build_catalog(pid: i32, items: &Vec<CatalogItem>) -> Vec<CatalogItem> {
 pub fn get_book_catalog(
     conn: &SqliteConnection,
     the_book_id: i32,
+    page_published: Option<bool>,
 ) -> Result<Vec<CatalogItem>, String> {
-    let page_items = page
+    let mut query_statement = page.into_boxed();
+    if let Some(is_published) = page_published {
+        query_statement = query_statement.filter(published.eq(is_published));
+    }
+    let page_items = query_statement
         .filter(page_dsl::book_id.eq(the_book_id))
-        .select((id, parent_id, display_order, title, url))
-        .load::<(i32, i32, i32, String, String)>(conn)
+        .select((
+            id,
+            parent_id,
+            display_order,
+            title,
+            url,
+            create_time,
+            published,
+        ))
+        .load::<(i32, i32, i32, String, String, String, bool)>(conn)
         .map_err(err_str)?
         .into_iter()
         .map(|t| CatalogItem {
@@ -35,6 +49,8 @@ pub fn get_book_catalog(
             title: t.3,
             parent_id: t.1,
             display_order: t.2,
+            create_time: t.5,
+            published: t.6,
             children: vec![],
         })
         .collect::<Vec<CatalogItem>>();
@@ -115,14 +131,25 @@ pub fn create_page_default(
             url: inserted_page.url,
             parent_id: inserted_page.parent_id,
             display_order: inserted_page.display_order,
+            create_time: inserted_page.create_time,
+            published: inserted_page.published,
             children: vec![],
         })
     })
     .map_err(err_str)
 }
 
-pub fn update_page(conn: &SqliteConnection, updae_page: Page) -> Result<usize, String> {
-    Err("error".into())
+pub fn update_page(conn: &SqliteConnection, update_page: UpdatePage) -> Result<usize, String> {
+    diesel::update(page.find(update_page.id))
+        .set((
+            title.eq(update_page.title),
+            url.eq(update_page.url),
+            content.eq(update_page.content),
+            published.eq(update_page.published),
+            allow_comment.eq(update_page.allow_comment),
+        ))
+        .execute(conn)
+        .map_err(err_str)
 }
 
 fn sort_display_order(
@@ -145,7 +172,11 @@ fn sort_display_order(
 
     for (order, pid) in page_ids.iter().enumerate() {
         diesel::update(page.find(pid))
-            .set((display_order.eq(order as i32), parent_id.eq(target_parent_id))).execute(conn)?;
+            .set((
+                display_order.eq(order as i32),
+                parent_id.eq(target_parent_id),
+            ))
+            .execute(conn)?;
     }
 
     Ok(0)
@@ -162,4 +193,11 @@ pub fn change_order(
         change_order.display_order,
     )
     .map_err(err_str)
+}
+
+pub fn delete_book_pages(
+    conn: &SqliteConnection,
+    delete_book_id: i32,
+) -> Result<usize, diesel::result::Error> {
+    diesel::delete(page.filter(book_id.eq(delete_book_id))).execute(conn)
 }

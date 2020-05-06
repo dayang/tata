@@ -1,3 +1,17 @@
+<style>
+    .unpublished{
+        vertical-align: middle;
+        color: #FF5722;
+        line-height: 20px;
+    }
+
+    .create-time{
+        line-height: 24px;
+        vertical-align: bottom;
+        color: #999;
+        font-size: .7rem;
+    }
+</style>
 <link href="/static/dist/css/jqtree.css" rel="stylesheet">
 <div class="layuimini-main">
     <div class="layui-btn-group" style="margin-bottom: 10px;">
@@ -5,19 +19,22 @@
             <i class="layui-icon layui-icon-refresh"></i>刷新
         </button>
         <button id="add_pre_btn" type="button" class="layui-btn layui-btn-sm">
-            <i class="layui-icon layui-icon-addition"></i>节点前
+            <i class="layui-icon layui-icon-add-1"></i>节点前
         </button>
         <button id="add_after_btn" type="button" class="layui-btn layui-btn-sm">
-            <i class="layui-icon layui-icon-addition"></i>节点后
+            <i class="layui-icon layui-icon-add-1"></i>节点后
         </button>
         <button id="add_child_btn" type="button" class="layui-btn layui-btn-sm">
-            <i class="layui-icon layui-icon-addition"></i>子节点
+            <i class="layui-icon layui-icon-add-1"></i>子节点
         </button>
         <button id="edit_page_btn" type="button" class="layui-btn layui-btn-sm">
             <i class="layui-icon layui-icon-edit"></i>编辑
         </button>
         <button id="delete_page_btn" type="button" class="layui-btn layui-btn-sm">
             <i class="layui-icon layui-icon-delete"></i>删除
+        </button>
+        <button id="view_page_comments_btn" type="button" class="layui-btn layui-btn-sm">
+            <i class="layui-icon layui-icon-reply-fill"></i>查看评论
         </button>
     </div>
     <div id="book-catalog"></div>
@@ -44,9 +61,10 @@
 </form>
 </script>
 <script type="text/javascript">
-    layui.use(['layer', 'jquery', 'jqtree', 'form'], function () {
+    layui.use(['layer', 'jquery', 'jqtree', 'form', 'miniPage'], function () {
         var layer = layui.layer,
             form = layui.form,
+            miniPage = layui.miniPage,
             $ = layui.$;
 
         var g_book_id = {{ book.id }};
@@ -85,6 +103,7 @@
             set_button_enabled($('#add_child_btn'), node != null);
             set_button_enabled($('#edit_page_btn'), node != null && node.id && node.id != g_root_id);
             set_button_enabled($('#delete_page_btn'), node != null && node.id && node.id != g_root_id && node.children.length == 0);
+            set_button_enabled($('#view_page_comments_btn'), node != null && node.id && node.id != g_root_id);
         }
 
         function index_of_me(node) {
@@ -148,7 +167,14 @@
             dragAndDrop: true,
             autoOpen: true,
             onCreateLi: function(node, $li) {
-
+                var data = node.getData(true)[0];
+                if(data.id == -1) {
+                    return;
+                }
+                $li.find('.jqtree-title').after('&nbsp;<span class="create-time">' + data.create_time + '</span>');
+                if(!data.published) {
+                    $li.find('.jqtree-title').after('&nbsp;<span class="fa fa-eye-slash unpublished"></span>');
+                }
             },
             onCanMove: function(node) {
                 return !is_ajaxing() && node.id !== g_root_id;
@@ -267,7 +293,23 @@
         $('#edit_page_btn').click(function(){
             var $tree = $('#book-catalog');
             var node = $tree.tree('getSelectedNode');
-            // TODO 打开新的layer，编辑page
+            
+            var content = miniPage.getHrefContent('/admin/pages/edit/' + node.id);
+            var openWH = miniPage.getOpenWidthHeight();
+
+            var index = layer.open({
+                title: '编辑page',
+                type: 1,
+                shade: 0.2,
+                maxmin:true,
+                shadeClose: true,
+                area: [openWH[0] + 'px', openWH[1] + 'px'],
+                offset: [openWH[2] + 'px', openWH[3] + 'px'],
+                content: content,
+            });
+            $(window).on("resize", function () {
+                layer.full(index);
+            });
         });
 
         $('#delete_page_btn').click(function(){
@@ -299,6 +341,13 @@
         $('#refresh_btn').click(function(){
             $('#book-catalog').tree('reload');
             update_operate_btns(null);
+        });
+
+        $('#view_page_comments_btn').click(function(){
+            var node = $('#book-catalog').tree('getSelectedNode');
+            var data = node.getData(true)[0];
+            miniPage.hashChange('/admin/comments/list?type=page&for_id=' + data.id);
+            layer.closeAll();
         });
     });
 </script>

@@ -1,5 +1,6 @@
 use crate::entity::FriendLink;
 use crate::service::friendlinks as link_service;
+use crate::service::{get_dict_value, set_dict_value};
 use crate::DbConn;
 use rocket::http::Status;
 use rocket_contrib::json::{Json, JsonValue};
@@ -8,8 +9,17 @@ use rocket_contrib::templates::Template;
 use super::super::{User, ViewData};
 
 #[get("/friendlinks/list")]
-pub fn list_page(_user: User) -> Result<Template, Status> {
-    Ok(Template::render("admin/friendlink/friendlinks", json!({})))
+pub fn list_page(_user: User, conn: DbConn) -> Result<Template, Status> {
+    let mut view_data = ViewData::default();
+    let enable_friendlink_apply =
+        get_dict_value(crate::consts::DICT_FRIENDLINK_APPPLY_ENABLE, &conn)
+            .map(|s| s.parse::<bool>().unwrap_or(false))
+            .unwrap_or(false);
+    view_data.add_viewbag("enable_friendlink_apply", enable_friendlink_apply);
+    Ok(Template::render(
+        "admin/friendlink/friendlinks",
+        view_data.to_json(),
+    ))
 }
 
 #[get("/friendlinks/api/all")]
@@ -55,6 +65,11 @@ pub fn delete(_user: User, conn: DbConn, id: i32) -> JsonValue {
     json!(link_service::delete(&conn, id))
 }
 
+#[put("/friendlinks/apply/toggle/<enable>")]
+pub fn toggle_enable_apply(_user: User, conn: DbConn, enable: bool) -> JsonValue {
+    json!(set_dict_value(crate::consts::DICT_FRIENDLINK_APPPLY_ENABLE, enable, &conn))
+}
+
 pub fn routes() -> Vec<rocket::Route> {
     routes![
         list_page,
@@ -64,5 +79,6 @@ pub fn routes() -> Vec<rocket::Route> {
         add,
         api_friendlinks_list,
         delete,
+        toggle_enable_apply,
     ]
 }

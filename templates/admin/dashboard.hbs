@@ -1,1 +1,88 @@
-<p>dashboard 页面</p>
+<style>
+    .top-panel {border:1px solid #eceff9;border-radius:5px;text-align:center;}
+    .top-panel > .layui-card-body {height:60px;}
+    .top-panel-number {line-height:60px;font-size:30px;}
+</style>
+<div class="layuimini-container layuimini-page-anim">
+    <div class="layuimini-main welcome">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-xs12 layui-col-md2">
+                <div class="layui-card top-panel">
+                    <div class="layui-card-header">文章总数</div>
+                    <div class="layui-card-body">
+                        <div class="layui-row layui-col-space5">
+                            <div class="top-panel-number">
+                                {{ dashboard.post_count }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-xs12 layui-col-md2">
+
+                <div class="layui-card top-panel">
+                    <div class="layui-card-header">Book总数</div>
+                    <div class="layui-card-body">
+                        <div class="layui-row layui-col-space5">
+                            <div class="top-panel-number">
+                                {{ dashboard.book_count }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="layui-col-xs12 layui-col-md2">
+                <div class="layui-card top-panel">
+                    <div class="layui-card-header">Page总数</div>
+                    <div class="layui-card-body">
+                        <div class="layui-row layui-col-space5">
+                            <div class="top-panel-number">
+                                {{ dashboard.page_count }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="layui-col-xs12 layui-col-md2">
+                <div class="layui-card top-panel">
+                    <div class="layui-card-header">评论总数</div>
+                    <div class="layui-card-body">
+                        <div class="layui-row layui-col-space5">
+                            <div class="top-panel-number">
+                                {{ dashboard.comment_count }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-xs12 layui-col-md2">
+                <div class="layui-card top-panel">
+                    <div class="layui-card-header">未读评论数</div>
+                    <div class="layui-card-body">
+                        <div class="layui-row layui-col-space5">
+                            <div class="top-panel-number">
+                                {{ dashboard.unread_comments }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-xs12 layui-col-md2">
+                <div class="layui-card top-panel">
+                    <div class="layui-card-header">友链数</div>
+                    <div class="layui-card-body">
+                        <div class="layui-row layui-col-space5">
+                            <div class="top-panel-number">
+                                {{ dashboard.friendlink_count }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

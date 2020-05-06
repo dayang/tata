@@ -1,5 +1,14 @@
 <div class="layuimini-container layuimini-page-anim">
     <div class="layuimini-main">
+        <form class="layui-form" lay-filter="firendlink-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">友链申请</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" name="allow-friendlink-apply" lay-skin="switch" lay-text="开启|关闭" lay-filter="allow-friendlink-apply" {{#if viewbag.enable_friendlink_apply}}checked{{/if}}>
+                </div>
+            </div>
+        </form>
+
         <script type="text/html" id="toolbarAdd">
             <div class="layui-btn-container">
                 <button class="layui-btn layui-btn-sm data-add-btn" lay-event="add"> 添加 </button>
@@ -22,6 +31,25 @@
             form = layui.form,
             table = layui.table,
             miniPage = layui.miniPage;
+
+        form.render();
+
+        form.on('switch(allow-friendlink-apply)', function(data){
+            $.ajax('/admin/friendlinks/apply/toggle/' + data.elem.checked, {
+                method: 'put',
+                success: function(result) {
+                    if(result.Err != undefined) {
+                        form.val("firendlink-form", {
+                            "allow-friendlink-apply": !data.elem.checked
+                        });
+                        layer.msg(result.Err);
+                    }
+                },
+                error: function(err){
+                    layer.msg(err.statusText);
+                }
+            });
+        });
 
         table.render({
             elem: '#currentTableId',

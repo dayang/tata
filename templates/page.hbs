@@ -72,13 +72,6 @@
     }
 
     #article-body p {
-            {
-                {
-                 !-- text-indent: 2rem;
-                --
-            }
-        }
-
         color: #34495e;
         font-size: 1rem;
         line-height: 1.8em;
@@ -196,29 +189,47 @@
         height: 200px;
     }
 
-    .book_catalog{
+    .book-catalog{
         position: relative;
         height: 42px;
         margin-bottom: 10px;
     }
-    .book_catalog .layui-collapse{
+    .book-catalog .layui-collapse{
         position: absolute;
         width: 100%;
         top: 0;
         left: 0;
         z-index: 1000;
         background-color: #fff;
+        border-color: #393D49;
     }
 
-    .book_catalog a{
+    .book-catalog .layui-colla-title{
+        background-color: #393D49;
+        color: #F0F0F0;
+    }
+
+    .book-catalog a{
         display: block;
         border: 1px dotted #ddd;
         padding: 3px 10px;
         margin: 3px 0;
     }
-    .book_catalog a:hover{
+    .book-catalog a:hover{
         color: #2474b5;
     }
+
+    .book-catalog a.curr-item{
+        pointer-events: none;
+        color: #2474b5;
+    }
+
+    .book-catalog a .create-time{
+        float: right;
+        color: #999;
+        font-size: .7rem;
+    }
+
     .level-1{
         margin-left: 0px;
     }
@@ -243,7 +254,7 @@
 
 {{#*inline "content"}}
 <article>
-    <div class="book_catalog">
+    <div class="book-catalog">
         <div class="layui-collapse">
             <div class="layui-colla-item">
                 <div class="layui-colla-title">{{ viewbag.book_title }} -- 目录</div>
@@ -418,6 +429,7 @@
             }
         }
 
+        
         $('#toggle-left-side').click(function () {
             toggle_left_side();
         });
@@ -559,6 +571,8 @@
         load_comments(1);
 
         {{/if}}
+
+        $('.book-catalog a[href="' + location.pathname + '"]').addClass('curr-item');
  });
 </script>
 {{/inline}}

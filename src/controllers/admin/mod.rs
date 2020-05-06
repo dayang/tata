@@ -16,7 +16,9 @@ use rocket::response::Redirect;
 use rocket_contrib::json::{Json, JsonValue};
 use rocket_contrib::templates::Template;
 
+use super::ViewData;
 use super::{Auth, JsonErr, User};
+use crate::DbConn;
 
 #[get("/index")]
 pub fn index(_user: User) -> Result<Template, Status> {
@@ -24,8 +26,15 @@ pub fn index(_user: User) -> Result<Template, Status> {
 }
 
 #[get("/dashboard")]
-pub fn dashboard(_user: User) -> Result<Template, Status> {
-    Ok(Template::render("admin/dashboard", json!({})))
+pub fn dashboard(_user: User, conn: DbConn) -> Result<Template, Status> {
+    let mut view_data = ViewData::default();
+    match crate::service::get_dashboard_data(&conn) {
+        Ok(data) => {
+            view_data.add("dashboard", data);
+            Ok(Template::render("admin/dashboard", view_data.to_json()))
+        }
+        Err(_) => Err(Status::InternalServerError),
+    }
 }
 
 #[get("/login")]
@@ -63,9 +72,9 @@ pub fn login(mut cookies: Cookies, login_form: Json<Auth>, auth: State<Auth>) ->
 }
 
 #[get("/logout")]
-pub fn logout(_user: User, mut cookies: Cookies) -> JsonValue {
+pub fn logout(_user: User, mut cookies: Cookies) -> Redirect {
     cookies.remove_private(Cookie::named("auth"));
-    json!(JsonErr::Ok("logout success".into()))
+    Redirect::to("/admin/login")
 }
 
 #[get("/logout", rank = 2)]

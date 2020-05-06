@@ -36,7 +36,7 @@ pub fn get_page(mut cookies: Cookies, url: String, conn: DbConn) -> Result<Templ
                 Err(_) => (),
             };
 
-            match page_service::get_book_catalog(&conn, book_id) {
+            match page_service::get_book_catalog(&conn, book_id, Some(true)) {
                 Ok(catalog) => {
                     view_data.add("catalog", catalog);
                     Ok(Template::render("page", view_data.to_json()))

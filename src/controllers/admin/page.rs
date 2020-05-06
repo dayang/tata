@@ -1,5 +1,6 @@
 use crate::dto::book::*;
-use crate::entity::Page;
+use crate::dto::page::*;
+// use crate::entity::Page;
 use crate::service::page as page_service;
 use crate::DbConn;
 use rocket::http::Status;
@@ -21,7 +22,7 @@ pub fn edit_page(_user: User, conn: DbConn, id: i32) -> Result<Template, Status>
 }
 
 #[put("/pages/edit", format = "json", data = "<update_page>")]
-pub fn edit(_user: User, conn: DbConn, update_page: Json<Page>) -> JsonValue {
+pub fn edit(_user: User, conn: DbConn, update_page: Json<UpdatePage>) -> JsonValue {
     json!(page_service::update_page(&conn, update_page.0))
 }
 

@@ -31,7 +31,7 @@
                         <div class="layui-inline">
                             <label class="layui-form-label">文章ID</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="postid_filter" autocomplete="off" class="layui-input">
+                                <input type="text" name="for_id_filter" autocomplete="off" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -70,10 +70,13 @@
             util = layui.tataUtil,
             miniPage = layui.miniPage;
 
+            // 渲染，否则select 显示不了
+        form.render();
+
         var hash = window.location.hash;
         var form_value = {};
-        if(util.getQueryParam(hash, 'post_id') != null) {
-            form_value['postid_filter'] = util.getQueryParam(hash, 'post_id');
+        if(util.getQueryParam(hash, 'for_id') != null) {
+            form_value['for_id_filter'] = util.getQueryParam(hash, 'for_id');
         }
     
         if(util.getQueryParam(hash, 'type') != null) {
@@ -81,9 +84,6 @@
         }
         
         form.val('comment-search-form', form_value);
-
-        // 渲染，否则select 显示不了
-        form.render('select');
 
         function get_where_params() {
             var v = form.val('comment-search-form');
@@ -101,7 +101,7 @@
                 params.comment_type = null;
             }
 
-            params.for_id = v.postid_filter;
+            params.for_id = v.for_id_filter;
 
             if(v.status_filter === 'unread') {
                 params.unread = true;

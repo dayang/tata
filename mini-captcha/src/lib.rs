@@ -51,6 +51,7 @@ impl Captcha {
         let light_green = rng.gen_range(160, 210);
         let light_blue = rng.gen_range(160, 210);
 
+        // 画布
         draw_filled_rect_mut(
             &mut image,
             Rect::at(0, 0).of_size(self.width, self.height),
@@ -74,6 +75,7 @@ impl Captcha {
             y: font_size,
         };
 
+        // 画字符
         for (i, ch) in captcha_code.chars().enumerate() {
             let deep_font_color = Rgb([
                 rng.gen_range(0, 140),
@@ -104,6 +106,7 @@ impl Captcha {
             );
         }
 
+        // 画线段
         for _ in 0..rng.gen_range(1, 3) {
             let deep_line_color = Rgb([
                 rng.gen_range(0, 140),
@@ -122,6 +125,7 @@ impl Captcha {
             draw_line_segment_mut(&mut image, start_point, end_point, deep_line_color);
         }
 
+        // 画随机曲线
         for _ in 0..rng.gen_range(1, 2) {
             let deep_line_color = Rgb([
                 rng.gen_range(0, 140),
@@ -156,6 +160,7 @@ impl Captcha {
             );
         }
 
+        // 加噪点
         gaussian_noise_mut(&mut image, 30.0, 15.0, 10);
 
         let mut img_buffer = vec![];
@@ -206,7 +211,7 @@ impl CaptchaBuilder {
 
 #[cfg(test)]
 mod tests {
-    use Super::*;
+    use super::*;
     #[test]
     fn it_works() {
         let captcha = CaptchaBuilder::default()

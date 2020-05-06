@@ -51,8 +51,8 @@ pub fn comment_type_helper(
 
 fn print_catalog_item(out: &mut dyn Output, item: CatalogItem, level: i32) -> HelperResult {
     out.write(&format!(
-        "<div class=\"level-{}\"><a href=\"/books/page/{}\">{}</a></div>",
-        level, item.url, item.title
+        "<div class=\"level-{}\"><a href=\"/books/page/{}\">{} <span class=\"create-time layui-hide-xs layui-hide-sm layui-show-md-block\">{}</span></a></div>",
+        level, item.url, item.title, item.create_time
     ))?;
     for child in item.children {
         print_catalog_item(out, child, level + 1)?;

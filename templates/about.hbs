@@ -34,7 +34,11 @@
     </div>
 
     <blockquote class="layui-elem-quote layui-quote-nm">
-        <h3>友情链接：<button id="apply-for-btn" class="layui-btn layui-btn-xs layui-btn-normal">友链申请</button></h3>
+        <h3>友情链接：
+            {{#if friendlink_apply_enabled }}
+            <button id="apply-for-btn" class="layui-btn layui-btn-xs layui-btn-normal">友链申请</button>
+            {{/if}}
+        </h3>
         <ul class="friend-links">
         {{#each friend_links}}
         <li>
@@ -50,6 +54,7 @@
 {{/inline}}
 
 {{#*inline "script-block"}}
+{{#if friendlink_apply_enabled }}
 <script id="friendlink-form" type="text/template">
 <form class="layui-form" action="" style="margin: 20px;">
   <div class="layui-form-item">
@@ -77,12 +82,14 @@
   </div>
 </form>
 </script>
+{{/if}}
 <script>
     layui.use(['jquery','layer', 'form'], function() {
         var layer = layui.layer;
         var $ = layui.jquery;
         var form = layui.form;
 
+        {{#if friendlink_apply_enabled }}
         $('#apply-for-btn').click(function() {
             layer.open({
                 type: 1,
@@ -111,6 +118,7 @@
                 }
             });
         });
+        {{/if}}
     });
 </script>
 {{/inline}}

@@ -16,6 +16,12 @@
       "target": "_self",
       "child": [
         {
+          "title": "主页",
+          "href": "/admin/dashboard",
+          "icon": "fa fa-home",
+          "target": "_self"
+        },
+        {
           "title": "标签管理",
           "href": "/admin/tags/list",
           "icon": "fa fa-tags",
