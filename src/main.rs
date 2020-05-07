@@ -31,6 +31,7 @@ mod schema;
 mod service;
 mod sqltypes;
 mod util;
+mod qinniu;
 
 embed_migrations!();
 
@@ -49,7 +50,7 @@ fn run_db_migrations(rocket: Rocket) -> Result<Rocket, Rocket> {
 }
 
 fn rocket() -> Rocket {
-    rocket::ignite()
+    let r = rocket::ignite()
         .attach(DbConn::fairing())
         .attach(AdHoc::on_attach("Database Migrations", run_db_migrations))
         .attach(AdHoc::on_attach("Get Auth", |rocket| {
@@ -110,7 +111,8 @@ fn rocket() -> Rocket {
                 "book_catalog",
                 Box::new(crate::helpers::book_catalog_helper),
             );
-        }))
+        }));
+    qinniu::attach_qiniu(r)
 }
 
 fn main() {

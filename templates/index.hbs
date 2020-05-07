@@ -2,6 +2,7 @@
 <style>  
     .post-list-item {
         border-top: 1px dashed #ddd;
+        padding: 0 10px;
     }
 
     .post-info{
@@ -24,9 +25,12 @@
     }
 
     .post-thumb {
-        width: 180px;
+        width: 160px;
         display: inline-block;
         vertical-align: middle;
+        margin: 10px 0;
+        margin-right: 10px;
+        text-align: center;
     }
 
     .post-meta span{
@@ -66,7 +70,7 @@
             {{#if (not_empty_str thumbnail) }}
             <div class="post-thumb layui-hide-xs">
                 <a href="/posts/post/{{url}}">
-    	            <img style="width: 160px;max-height: 100%;" src="{{thumbnail}}" alt="图片呢？(｡•ˇ‸ˇ•｡)">
+    	            <img style="max-width: 160px;max-height: 100%;" src="{{thumbnail}}" alt="图片呢？(｡•ˇ‸ˇ•｡)">
                 </a>
             </div>
             {{/if}}

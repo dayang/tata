@@ -20,6 +20,8 @@ time = "0.1"
 pulldown-cmark = "0.6"
 ammonia = "3.1.0"
 md5 = "0.7.0"
+multipart = "0.16.1"
+qiniu-ng ={ version = "0.0.2", features=["use-libcurl"] }
 
 [dependencies.rusqlite]
 version = "0.16.0"

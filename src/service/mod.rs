@@ -11,7 +11,7 @@ pub mod tag;
 use crate::schema::dict::dsl as dict_dsl;
 use diesel::prelude::*;
 
-fn err_str<T: ToString>(err: T) -> String {
+pub fn err_str<T: ToString>(err: T) -> String {
     err.to_string()
 }
 

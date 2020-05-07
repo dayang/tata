@@ -20,6 +20,7 @@ layui.config({
     xmSelect: 'xm-select/xm-select',// 多选下拉框
     tataUtil: 'tatautil/tatautil',
     eleTree: 'ele-tree/eleTree', // 树形控件
+    imageupload: 'imageupload/imageupload', // 上传图片封装
 });
 
 // 加载非layui模块js文件

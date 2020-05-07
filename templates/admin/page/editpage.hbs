@@ -56,10 +56,10 @@
 
 </div>
 <script type="text/javascript">
-    layui.use(['form', 'simplemde', 'upload', 'layer'], function () {
+    layui.use(['form', 'simplemde', 'imageupload', 'layer'], function () {
         var form = layui.form,
             layer = layui.layer,
-            upload = layui.upload,
+            imageupload = layui.imageupload,
             $ = layui.$;
 
         /**
@@ -74,29 +74,7 @@
             status: false,
         });
 
-        upload.render({
-            elem: '#upload-img-btn',
-            url: '/upload/',
-            accept: 'images',
-            acceptMime: 'image/*',
-            done: function(res){
-                layer.open({
-                    title: "上传成功",
-                    shadeClose: false,
-                    content: '\<input type="text" class="layui-input" id="img-src-link" readonly value="图片链接">\<\/input>',
-                    btn: ['复制链接'],
-                    btnAlign: 'c',
-                    yes: function(index, layero){
-                        layero.context.getElementById("img-src-link").select();
-                        document.execCommand("Copy");
-                        layer.close(index);
-                    }
-                });
-            },
-            error: function(){
-                layer.msg("出错了", {icon: 2});
-            }
-        });
+        imageupload.render('#upload-img-btn');
 
         // 当前弹出层，防止ID被覆盖
         var parentIndex = layer.index;

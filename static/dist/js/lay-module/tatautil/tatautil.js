@@ -4,7 +4,8 @@ layui.define(function(exports){
             var reg = new RegExp("(^|&|\\?)" + name + "=([^&]*)(&|$)");
             var r = url.match(reg);
             if (r != null) return encodeURI(r[2]); return null;
-        }
+        },
+        
     }
 
     exports('tataUtil', util);

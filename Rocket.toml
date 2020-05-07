@@ -13,3 +13,10 @@ url = "db/db.sqlite"
 [global.auth]
 admin = "admin"
 password = "123456"
+
+[global.qiniu]
+# qiniu 外链域名 + 上传图片key = 图片链接
+host = "http://domain.com"
+bucket = "bucket_name"
+access_key = "your_access_key"
+secret_key = "your_secret_key"

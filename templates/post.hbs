@@ -109,6 +109,7 @@
 
     .article-header-hr {
         margin-bottom: 5px;
+        height: 1px;
     }
 
     .copyright-item {
@@ -227,7 +228,7 @@
             <a class="article-tag layui-badge-rim" href="/posts/tag/{{name}}">{{display_text}}</a>
             {{/each}}
         </div>
-        <hr class="article-header-hr">
+        {{!-- <hr class="article-header-hr"> --}}
     </header>
 
     <div id="article-body">{{ markdown post.content }}</div>
