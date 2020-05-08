@@ -3,7 +3,7 @@ use crate::consts::*;
 use crate::dto::{comment::*, pagination::*};
 use crate::entity::Comment as CommentEntity;
 use crate::schema::comment::dsl::*;
-use crate::service::get_dict_value;
+use crate::service::dict::get_dict_value;
 use crate::service::pagination::*;
 use diesel::prelude::*;
 

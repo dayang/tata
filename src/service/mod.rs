@@ -2,49 +2,17 @@ pub mod admin;
 pub mod book;
 pub mod category;
 pub mod comment;
+pub mod dict;
 pub mod friendlinks;
 pub mod page;
 pub mod pagination;
 pub mod post;
 pub mod tag;
 
-use crate::schema::dict::dsl as dict_dsl;
 use diesel::prelude::*;
 
 pub fn err_str<T: ToString>(err: T) -> String {
     err.to_string()
-}
-
-pub fn get_dict_value(key: &str, conn: &SqliteConnection) -> Option<String> {
-    dict_dsl::dict
-        .find(key.to_string())
-        .select(dict_dsl::d_value)
-        .first::<String>(conn)
-        .ok()
-}
-
-pub fn set_dict_value<T: ToString>(
-    key: &str,
-    value: T,
-    conn: &SqliteConnection,
-) -> Result<usize, String> {
-    match dict_dsl::dict
-        .find(key.to_string())
-        .first::<crate::entity::Dict>(conn)
-        .ok()
-    {
-        Some(dict_item) => diesel::update(&dict_item)
-            .set(dict_dsl::d_value.eq(value.to_string()))
-            .execute(conn)
-            .map_err(err_str),
-        None => diesel::insert_into(dict_dsl::dict)
-            .values((
-                dict_dsl::d_key.eq(key.to_string()),
-                dict_dsl::d_value.eq(value.to_string()),
-            ))
-            .execute(conn)
-            .map_err(err_str),
-    }
 }
 
 pub fn get_dashboard_data(conn: &SqliteConnection) -> Result<crate::dto::DashBoardData, String> {

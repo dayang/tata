@@ -3,12 +3,12 @@ pub mod category;
 pub mod comment;
 pub mod dict;
 pub mod friendlink;
+pub mod image;
 pub mod logininfo;
 pub mod page;
 pub mod post;
 pub mod tag;
 pub mod user;
-pub mod image;
 
 // use crate::DbConn;
 use rocket::http::{Cookie, Cookies, Status};
@@ -102,6 +102,7 @@ pub fn routes() -> Vec<rocket::Route> {
     routes.append(&mut book::routes());
     routes.append(&mut page::routes());
     routes.append(&mut image::routes());
+    routes.append(&mut dict::routes());
 
     routes
 }

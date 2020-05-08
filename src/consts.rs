@@ -8,8 +8,8 @@ pub const DICT_POST_PAGE_NUM: &'static str = "post_page_num";
 pub const DICT_COMMENT_PAGE_NUM: &'static str = "comment_page_num";
 pub const DICT_INDEX_QUOTE: &'static str = "index_quote";
 pub const DICT_ABOUT_PAGE: &'static str = "about_page";
-pub const DICT_AVATOR_URL: &'static str = "avatar_url";
-pub const DICT_SCRIPTS: &'static str = "scripts";
+pub const DICT_AVATAR_URL: &'static str = "avatar_url";
+pub const DICT_SCRIPTS: &'static str = "common_scripts";
 pub const DICT_FRIENDLINK_APPPLY_ENABLE: &'static str = "enable_friendlink_apply";
 
 /// 默认博客每页数量

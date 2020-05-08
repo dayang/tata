@@ -5,7 +5,7 @@ pub struct Qiniu {
     pub host: String,
     pub bucket: String,
     pub access_key: String,
-    pub secret_key: String
+    pub secret_key: String,
 }
 
 pub fn attach_qiniu(rocket: Rocket) -> Rocket {
@@ -41,7 +41,7 @@ pub fn attach_qiniu(rocket: Rocket) -> Rocket {
             .expect("secret_key should be string")
             .to_string();
 
-        Ok(rocket.manage(Qiniu{
+        Ok(rocket.manage(Qiniu {
             host,
             bucket,
             access_key,

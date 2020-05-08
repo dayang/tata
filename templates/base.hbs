@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="keywords" content="yonghua's blog,编程,博客,yonghua,hey tomorrow">
-    <meta name="description" content="yonghua的个人博客，记录生活和工作">
+    <meta name="keywords" content="{{ viewbag.meta_key_words }}">
+    <meta name="description" content="{{ viewbag.meta_description }}">
     <title>
     {{#> title}}
          {{ title }}
@@ -22,7 +22,7 @@
     </script> --}}
 
     <link rel="stylesheet" href="https://www.layuicdn.com/layui-v2.5.6/css/layui.css">
-    {{~> header-block}}
+    <link rel="stylesheet" href="/static/dist/css/markdown.css">
 
     <style>
         ::-webkit-scrollbar{
@@ -287,6 +287,7 @@
         }
 
     </style>
+     {{~> header-block}}
 </head>
 <body>
     <div id="tata-side-nav" style="display: none;" class="layui-nav layui-nav-tree layui-nav-side">
@@ -363,7 +364,7 @@
                         </ul>
                         <h4 class="left-header">关于博主</h4>
                         <div class="user-img">
-                            <img src="/static/dist/img/users-2.png" alt="" style="width: 100%;">
+                            <img src="{{{ viewbag.avatar_url }}}" alt="头像不见了" style="width: 100%;">
                         </div>
                         <ul class="user-info">
                             <li>
@@ -407,9 +408,9 @@
                 </div>
                 <div class="layui-row tata-footer">
                     <div class="layui-col-md4 layui-col-md-offset4">
-                        <p>Powered by <a href="https://rocket.rs/" target="_blank">Rocket</a><p/> 
+                        <p>{{{ viewbag.site_info }}}<p/> 
                         <p><a href="http://www.beian.miit.gov.cn" target="_blank">皖ICP备16017204号</a></p>
-                        <p>Copyright © 2020 - 2021 yyonghua</p> 
+                        <p>{{{ viewbag.copyright }}}</p> 
                     </div>
                 </div>
             </div>
@@ -466,5 +467,6 @@
         searchAll('.search-form');
     });
 </script>
+{{{ viewbag.common_scripts }}}
 {{~> script-block}}
 </html>

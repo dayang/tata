@@ -59,7 +59,7 @@
         },
         {
           "title": "设置",
-          "href": "/admin/dicts/list",
+          "href": "/admin/dicts",
           "icon": "fa fa-gear",
           "target": "_self"
         },

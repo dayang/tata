@@ -1,6 +1,6 @@
 use crate::service::{
-    category as category_service, comment as comment_service, get_dict_value, post as post_service,
-    tag as tag_service,
+    category as category_service, comment as comment_service, dict::get_dict_value,
+    post as post_service, tag as tag_service,
 };
 use crate::DbConn;
 use rocket::http::{Cookie, Cookies, Status};

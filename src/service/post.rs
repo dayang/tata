@@ -8,7 +8,7 @@ use crate::schema::post::{dsl as post_dsl, dsl::*};
 use crate::schema::posttag::{dsl as posttag_dsl, dsl::*};
 use crate::schema::tag::{dsl as tag_dsl, dsl::*};
 use crate::service::pagination::*;
-use crate::service::{category as category_service, get_dict_value};
+use crate::service::{category as category_service, dict::get_dict_value};
 use crate::util::*;
 use chrono::{Datelike, NaiveDate, NaiveDateTime};
 use diesel::prelude::*;

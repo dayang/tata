@@ -1,5 +1,6 @@
 pub mod book;
 pub mod comment;
+pub mod dict;
 pub mod friendlink;
 pub mod page;
 pub mod pagination;

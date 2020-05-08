@@ -1,6 +1,6 @@
 use crate::entity::FriendLink;
+use crate::service::dict::{get_dict_value, set_dict_value};
 use crate::service::friendlinks as link_service;
-use crate::service::{get_dict_value, set_dict_value};
 use crate::DbConn;
 use rocket::http::Status;
 use rocket_contrib::json::{Json, JsonValue};
@@ -67,7 +67,11 @@ pub fn delete(_user: User, conn: DbConn, id: i32) -> JsonValue {
 
 #[put("/friendlinks/apply/toggle/<enable>")]
 pub fn toggle_enable_apply(_user: User, conn: DbConn, enable: bool) -> JsonValue {
-    json!(set_dict_value(crate::consts::DICT_FRIENDLINK_APPPLY_ENABLE, enable, &conn))
+    json!(set_dict_value(
+        crate::consts::DICT_FRIENDLINK_APPPLY_ENABLE,
+        enable,
+        &conn
+    ))
 }
 
 pub fn routes() -> Vec<rocket::Route> {

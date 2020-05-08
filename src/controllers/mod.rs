@@ -6,7 +6,7 @@ pub mod page;
 pub mod post;
 
 use crate::consts::*;
-use crate::service::get_dict_value;
+use crate::service::dict::get_dict_value;
 use crate::service::{category as category_service, friendlinks as friendlink_service};
 use crate::DbConn;
 use diesel::prelude::*;
@@ -69,12 +69,40 @@ impl ViewData {
             Err(_) => (),
         };
 
-        get_dict_value(DICT_INDEX_QUOTE.into(), conn)
-            .into_iter()
-            .for_each(|v| {
-                self.view_bag
-                    .insert("index_quote".into(), Self::json_value(v));
-            });
+        if let Some(v) = get_dict_value(DICT_INDEX_QUOTE.into(), conn) {
+            self.view_bag
+                .insert("index_quote".into(), Self::json_value(v));
+        }
+
+        if let Some(v) = get_dict_value(DICT_KEYWORDS.into(), conn) {
+            self.view_bag
+                .insert("meta_key_words".into(), Self::json_value(v));
+        }
+
+        if let Some(v) = get_dict_value(DICT_DESCRIPTION.into(), conn) {
+            self.view_bag
+                .insert("meta_description".into(), Self::json_value(v));
+        }
+
+        if let Some(v) = get_dict_value(DICT_SITE_INFO.into(), conn) {
+            self.view_bag
+                .insert("site_info".into(), Self::json_value(v));
+        }
+
+        if let Some(v) = get_dict_value(DICT_COPYRIGHT.into(), conn) {
+            self.view_bag
+                .insert("copyright".into(), Self::json_value(v));
+        }
+
+        if let Some(v) = get_dict_value(DICT_SCRIPTS.into(), conn) {
+            self.view_bag
+                .insert("common_scripts".into(), Self::json_value(v));
+        }
+
+        if let Some(v) = get_dict_value(DICT_AVATAR_URL.into(), conn) {
+            self.view_bag
+                .insert("avatar_url".into(), Self::json_value(v));
+        }
     }
 }
 
@@ -121,7 +149,12 @@ pub fn about(conn: DbConn) -> Template {
     let mut view_data = ViewData::default();
     view_data.load_posts_page_meta_data(&conn);
     view_data.add("about_page", get_dict_value(DICT_ABOUT_PAGE.into(), &conn));
-    view_data.add("friendlink_apply_enabled", get_dict_value(DICT_FRIENDLINK_APPPLY_ENABLE, &conn).map(|b| b.parse::<bool>().unwrap_or(false)).unwrap_or(false));
+    view_data.add(
+        "friendlink_apply_enabled",
+        get_dict_value(DICT_FRIENDLINK_APPPLY_ENABLE, &conn)
+            .map(|b| b.parse::<bool>().unwrap_or(false))
+            .unwrap_or(false),
+    );
 
     match friendlink_service::all_friendlinks(&conn, true) {
         Ok(links) => view_data.add("friend_links", links),

@@ -1,0 +1,133 @@
+<div class="layuimini-container layuimini-page-anim">
+    <div class="layuimini-main">
+        <form class="layui-form" action="">
+            <div class="layui-form-item">
+                <label class="layui-form-label">首页标题(title)</label>
+                <div class="layui-input-block">
+                    <input type="text" name="index_title" required lay-verify="required" value="{{ dicts.index_title }}" autocomplete="off"
+                        class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">网页关键字(keywords)</label>
+                <div class="layui-input-block">
+                    <input type="text" name="meta_key_words" required lay-verify="required" value="{{ dicts.meta_key_words }}" autocomplete="off"
+                        class="layui-input">
+                </div>
+            </div>
+
+             <div class="layui-form-item">
+                <label class="layui-form-label">网页描述(description)</label>
+                <div class="layui-input-block">
+                    <input type="text" name="meta_description" required lay-verify="required" value="{{ dicts.meta_description }}" autocomplete="off"
+                        class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">站点信息</label>
+                <div class="layui-input-block">
+                    <input type="text" name="site_info" required lay-verify="required" value="{{ dicts.site_info }}" autocomplete="off"
+                        class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">版权信息</label>
+                <div class="layui-input-block">
+                    <input type="text" name="copyright" required lay-verify="required" value="{{ dicts.copyright }}" autocomplete="off"
+                        class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">博客每页数量</label>
+                <div class="layui-input-block">
+                    <input type="text" name="post_page_num" required lay-verify="required|number" value="{{ dicts.post_page_num }}" autocomplete="off"
+                        class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">评论每页数量</label>
+                <div class="layui-input-block">
+                    <input type="text" name="comment_page_num" required lay-verify="required|number" value="{{ dicts.comment_page_num }}" autocomplete="off"
+                        class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">头像连接</label>
+                <div class="layui-input-block">
+                    <input type="text" name="avatar_url" required lay-verify="required" value="{{ dicts.avatar_url }}" autocomplete="off"
+                        class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">网站通用脚本(统计等)</label>
+                <div class="layui-input-block">
+                    <textarea name="common_scripts" placeholder="请输入内容" class="layui-textarea">{{ dicts.common_scripts }}</textarea>
+                </div>
+            </div>
+            
+            <div class="layui-form-item">
+                <label class="layui-form-label">引用格言</label>
+                <div class="layui-input-block">
+                    <textarea name="index_quote" placeholder="请输入内容" class="layui-textarea">{{ dicts.index_quote }}</textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">关于页内容</label>
+                <div class="layui-input-block">
+                    <textarea name="about_page" placeholder="请输入内容(markdown格式)" class="layui-textarea">{{ dicts.about_page }}</textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="saveBtn">立即提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+
+        /**
+         * 初始化表单，要加上，不然刷新部分组件可能会不加载
+         */
+        form.render();
+
+        // 当前弹出层，防止ID被覆盖
+        var parentIndex = layer.index;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            console.log(data.field);
+            $.ajax("/admin/dicts/edit", {
+                method: "put",
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify(data.field),
+                success: function(data) {
+                    if(data.Ok) {
+                        layer.msg("修改成功", {time: 1000 }, function () {
+                            
+                        });
+                    } else {
+                        layer.msg(data.Err);
+                    }
+                }
+            });
+            return false;
+        });
+
+    });
+</script>

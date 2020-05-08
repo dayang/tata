@@ -27,11 +27,11 @@ mod controllers;
 mod dto;
 mod entity;
 mod helpers;
+mod qinniu;
 mod schema;
 mod service;
 mod sqltypes;
 mod util;
-mod qinniu;
 
 embed_migrations!();
 
