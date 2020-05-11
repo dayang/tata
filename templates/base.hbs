@@ -350,7 +350,9 @@
                     </div>
                 </div>
                 <div class="layui-row">
-                    <div id="tata-left-side" class="layui-col-md3 layui-hide-xs layui-hide-sm layui-show-md-block layui-show-lg-block">
+                    <div id="tata-left-side" class="layui-col-md3 layui-hide-xs layui-hide-sm {{#> show-left-side ~}}
+                                                                                                layui-show-md-block
+                                                                                                {{~/show-left-side}}">
                         <p class="tata-quote">
                             {{ viewbag.index_quote }}
                         </p>
@@ -402,7 +404,9 @@
                             </li>
                         </ul>               
                     </div>
-                    <div id="main-content" class="layui-col-md9 layui-col-ms12 layui-xs-ms12">
+                    <div id="main-content" class="{{#> main-content-width ~}}
+                                                    layui-col-md9
+                                                    {{~/main-content-width}}" layui-col-ms12 layui-xs-ms12">
                         {{~> content}}
                     </div>
                 </div>

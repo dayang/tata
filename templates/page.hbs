@@ -1,3 +1,11 @@
+{{#*inline "show-left-side"}}
+  
+{{/inline}}
+
+{{#*inline "main-content-width"}}
+  layui-col-md12
+{{/inline}}
+
 {{#*inline "header-block"}}
 <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/vs.min.css">
 {{#if page.allow_comment}}
@@ -164,7 +172,7 @@
     <header>
         <h1 class="article-title">
             <i id="toggle-left-side"
-                class="layui-hide-xs layui-hide-sm layui-show-md-inline-block layui-show-lg-inline-block layui-icon layui-icon-prev"></i>
+                class="layui-hide-xs layui-hide-sm layui-show-md-inline-block layui-show-lg-inline-block layui-icon layui-icon-next"></i>
             {{ page.title }}
 
             <svg id="post-qrcode-btn" class="icon-symbol layui-hide-xs" title="文章二维码" aria-hidden="true"
@@ -305,10 +313,9 @@
             $(this).attr("src", "/captcha/get?k=" + Math.random());
         })
 
-        var left_side_show = true;
+        var left_side_show = false;
         function toggle_left_side() {
             $('#tata-left-side').toggleClass('layui-show-md-block');
-            $('#tata-left-side').toggleClass('layui-show-lg-block');
             left_side_show = !left_side_show;
             if (left_side_show) {
                 $('#main-content').removeClass('layui-col-md12');
@@ -469,7 +476,7 @@
         $('.book-catalog a[href="' + location.pathname + '"]').addClass('curr-item');
  });
 </script>
-
+{{> shared/mathjax}}
 {{/inline}}
 
 {{~> base ~}}
