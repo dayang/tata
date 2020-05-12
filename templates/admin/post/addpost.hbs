@@ -111,6 +111,9 @@
                 setTimeout(function(){
                     preview.innerHTML = marked(plainText);
                     MathJax.typeset();
+                    document.querySelectorAll('pre code').forEach((block) => {
+                        hljs.highlightBlock(block);
+                    });
                 }, 250); 
                 return 'loading';
             }

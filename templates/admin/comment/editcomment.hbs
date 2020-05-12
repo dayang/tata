@@ -79,6 +79,16 @@
             spellChecker: false,
             toolbarTips: false,
             status: false,
+            previewRender: function(plainText, preview) { // Async method
+                setTimeout(function(){
+                    preview.innerHTML = marked(plainText);
+
+                    document.querySelectorAll('pre code').forEach((block) => {
+                        hljs.highlightBlock(block);
+                    });
+                }, 250); 
+                return 'loading';
+            }
         });
 
         // 当前弹出层，防止ID被覆盖
