@@ -4,9 +4,39 @@ use self::handlebars::{
 };
 
 use crate::dto::book::CatalogItem;
-use ammonia::clean;
-use pulldown_cmark::{html, Parser};
+use pulldown_cmark::{html, Parser, Options};
 use rocket_contrib::templates::handlebars;
+
+const ALLOWED_CODE_CLASSES: &[&'static str] = &[
+    "language-bash",
+    "language-clike",
+    "language-go",
+    "language-ini",
+    "language-javascript",
+    "language-json",
+    "language-markup",
+    "language-protobuf",
+    "language-ruby",
+    "language-rust",
+    "language-scss",
+    "language-sql",
+    "language-csharp",
+    "language-golang",
+    "language-shell",
+    "language-html",
+    "language-css",
+    "language-cpp",
+    "language-kotlin",
+    "language-php",
+    "language-python",
+    "language-r",
+    "language-matlab",
+    "language-scala",
+    "language-yaml",
+    "language-lua",
+    "language-groovy",
+    "language-typescript",
+];
 
 pub fn markdown_helper(
     h: &Helper<'_, '_>,
@@ -17,11 +47,15 @@ pub fn markdown_helper(
 ) -> HelperResult {
     if let Some(param) = h.param(0) {
         let markdown_text = param.value().render();
-        let parser = Parser::new(&markdown_text);
+        let mut options = Options::empty();
+        options.insert(Options::ENABLE_TABLES);
+        let parser = Parser::new_ext(&markdown_text, options);
         let mut html_output = String::new();
         html::push_html(&mut html_output, parser);
-        let safe_html = clean(&*html_output);
-        out.write(&safe_html)?;
+        let cleaned = ammonia::Builder::default().add_allowed_classes("code", ALLOWED_CODE_CLASSES).clean(&html_output).to_string();
+        // let safe_html = clean(&*html_output);
+        // out.write(&safe_html)?;
+        out.write(&cleaned)?;
     }
 
     Ok(())

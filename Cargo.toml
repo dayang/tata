@@ -17,7 +17,7 @@ diesel_migrations = "1.0"
 log = "0.4"
 chrono = { version = "0.4", features = ["serde"] }
 time = "0.1"
-pulldown-cmark = "0.6"
+pulldown-cmark = "0.7"
 ammonia = "3.1.0"
 md5 = "0.7.0"
 multipart = "0.16.1"
