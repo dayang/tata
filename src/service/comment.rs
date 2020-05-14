@@ -79,6 +79,7 @@ pub fn get_paged_comment(
         .filter(foreign_id.eq(master_id))
         .filter(comment_type.eq(comment_for))
         .filter(show.eq(true))
+        .order((comment_time.desc(), id.desc()))
         .paginate(page_index as i64)
         .per_page(page_num as i64)
         .load_and_count_pages::<CommentEntity>(conn)

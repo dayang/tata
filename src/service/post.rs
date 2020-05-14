@@ -72,6 +72,7 @@ pub fn get_posts_list(
     }
 
     paged_posts = paged_posts_query
+        .order((post_dsl::create_time.desc(), post_dsl::id.desc()))
         .paginate(page as i64)
         .per_page(page_num as i64)
         .load_and_count_pages::<Post>(conn)
