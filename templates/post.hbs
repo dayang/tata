@@ -325,7 +325,7 @@
                 title: "文章二维码",
                 content: '<div id="post-qrcode" style="text-align:center;"></div>',
                 success: function (layero, index) {
-                    var qr = qrcode(4, 'M');
+                    var qr = qrcode(0, 'M');
                     qr.addData(window.location.href, 'Byte');
                     qr.make();
                     $('#post-qrcode').html(qr.createSvgTag());
