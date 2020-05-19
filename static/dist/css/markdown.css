@@ -2,7 +2,7 @@
 .editor-preview-active ul li,
 .editor-preview-active-side ul li {
     list-style: disc;
-    margin-left: 20px;
+    margin-left: 40px;
     line-height: 1.8rem;
 }
 
@@ -61,7 +61,8 @@
 .editor-preview-active-side h1 {
     margin: 20px 0 20px;
     color: #34495e;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
+    font-weight: 700;
 }
 
 .tata-markdown-content h2,
@@ -69,38 +70,42 @@
 .editor-preview-active-side h2 {
     margin: 20px 0 20px;
     color: #34495e;
-    font-size: 1.4rem;
+    font-weight: 700;
+    font-size: 1.6rem;
 }
 
 .tata-markdown-content h3,
 .editor-preview-active h3,
 .editor-preview-active-side h3 {
-    margin: 20px 0 20px;
+    margin: 15px 0 15px;
     color: #34495e;
-    font-size: 1.3rem;
+    font-weight: 700;
+    font-size: 1.4rem;
 }
 
 .tata-markdown-content h4,
 .editor-preview-active h4,
 .editor-preview-active-side h4 {
-    margin: 20px 0 20px;
+    margin: 10px 0 10px;
     color: #34495e;
+    font-weight: 700;
     font-size: 1.2rem;
 }
 
 .tata-markdown-content h5,
 .editor-preview-active h5,
 .editor-preview-active-side h5 {
-    margin: 20px 0 20px;
+    margin: 5px 0 5px;
     color: #34495e;
+    font-weight: 700;
     font-size: 1.1rem;
 }
 
 .tata-markdown-content h6,
 .editor-preview-active h6,
 .editor-preview-active-side h6 {
-    margin: 20px 0 20px;
     color: #34495e;
+    font-weight: 700;
     font-size: 1.05rem;
 }
 

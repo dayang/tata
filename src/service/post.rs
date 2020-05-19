@@ -115,7 +115,6 @@ pub fn get_post_by_url(conn: &SqliteConnection, post_url: String) -> Result<Post
         .map_err(err_str)
 }
 
-/// TODO should be post_detail_admin
 pub fn get_post(conn: &SqliteConnection, by_id: i32) -> Result<Post, String> {
     post.find(by_id).first::<Post>(conn).map_err(err_str)
 }
@@ -167,6 +166,7 @@ pub fn like_post(conn: &SqliteConnection, post_url: String) -> Result<usize, Str
 pub fn archive_posts(conn: &SqliteConnection) -> Result<Vec<PostYearArchive>, String> {
     use std::collections::HashMap;
     let times = post
+        .filter(published.eq(true))
         .select(create_time)
         .load::<NaiveDateTime>(conn)
         .map_err(err_str)?;
