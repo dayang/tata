@@ -3,11 +3,19 @@
     .post-list-item {
         border-top: 1px dashed #ddd;
         padding: 0 10px;
+        overflow: auto;
+    }
+
+    .post-thumb {
+        width: 160px;
+        vertical-align: middle;
+        margin: 20px 0;
+        margin-right: 10px;
+        text-align: center;
     }
 
     .post-info{
-        display: inline-block;
-        vertical-align: middle;
+        
     }
 
     .post-title a{
@@ -22,15 +30,6 @@
     .post-title a:hover{
         color: #2474b5;
         transition: color 0.3s ease;
-    }
-
-    .post-thumb {
-        width: 160px;
-        display: inline-block;
-        vertical-align: middle;
-        margin: 10px 0;
-        margin-right: 10px;
-        text-align: center;
     }
 
     .post-meta span{
@@ -66,15 +65,15 @@
     <div class="layui-card-header">{{ viewbag.list_title }}</div>
     <div class="layui-card-body">
         {{#each post_list_info.page_items}}
-        <div class="post-list-item">
+        <div class="post-list-item layui-row">
             {{#if (not_empty_str thumbnail) }}
-            <div class="post-thumb layui-hide-xs">
+            <div class="post-thumb layui-hide-xs layui-col-sm4 layui-col-lg3">
                 <a href="/posts/post/{{url}}">
     	            <img style="max-width: 160px;max-height: 100%;" src="{{thumbnail}}" alt="图片呢？(｡•ˇ‸ˇ•｡)">
                 </a>
             </div>
             {{/if}}
-            <div class="post-info">
+            <div class="post-info layui-col-sm8 layui-col-lg9">
                 <h2 class="post-title">
                     <a href="/posts/post/{{url}}">{{ title }}</a>
                 </h2>
