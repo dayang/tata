@@ -2685,7 +2685,7 @@ checksum = "8dd9f05986b21b281a08e4b1a1f0e9c1c1675ede56e0e5d9af47eecc0522c420"
 
 [[package]]
 name = "tata"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "ammonia",
  "chrono",

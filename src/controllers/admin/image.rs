@@ -6,39 +6,8 @@ use rocket::request::State;
 use rocket::Data;
 
 use super::super::{JsonErr, User};
-use crate::service::err_str;
-use std::io::Read;
 
-use crate::qinniu::Qiniu;
-use qiniu_ng::{
-    storage::upload_policy::UploadPolicyBuilder, storage::upload_token::UploadToken,
-    storage::uploader::UploadManager, ConfigBuilder, Credential,
-};
-use std::time::Duration;
-
-fn upload_qiniu<T: Read + Send>(
-    stream: T,
-    file_name: String,
-    qiniu: &Qiniu,
-) -> Result<String, String> {
-    let credential = Credential::new(qiniu.access_key.clone(), qiniu.secret_key.clone());
-    let config = ConfigBuilder::default().build();
-    let upload_policy =
-        UploadPolicyBuilder::new_policy_for_bucket(qiniu.bucket.clone(), Duration::from_secs(7200))
-            .build();
-
-    let upload_token = UploadToken::from_policy(upload_policy, credential);
-    let upload_manager = UploadManager::new(config);
-    let upload_response = upload_manager
-        .for_upload_token(upload_token)
-        .map_err(err_str)?
-        .upload_stream(stream, Some(file_name), None)
-        .map_err(err_str)?;
-    upload_response
-        .key()
-        .map(|v| format!("{}/{}", qiniu.host, v))
-        .ok_or("no key in qiniu api response".into())
-}
+use crate::qiniu::{upload_file, Qiniu, UploadType};
 
 #[post("/image/upload", data = "<data>")]
 pub fn upload_image(
@@ -56,7 +25,10 @@ pub fn upload_image(
             Ok(Some(multipart_field)) => {
                 if multipart_field.headers.name.as_ref() == "file" {
                     let file_name = multipart_field.headers.filename.unwrap_or("temp".into());
-                    json!(upload_qiniu(multipart_field.data, file_name, &qiniu))
+                    json!(
+                        upload_file(multipart_field.data, file_name, &qiniu, UploadType::Image)
+                            .map(|v| format!("{}/{}", qiniu.host, v))
+                    )
                 } else {
                     json!(JsonErr::Err("no file field".into()))
                 }

@@ -17,6 +17,7 @@ password = "123456"
 [global.qiniu]
 # qiniu 外链域名 + 上传图片key = 图片链接
 host = "http://domain.com"
-bucket = "bucket_name"
+image_bucket = "bucket_name"
+db_bucket = "bucket_name"
 access_key = "your_access_key"
 secret_key = "your_secret_key"

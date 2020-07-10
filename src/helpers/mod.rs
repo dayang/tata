@@ -4,7 +4,7 @@ use self::handlebars::{
 };
 
 use crate::dto::book::CatalogItem;
-use pulldown_cmark::{html, Parser, Options};
+use pulldown_cmark::{html, Options, Parser};
 use rocket_contrib::templates::handlebars;
 
 const ALLOWED_CODE_CLASSES: &[&'static str] = &[
@@ -54,7 +54,10 @@ pub fn markdown_helper(
         let parser = Parser::new_ext(&markdown_text, options);
         let mut html_output = String::new();
         html::push_html(&mut html_output, parser);
-        let cleaned = ammonia::Builder::default().add_allowed_classes("code", ALLOWED_CODE_CLASSES).clean(&html_output).to_string();
+        let cleaned = ammonia::Builder::default()
+            .add_allowed_classes("code", ALLOWED_CODE_CLASSES)
+            .clean(&html_output)
+            .to_string();
         // let safe_html = clean(&*html_output);
         // out.write(&safe_html)?;
         out.write(&cleaned)?;

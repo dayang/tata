@@ -21,13 +21,14 @@ use rocket::Rocket;
 use rocket_contrib::serve::StaticFiles;
 use rocket_contrib::templates::Template;
 
+mod backup;
 mod catchers;
 mod consts;
 mod controllers;
 mod dto;
 mod entity;
 mod helpers;
-mod qinniu;
+mod qiniu;
 mod schema;
 mod service;
 mod sqltypes;
@@ -112,7 +113,25 @@ fn rocket() -> Rocket {
                 Box::new(crate::helpers::book_catalog_helper),
             );
         }));
-    qinniu::attach_qiniu(r)
+    qiniu::attach_qiniu(r).attach(AdHoc::on_launch("start backup", |rocket| {
+        if let Some(qiniu) = rocket.state::<qiniu::Qiniu>() {
+            let db_config = rocket
+                .config()
+                .get_table("databases")
+                .expect("missing db config");
+
+            let url = db_config
+                .get("sqlite_database")
+                .expect("missing db url config")
+                .get("url")
+                .expect("missing db url config")
+                .as_str()
+                .expect("db url should be string")
+                .to_string();
+
+            backup::start(url, qiniu.clone());
+        }
+    }))
 }
 
 fn main() {

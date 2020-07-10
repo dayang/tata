@@ -2,8 +2,8 @@
 
 [package]
 name = "tata"
-version = "0.1.0"
-authors = ["yang.yh <yang.yh@torayoung.com>"]
+version = "1.0.0"
+authors = ["dayang <1306693844@qq.com>"]
 edition = "2018"
 
 [dependencies]
